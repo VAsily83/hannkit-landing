@@ -1,0 +1,343 @@
+hannkit-landing/
+├─ package.json
+├─ next.config.js
+├─ tsconfig.json
+├─ pages/
+│  ├─ _app.tsx
+│  ├─ index.tsx
+│  └─ api/
+│     └─ lead.ts
+├─ styles/
+│  └─ globals.css
+└─ public/
+   └─ favicon.ico   (можно не добавлять сейчас)
+{
+  "name": "hannkit-landing",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000"
+  },
+  "dependencies": {
+    "next": "14.2.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.30",
+    "@types/react": "18.2.66",
+    "typescript": "5.4.5"
+  }
+}
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true
+};
+module.exports = nextConfig;
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
+}
+import type { AppProps } from 'next/app';
+import '../styles/globals.css';
+
+export default function App({ Component, pageProps }: AppProps) {
+  return <Component {...pageProps} />;
+}
+:root{
+  --primary:#0B1E5B;
+  --primary-700:#0A1A4F;
+  --bg:#F7F7FA;
+  --text:#111;
+  --muted:#5A6472;
+  --card:#FFFFFF;
+  --border:#E5E7EB;
+  --accent:#D6D7D9;
+}
+
+*{box-sizing:border-box}
+html,body{padding:0;margin:0}
+body{
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--text);
+  background:var(--bg);
+}
+.container{max-width:1120px;margin:0 auto;padding:0 16px}
+.btn{display:inline-flex;align-items:center;gap:8px; border:none; border-radius:10px; padding:12px 18px; cursor:pointer; font-weight:600}
+.btn-primary{background:var(--primary); color:#fff}
+.btn-primary:hover{background:var(--primary-700)}
+.btn-light{background:#fff; color:var(--primary); border:1px solid rgba(255,255,255,.2)}
+.pill{display:inline-block;padding:8px 12px;border-radius:999px;border:1px solid var(--border); background:#fff; color:#1F2A44; font-weight:600; font-size:14px}
+.card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px}
+.hero{background:var(--primary); color:#fff; padding:24px 0}
+.hero h1{font-size:42px; line-height:1.1; margin:0 0 16px}
+.hero p{color:#D9E1F2; margin:0 0 20px}
+.section{padding:36px 0}
+.grid{display:grid; gap:16px}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.footer{background:var(--accent); padding:24px 0; color:#333}
+.input, .textarea{
+  width:100%; padding:12px 14px; border-radius:10px;
+  border:1px solid var(--border); outline:none; font-size:16px; background:#fff;
+}
+.textarea{min-height:100px; resize:vertical}
+.modal-backdrop{
+  position:fixed; inset:0; background:rgba(0,0,0,.5);
+  display:flex; align-items:center; justify-content:center; padding:16px; z-index:50;
+}
+.modal{
+  background:#fff; border-radius:16px; padding:20px; width:100%; max-width:520px; border:1px solid var(--border);
+}
+.small{font-size:12px;color:var(--muted)}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+async function sendTelegram(text: string) {
+  const token = process.env.TELEGRAM_BOT_TOKEN!;
+  const chatId = process.env.TELEGRAM_CHAT_ID!;
+  if (!token || !chatId) return;
+
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML' })
+  });
+}
+
+async function sendEmail(subject: string, html: string) {
+  const apiKey = process.env.RESEND_API_KEY!;
+  const from = process.env.FROM_EMAIL!;
+  const to = process.env.TO_EMAIL!;
+  if (!apiKey || !from || !to) return;
+
+  await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from, to, subject, html })
+  });
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') return res.status(405).end();
+
+  try {
+    const { name, email, phone, note } = req.body || {};
+    if (!name && !email && !phone) return res.status(400).json({ ok: false, error: 'empty' });
+
+    const subject = 'Новая заявка · Hannkit';
+    const lines = [
+      '<b>Hannkit · Заявка</b>',
+      name ? `Имя: ${name}` : null,
+      email ? `Email: ${email}` : null,
+      phone ? `Телефон: ${phone}` : null,
+      note ? `Комментарий: ${note}` : null,
+      `Время: ${new Date().toLocaleString('ru-RU')}`
+    ].filter(Boolean) as string[];
+
+    const text = lines.join('\n');
+    const html = lines.join('<br/>');
+
+    await Promise.all([sendTelegram(text), sendEmail(subject, html)]);
+    return res.status(200).json({ ok: true });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ ok: false });
+  }
+}
+import React, { useState } from 'react';
+
+export default function Home() {
+  const [open, setOpen] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState<null | 'ok' | 'err'>(null);
+  const [name, setName] = useState(''); 
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [note, setNote] = useState('');
+  const [agree, setAgree] = useState(true);
+
+  async function submitLead(e: React.FormEvent) {
+    e.preventDefault();
+    if (!agree) return;
+    try {
+      setSending(true); setSent(null);
+      const r = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone, note })
+      });
+      const data = await r.json();
+      if (r.ok && data?.ok) {
+        setSent('ok');
+        setTimeout(() => { setOpen(false); setSent(null); }, 1200);
+        setName(''); setEmail(''); setPhone(''); setNote('');
+      } else setSent('err');
+    } catch { setSent('err'); }
+    finally { setSending(false); }
+  }
+
+  return (
+    <>
+      {/* HERO */}
+      <div className="hero">
+        <div className="container">
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center', marginBottom:14}}>
+            <strong>Hannkit</strong>
+            <button className="btn btn-light" onClick={()=>setOpen(true)}>Стать партнёром</button>
+          </div>
+          <h1>Продавайте в России без рисков и вложений</h1>
+          <p>Мы размещаем ваши товары на Wildberries, Ozon и Яндекс.Маркете, берём на себя маркетинг, логистику и поддержку. Вы получаете себестоимость + 30% от прибыли после продажи.</p>
+          <div className="row">
+            <button className="btn btn-primary" onClick={()=>setOpen(true)}>Стать партнёром</button>
+            <span className="pill">Wildberries</span>
+            <span className="pill">Ozon</span>
+            <span className="pill">Яндекс.Маркет</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ПОЧЕМУ */}
+      <section className="section">
+        <div className="container">
+          <h2>Почему это выгодно производителю</h2>
+          <div className="grid grid-3" style={{marginTop:16}}>
+            <div className="card"><b>Быстрый выход</b><div className="small">Запуск продаж без инвестиций и сложных процедур</div></div>
+            <div className="card"><b>Минимум рисков</b><div className="small">Мы берём на себя маркетинг, логистику и поддержку</div></div>
+            <div className="card"><b>Рост прибыли</b><div className="small">Вы получаете себестоимость + 30% от прибыли</div></div>
+          </div>
+        </div>
+      </section>
+
+      {/* КАК РАБОТАЕМ */}
+      <section className="section" style={{background:'#fff'}}>
+        <div className="container">
+          <h2>Как мы работаем</h2>
+          <ul>
+            <li>Анализ спроса и SKU</li>
+            <li>Легализация и сертификация</li>
+            <li>Поставка на склад</li>
+            <li>Продажи на маркетплейсах</li>
+            <li>Выплаты и отчёты</li>
+          </ul>
+        </div>
+      </section>
+
+      {/* ФИНАНСЫ */}
+      <section className="section">
+        <div className="container">
+          <h2>Финансовые условия</h2>
+        <ul>
+          <li>COGS+30% — стандартное вознаграждение</li>
+          <li>Выплаты раз в месяц</li>
+          <li>Все расходы на маркетинг и логистику за нами</li>
+          <li>Прозрачные отчёты по продажам</li>
+          <li>SLA по срокам выплат</li>
+        </ul>
+        </div>
+      </section>
+
+      {/* ГАРАНТИИ */}
+      <section className="section" style={{background:'#fff'}}>
+        <div className="container">
+          <h2>Гарантии и прозрачность</h2>
+          <div className="grid grid-3" style={{marginTop:16}}>
+            <div className="card"><b>Юридическая чистота</b><div className="small">Работаем с юрлицами, соблюдаем все нормы</div></div>
+            <div className="card"><b>Прозрачные отчёты</b><div className="small">Регулярные дашборды и статистика</div></div>
+            <div className="card"><b>Поддержка 24/7</b><div className="small">Отвечаем на любые вопросы партнёров</div></div>
+          </div>
+        </div>
+      </section>
+
+      {/* B2B */}
+      <section className="section">
+        <div className="container" id="b2b">
+          <h2>B2B для продавцов маркетплейсов</h2>
+          <div className="grid grid-4" style={{marginTop:16}}>
+            <div className="card"><b>Оптовые партии</b><div className="small">Выгодные условия закупки от минимального объёма</div></div>
+            <div className="card"><b>White Label</b><div className="small">Производство под нашим лейблом на вашем производстве</div></div>
+            <div className="card"><b>Аналитика трендов</b><div className="small">Рекомендации по SKU и ассортименту</div></div>
+            <div className="card"><b>Готовая логистика</b><div className="small">Доставка на склады маркетплейсов без вашего участия</div></div>
+          </div>
+          <div style={{marginTop:16}}>
+            <button className="btn btn-primary" onClick={()=>setOpen(true)}>Стать партнёром</button>
+          </div>
+        </div>
+      </section>
+
+      {/* КОНТАКТЫ */}
+      <section className="section" style={{background:'#fff'}}>
+        <div className="container" id="contact">
+          <h2>Связаться с нами</h2>
+          <p className="small">Получите расчёт спроса и тестовую матрицу SKU за 48 часов.</p>
+          <div className="grid grid-2">
+            <div className="card">
+              <b>Email</b>
+              <div>Wildbizshop@gmail.com</div>
+            </div>
+            <div className="card">
+              <b>Telegram</b>
+              <div><a href="https://t.me/HardVassya" target="_blank" rel="noreferrer">@HardVassya — открыть</a></div>
+              <div className="small" style={{marginTop:8}}>WeChat: ID <b>HardVassya</b> (Откройте WeChat → Поиск → ID)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="footer">
+        <div className="container">© 2025 Hannkit · hannkit.com. All rights reserved.</div>
+      </footer>
+
+      {/* MODAL */}
+      {open && (
+        <div className="modal-backdrop" onClick={()=>setOpen(false)}>
+          <div className="modal" onClick={(e)=>e.stopPropagation()}>
+            <h3 style={{marginTop:0}}>Оставьте заявку</h3>
+            <form onSubmit={submitLead}>
+              <div className="grid" style={{gridTemplateColumns:'1fr 1fr'}}>
+                <input className="input" placeholder="Ваше имя" value={name} onChange={e=>setName(e.target.value)} />
+                <input className="input" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} />
+                <input className="input" placeholder="Телефон" value={phone} onChange={e=>setPhone(e.target.value)} />
+                <div />
+              </div>
+              <div style={{marginTop:12}}>
+                <textarea className="textarea" placeholder="Комментарий (по желанию)" value={note} onChange={e=>setNote(e.target.value)} />
+              </div>
+              <label style={{display:'flex',gap:8,alignItems:'center',marginTop:8}}>
+                <input type="checkbox" checked={agree} onChange={e=>setAgree(e.target.checked)} />
+                <span className="small">Отправляя форму, вы соглашаетесь с обработкой персональных данных.</span>
+              </label>
+              <div className="row" style={{marginTop:12}}>
+                <button className="btn btn-primary" disabled={sending || !agree}>
+                  {sending ? 'Отправляем…' : 'Отправить'}
+                </button>
+                <button type="button" className="btn" onClick={()=>setOpen(false)}>Закрыть</button>
+              </div>
+              {sent==='ok' && <div className="small" style={{color:'green',marginTop:8}}>Спасибо! Мы свяжемся с вами.</div>}
+              {sent==='err' && <div className="small" style={{color:'crimson',marginTop:8}}>Не получилось отправить. Попробуйте позже.</div>}
+            </form>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
