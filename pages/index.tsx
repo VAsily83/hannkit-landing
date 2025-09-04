@@ -3,7 +3,7 @@ import React, { useMemo, useState } from 'react';
 export default function LandingHannkit() {
   const COLORS = {
     primary: '#0B1E5B',
-    accent: '#F3F4F6',
+    accent: '#F9FAFB',
     text: '#111111',
     border: '#E5E7EB',
   };
@@ -66,37 +66,18 @@ export default function LandingHannkit() {
           ],
           contactTitle: 'Связаться с нами',
           contactLead: 'Получите расчёт спроса и тестовую матрицу SKU за 48 часов.',
-          email: 'Email',
-          telegram: 'Telegram',
-          wechat: 'WeChat',
-          wechatHint: 'Откройте WeChat → Поиск → ID: HardVassya',
-          modalTitle: 'Оставьте заявку',
-          name: 'Ваше имя',
-          phone: 'Телефон',
-          submit: 'Отправить',
-          close: 'Закрыть',
           footer: '© 2025 Hannkit · hannkit.com. All rights reserved.',
-          langLabel: 'Язык',
         },
       } as const)[uiLang],
     [uiLang]
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-
-  const makeMailtoHref = (n: string, m: string, p: string) => {
-    const subject = 'Заявка с лендинга Hannkit';
-    const body = `Имя: ${n || '-'}\nEmail: ${m || '-'}\nТелефон: ${p || '-'}`;
-    return `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
 
   return (
     <div style={{ fontFamily: 'Inter, system-ui, sans-serif', color: COLORS.text }}>
       {/* Header */}
-      <header style={{ background: COLORS.primary, color: '#fff', padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <header style={{ background: COLORS.primary, color: '#fff', padding: '20px', display: 'flex', justifyContent: 'space-between' }}>
         <h1>{T.brand}</h1>
         <button
           style={{
@@ -134,23 +115,24 @@ export default function LandingHannkit() {
         {/* Why */}
         <section>
           <h3>{T.whyTitle}</h3>
-          <ul>
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
             {T.why.map((item, i) => (
-              <li key={i}>
-                <b>{item.title}:</b> {item.text}
-              </li>
+              <div key={i} style={{ background: COLORS.accent, padding: '20px', borderRadius: '8px', flex: '1 1 200px' }}>
+                <b>{item.title}</b>
+                <p>{item.text}</p>
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
 
         {/* How */}
         <section>
           <h3>{T.howTitle}</h3>
-          <ol>
+          <ul>
             {T.how.map((step, i) => (
               <li key={i}>{step}</li>
             ))}
-          </ol>
+          </ul>
         </section>
 
         {/* Financials */}
@@ -166,44 +148,49 @@ export default function LandingHannkit() {
         {/* Trust */}
         <section>
           <h3>{T.trustTitle}</h3>
-          <ul>
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
             {T.trust.map((item, i) => (
-              <li key={i}>
-                <b>{item.title}:</b> {item.text}
-              </li>
+              <div key={i} style={{ background: COLORS.accent, padding: '20px', borderRadius: '8px', flex: '1 1 200px' }}>
+                <b>{item.title}</b>
+                <p>{item.text}</p>
+              </div>
             ))}
-          </ul>
+          </div>
         </section>
 
         {/* Categories */}
         <section>
           <h3>{T.catsTitle}</h3>
-          <ul>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             {T.cats.map((c, i) => (
-              <li key={i}>{c}</li>
+              <span key={i} style={{ padding: '8px 12px', border: `1px solid ${COLORS.border}`, borderRadius: '20px', background: '#fff' }}>
+                {c}
+              </span>
             ))}
-          </ul>
+          </div>
         </section>
 
         {/* B2B */}
         <section>
           <h3>{T.b2bTitle}</h3>
           <p>{T.b2bLead}</p>
-          <ul>
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
             {T.b2b.map((b, i) => (
-              <li key={i}>
-                <b>{b.title}:</b> {b.text}
-              </li>
+              <div key={i} style={{ background: COLORS.accent, padding: '20px', borderRadius: '8px', flex: '1 1 200px' }}>
+                <b>{b.title}</b>
+                <p>{b.text}</p>
+              </div>
             ))}
-          </ul>
+          </div>
           <button
             style={{
-              marginTop: '10px',
+              marginTop: '20px',
               background: COLORS.primary,
               color: '#fff',
               padding: '10px 15px',
               border: 'none',
               borderRadius: '6px',
+              fontWeight: 600,
             }}
             onClick={() => setIsModalOpen(true)}
           >
@@ -212,78 +199,27 @@ export default function LandingHannkit() {
         </section>
 
         {/* Contacts */}
-        <section id="contact" style={{ marginTop: '40px' }}>
+        <section style={{ marginTop: '40px' }}>
           <h3>{T.contactTitle}</h3>
           <p>{T.contactLead}</p>
-          <div style={{ display: 'grid', gap: '20px', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
-            {/* Email */}
-            <div style={{ background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: '10px', padding: '15px' }}>
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+            <div style={{ background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: '10px', padding: '15px', flex: '1 1 200px' }}>
               <strong>Email</strong>
-              <p>
-                <a href={makeMailtoHref(name, email, phone)}>Wildbizshop@gmail.com</a>
-              </p>
+              <p><a href="mailto:Wildbizshop@gmail.com">Wildbizshop@gmail.com</a></p>
             </div>
-            {/* Telegram */}
-            <div style={{ background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: '10px', padding: '15px' }}>
+            <div style={{ background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: '10px', padding: '15px', flex: '1 1 200px' }}>
               <strong>Telegram</strong>
-              <p>
-                <a href="https://t.me/HardVassya" target="_blank" rel="noopener noreferrer">
-                  @HardVassya
-                </a>
-              </p>
+              <p><a href="https://t.me/HardVassya" target="_blank" rel="noopener noreferrer">@HardVassya</a></p>
             </div>
-            {/* WeChat */}
-            <div style={{ background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: '10px', padding: '15px' }}>
+            <div style={{ background: '#fff', border: `1px solid ${COLORS.border}`, borderRadius: '10px', padding: '15px', flex: '1 1 200px' }}>
               <strong>WeChat</strong>
-              <p>
-                ID: <b>HardVassya</b> ({T.wechatHint}){' '}
-                <button onClick={() => navigator.clipboard.writeText('HardVassya')} style={{ marginLeft: '10px' }}>
-                  Скопировать ID
-                </button>
-              </p>
+              <p>ID: <b>HardVassya</b> <br /> (Откройте WeChat → Поиск → ID)</p>
             </div>
           </div>
         </section>
       </main>
 
-      {/* Footer */}
       <footer style={{ background: COLORS.accent, padding: '20px', marginTop: '40px', textAlign: 'center' }}>{T.footer}</footer>
-
-      {/* Modal */}
-      {isModalOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          onClick={() => setIsModalOpen(false)}
-        >
-          <div
-            style={{
-              background: '#fff',
-              padding: '20px',
-              borderRadius: '8px',
-              width: '300px',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3>{T.modalTitle}</h3>
-            <input placeholder={T.name} value={name} onChange={(e) => setName(e.target.value)} />
-            <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <input placeholder={T.phone} value={phone} onChange={(e) => setPhone(e.target.value)} />
-            <div style={{ marginTop: '10px' }}>
-              <a href={makeMailtoHref(name, email, phone)} onClick={() => setIsModalOpen(false)} style={{ marginRight: '10px' }}>
-                {T.submit}
-              </a>
-              <button onClick={() => setIsModalOpen(false)}>{T.close}</button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
