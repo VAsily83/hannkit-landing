@@ -1,306 +1,448 @@
-// pages/index.tsx
-import { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from 'react';
 
-type Lang = "ru" | "en" | "zh";
+export default function LandingHannkit() {
+  // ---- Палитра
+  const COLORS = {
+    primary: '#0B1E5B',        // тёмный хиро
+    accent: '#F3F4F6',         // светлый фон секций
+    text: '#111111',
+    border: '#E5E7EB',
+    white: '#FFFFFF',
+  };
 
-const TDICT = {
-  ru: {
-    brand: "Hannkit",
-    langLabel: "Язык",
-    ctas: { partner: "Стать партнёром" },
-    heroTitle: "Продавайте в России без рисков и вложений",
-    heroLead:
-      "Мы размещаем ваши товары на Wildberries, Ozon и Яндекс.Маркете, берём на себя маркетинг, логистику и поддержку. Вы получаете себестоимость + 30% от прибыли после продажи.",
-    badges: ["Wildberries", "Ozon", "Яндекс.Маркет"],
-    whyTitle: "Почему это выгодно производителю",
-    why: [
-      { title: "Быстрый выход", text: "Запуск продаж без инвестиций и сложных процедур" },
-      { title: "Минимум рисков", text: "Мы берём на себя маркетинг, логистику и поддержку" },
-      { title: "Рост прибыли", text: "Вы получаете себестоимость + 30% от прибыли" },
-    ],
-    howTitle: "Как мы работаем",
-    how: [
-      "Анализ спроса и SKU",
-      "Легализация и сертификация",
-      "Поставка на склад",
-      "Продажи на маркетплейсах",
-      "Выплаты и отчёты",
-    ],
-    finTitle: "Финансовые условия",
-    fin: [
-      "COGS+30% — стандартное вознаграждение",
-      "Выплаты раз в месяц",
-      "Все расходы на маркетинг и логистику за нами",
-      "Прозрачные отчёты по продажам",
-      "SLA по срокам выплат",
-    ],
-    trustTitle: "Гарантии и прозрачность",
-    trust: [
-      { title: "Юридическая чистота", text: "Работаем с юрлицами, соблюдаем все нормы" },
-      { title: "Прозрачные отчёты", text: "Регулярные дашборды и статистика" },
-      { title: "Поддержка 24/7", text: "Отвечаем на любые вопросы партнёров" },
-    ],
-    b2bTitle: "B2B для продавцов маркетплейсов",
-    b2bLead: "Оптовые поставки и решения для действующих селлеров.",
-    b2b: [
-      { title: "Оптовые партии", text: "Выгодные условия закупки от минимального объёма." },
-      { title: "White Label", text: "Производство под нашим лейблом на вашем производстве." },
-      { title: "Аналитика трендов", text: "Рекомендации по SKU и ассортименту на основе данных." },
-      { title: "Готовая логистика", text: "Доставка на склады маркетплейсов без вашего участия." },
-    ],
-    contactTitle: "Связаться с нами",
-    contactLead: "Получите расчёт спроса и тестовую матрицу SKU за 48 часов.",
-    email: "Email",
-    telegramOpen: "Открыть в Telegram",
-    wechatHint: "Откройте WeChat → Поиск → ID: HardVassya",
-    footer: "© 2025 Hannkit · hannkit.com. All rights reserved.",
-  },
-  en: {
-    brand: "Hannkit",
-    langLabel: "Language",
-    ctas: { partner: "Become a partner" },
-    heroTitle: "Sell in Russia with no risk and upfront costs",
-    heroLead:
-      "We list your products on Wildberries, Ozon and Yandex.Market, handling marketing, logistics and support. You get cost price + 30% of profit after sale.",
-    badges: ["Wildberries", "Ozon", "Yandex.Market"],
-    whyTitle: "Why it benefits a manufacturer",
-    why: [
-      { title: "Fast launch", text: "Start selling with no investment or complex procedures" },
-      { title: "Low risk", text: "We handle marketing, logistics and support" },
-      { title: "Profit growth", text: "You get cost price + 30% of profit" },
-    ],
-    howTitle: "How we work",
-    how: [
-      "Demand & SKU analysis",
-      "Legalization & certification",
-      "Inbound to warehouse",
-      "Marketplace sales",
-      "Payouts & reports",
-    ],
-    finTitle: "Financial terms",
-    fin: [
-      "COGS+30% — standard compensation",
-      "Monthly payouts",
-      "We pay for marketing & logistics",
-      "Transparent sales reports",
-      "SLA on payout terms",
-    ],
-    trustTitle: "Guarantees & transparency",
-    trust: [
-      { title: "Legal compliance", text: "We work with legal entities and obey all regulations" },
-      { title: "Transparent reports", text: "Regular dashboards and statistics" },
-      { title: "Support 24/7", text: "We answer partners’ questions any time" },
-    ],
-    b2bTitle: "B2B for marketplace sellers",
-    b2bLead: "Wholesale supply and solutions for active sellers.",
-    b2b: [
-      { title: "Wholesale", text: "Favourable terms from minimum order quantity" },
-      { title: "White Label", text: "Produce under our label at your factory" },
-      { title: "Trend analytics", text: "SKU & assortment recommendations based on data" },
-      { title: "Logistics", text: "Delivery to marketplace warehouses with no involvement from you" },
-    ],
-    contactTitle: "Contact us",
-    contactLead: "Get demand estimation and a test SKU matrix within 48 hours.",
-    email: "Email",
-    telegramOpen: "Open in Telegram",
-    wechatHint: "Open WeChat → Search → ID: HardVassya",
-    footer: "© 2025 Hannkit · hannkit.com. All rights reserved.",
-  },
-  zh: {
-    brand: "Hannkit",
-    langLabel: "语言",
-    ctas: { partner: "成为合作伙伴" },
-    heroTitle: "零风险、零前期投入在俄罗斯销售",
-    heroLead:
-      "我们在 Wildberries、Ozon 和 Yandex.Market 上架您的商品，并负责营销、物流与客服。售出后您获得成本价 + 30% 的利润。",
-    badges: ["Wildberries", "Ozon", "Yandex.Market"],
-    whyTitle: "对生产商的优势",
-    why: [
-      { title: "快速上线", text: "无需投入与复杂流程，即可启动销售" },
-      { title: "风险极低", text: "我们承担营销、物流与客服" },
-      { title: "利润提升", text: "售后获得成本 + 30% 利润" },
-    ],
-    howTitle: "我们的流程",
-    how: ["需求与 SKU 分析", "合规与认证", "入仓", "平台销售", "结算与报表"],
-    finTitle: "财务条款",
-    fin: ["COGS+30% 标准分成", "按月结算", "营销与物流由我们承担", "透明的销售报表", "按 SLA 付款"],
-    trustTitle: "保障与透明",
-    trust: [
-      { title: "合法合规", text: "与法人合作，遵守法规" },
-      { title: "透明报表", text: "定期仪表盘与统计" },
-      { title: "7×24 支持", text: "随时解答合作伙伴问题" },
-    ],
-    b2bTitle: "B2B（面向卖家）",
-    b2bLead: "为平台卖家提供批发与解决方案。",
-    b2b: [
-      { title: "批发供货", text: "起订量低、价格优惠" },
-      { title: "白标生产", text: "在您工厂贴我们品牌生产" },
-      { title: "趋势分析", text: "基于数据的 SKU 与选品建议" },
-      { title: "一件入仓", text: "直送平台仓，无需您操心" },
-    ],
-    contactTitle: "联系我们",
-    contactLead: "48 小时内提供需求评估与测试 SKU 矩阵。",
-    email: "邮箱",
-    telegramOpen: "打开 Telegram",
-    wechatHint: "打开 WeChat → 搜索 → ID: HardVassya",
-    footer: "© 2025 Hannkit · hannkit.com. All rights reserved.",
-  },
-} as const;
+  // ---- Язык (оставляем RU как основной)
+  const [uiLang, setUiLang] = useState<'ru' | 'en' | 'zh'>('ru');
+  const T = useMemo(
+    () =>
+      ({
+        ru: {
+          brand: 'Hannkit',
+          langLabel: 'Язык',
+          heroTitle: 'Продавайте в России без рисков и вложений',
+          heroLead:
+            'Мы размещаем ваши товары на Wildberries, Ozon и Яндекс.Маркете, берём на себя маркетинг, логистику и поддержку. Вы получаете себестоимость + 30% от прибыли после продажи.',
+          ctas: { partner: 'Стать партнёром' },
+          badges: ['Wildberries', 'Ozon', 'Яндекс.Маркет'],
 
-export default function Home() {
-  const [lang, setLang] = useState<Lang>("ru");
+          whyTitle: 'Почему это выгодно производителю',
+          why: [
+            { title: 'Быстрый выход', text: 'Запуск продаж без инвестиций и сложных процедур' },
+            { title: 'Минимум рисков', text: 'Мы берём на себя маркетинг, логистику и поддержку' },
+            { title: 'Рост прибыли', text: 'Вы получаете себестоимость + 30% от прибыли' },
+          ],
 
-  useEffect(() => {
-    const saved = localStorage.getItem("lang");
-    if (saved === "ru" || saved === "en" || saved === "zh") setLang(saved);
-  }, []);
-  useEffect(() => {
-    localStorage.setItem("lang", lang);
-  }, [lang]);
+          howTitle: 'Как мы работаем',
+          how: [
+            'Анализ спроса и SKU',
+            'Легализация и сертификация',
+            'Поставка на склад',
+            'Продажи на маркетплейсах',
+            'Выплаты и отчёты',
+          ],
 
-  const T = useMemo(() => TDICT[lang], [lang]);
+          finTitle: 'Финансовые условия',
+          fin: [
+            'COGS+30% — стандартное вознаграждение',
+            'Выплаты раз в месяц',
+            'Все расходы на маркетинг и логистику за нами',
+            'Прозрачные отчёты по продажам',
+            'SLA по срокам выплат',
+          ],
 
-  const mailto = (name?: string, email?: string, phone?: string) => {
-    const subject = "Заявка с лендинга Hannkit";
-    const body = `Имя/Name: ${name || "-"}\nEmail: ${email || "-"}\nТел/Phone: ${phone || "-"}`;
-    return `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          trustTitle: 'Гарантии и прозрачность',
+          trust: [
+            { title: 'Юридическая чистота', text: 'Работаем с юрлицами, соблюдаем все нормы' },
+            { title: 'Прозрачные отчёты', text: 'Регулярные дашборды и статистика' },
+            { title: 'Поддержка 24/7', text: 'Отвечаем на любые вопросы партнёров' },
+          ],
+
+          catsTitle: 'Категории, с которыми работаем',
+          cats: [
+            'Малая бытовая техника и электроника',
+            'Товары для красоты и здоровья',
+            'Дом, кухня, уборка',
+            'Спорт и отдых',
+            'Автотовары и инструменты',
+            'Детские товары',
+          ],
+
+          b2bTitle: 'B2B для продавцов маркетплейсов',
+          b2bLead: 'Оптовые поставки и решения для действующих селлеров.',
+          b2b: [
+            { title: 'Оптовые партии', text: 'Выгодные условия закупки от минимального объёма.' },
+            { title: 'White Label', text: 'Производство под нашим лейблом на вашем производстве.' },
+            { title: 'Аналитика трендов', text: 'Рекомендации по SKU и ассортименту на основе данных.' },
+            { title: 'Готовая логистика', text: 'Доставка на склады маркетплейсов без вашего участия.' },
+          ],
+
+          contactTitle: 'Связаться с нами',
+          contactLead: 'Получите расчёт спроса и тестовую матрицу SKU за 48 часов.',
+          email: 'Email',
+          telegram: 'Открыть в Telegram',
+          wechat: 'WeChat',
+          wechatHint: 'Откройте WeChat → Поиск → ID: HardVassya',
+
+          modalTitle: 'Оставьте заявку',
+          name: 'Ваше имя',
+          phone: 'Телефон',
+          submit: 'Отправить',
+          close: 'Закрыть',
+
+          footer: '© 2025 Hannkit · hannkit.com. All rights reserved.',
+        },
+        // Для EN/ZH пока показываем русские тексты, чтобы не ломать переключатель.
+        en: undefined,
+        zh: undefined,
+      } as const)[uiLang] || ({} as any),
+    [uiLang]
+  );
+
+  // ---- Состояния формы
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // ---- Отправка формы в Formspree
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (loading) return;
+
+    try {
+      setLoading(true);
+      const endpoint = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT as string;
+      if (!endpoint) throw new Error('Form endpoint is not configured');
+
+      const res = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, phone }),
+      });
+
+      if (!res.ok) throw new Error('Submit failed');
+
+      alert('Спасибо! Заявка отправлена 🚀');
+      setIsModalOpen(false);
+      setName('');
+      setEmail('');
+      setPhone('');
+    } catch (err) {
+      alert('Ошибка при отправке. Попробуйте ещё раз.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ---- Утилиты стилей
+  const shell: React.CSSProperties = {
+    fontFamily:
+      "Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, 'Apple Color Emoji', 'Segoe UI Emoji'",
+    color: COLORS.text,
+    margin: 0,
+  };
+  const container: React.CSSProperties = { maxWidth: 1120, margin: '0 auto', padding: '0 20px' };
+  const pill: React.CSSProperties = {
+    display: 'inline-block',
+    padding: '10px 16px',
+    borderRadius: 999,
+    border: `1px solid ${COLORS.border}`,
+    background: COLORS.white,
+  };
+  const btnPrimary: React.CSSProperties = {
+    padding: '12px 18px',
+    borderRadius: 12,
+    border: 'none',
+    background: COLORS.primary,
+    color: COLORS.white,
+    fontWeight: 600,
+    cursor: 'pointer',
   };
 
   return (
-    <div style={{ fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif", color: "#0f172a" }}>
-      {/* NAVBAR */}
-      <div style={{ background: "#0B1E5B", color: "#fff" }}>
-        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "16px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <strong>Hannkit</strong>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <span style={{ opacity: 0.8 }}>{T.langLabel}:</span>
-            {(["ru", "en", "zh"] as Lang[]).map((l) => (
-              <button
-                key={l}
-                onClick={() => setLang(l)}
-                style={{
-                  padding: "6px 10px",
-                  borderRadius: 8,
-                  border: "1px solid rgba(255,255,255,0.25)",
-                  background: lang === l ? "#fff" : "transparent",
-                  color: lang === l ? "#0B1E5B" : "#fff",
-                  cursor: "pointer",
-                }}
-              >
-                {l.toUpperCase()}
-              </button>
-            ))}
+    <div style={shell}>
+      {/* ---------------- Header ---------------- */}
+      <div style={{ background: COLORS.primary, color: COLORS.white }}>
+        <div style={{ ...container, display: 'flex', alignItems: 'center', gap: 16, height: 64 }}>
+          <div style={{ fontWeight: 800 }}>Hannkit</div>
+
+          <div style={{ marginLeft: 'auto', display: 'flex', gap: 8, alignItems: 'center' }}>
+            <span style={{ opacity: 0.8 }}>{T.langLabel}</span>
+            <button
+              onClick={() => setUiLang('ru')}
+              style={{ ...pill, background: COLORS.white, borderColor: 'transparent', fontWeight: 700 }}
+            >
+              RU
+            </button>
+            <button onClick={() => setUiLang('en')} style={{ ...pill, color: COLORS.white, background: 'transparent' }}>
+              EN
+            </button>
+            <button onClick={() => setUiLang('zh')} style={{ ...pill, color: COLORS.white, background: 'transparent' }}>
+              ZH
+            </button>
+
+            <button style={{ ...btnPrimary, background: COLORS.white, color: COLORS.primary }} onClick={() => setIsModalOpen(true)}>
+              {T.ctas.partner}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* HERO */}
-      <header style={{ background: "#0B1E5B", color: "#fff" }}>
-        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "48px 20px" }}>
-          <h1 style={{ fontSize: 44, lineHeight: 1.1, margin: 0 }}>{T.heroTitle}</h1>
-          <p style={{ marginTop: 16, opacity: 0.95, maxWidth: 900 }}>{T.heroLead}</p>
-          <div style={{ marginTop: 20, display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <a href={mailto()} style={{ background: "#fff", color: "#0B1E5B", borderRadius: 10, padding: "12px 18px", fontWeight: 600, textDecoration: "none" }}>
+      {/* ---------------- Hero ---------------- */}
+      <section style={{ background: COLORS.primary, color: COLORS.white }}>
+        <div style={{ ...container, paddingTop: 40, paddingBottom: 40 }}>
+          <h1 style={{ fontSize: 48, lineHeight: 1.1, margin: 0, fontWeight: 800 }}>{T.heroTitle}</h1>
+          <p style={{ marginTop: 16, opacity: 0.95, maxWidth: 760 }}>{T.heroLead}</p>
+
+          <div style={{ marginTop: 20, display: 'flex', gap: 12, alignItems: 'center' }}>
+            <button style={{ ...btnPrimary }} onClick={() => setIsModalOpen(true)}>
               {T.ctas.partner}
-            </a>
+            </button>
             {T.badges.map((b, i) => (
-              <span key={i} style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", padding: "8px 14px", borderRadius: 999 }}>
+              <span key={i} style={{ ...pill, background: 'rgba(255,255,255,0.08)', color: COLORS.white, borderColor: 'rgba(255,255,255,0.2)' }}>
                 {b}
               </span>
             ))}
           </div>
-        </div>
-      </header>
 
-      <main style={{ background: "#F6F7FB" }}>
-        <section style={{ maxWidth: 1120, margin: "0 auto", padding: "40px 20px" }}>
-          <h2 style={{ fontSize: 28, margin: "16px 0 20px" }}>{T.whyTitle}</h2>
-          <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))" }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+              gap: 16,
+              marginTop: 28,
+            }}
+          >
             {T.why.map((card, i) => (
-              <div key={i} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 18 }}>
-                <strong>{card.title}</strong>
-                <div style={{ marginTop: 8, opacity: 0.9 }}>{card.text}</div>
+              <div
+                key={i}
+                style={{
+                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  borderRadius: 16,
+                  padding: 18,
+                }}
+              >
+                <div style={{ fontWeight: 700 }}>{card.title}</div>
+                <div style={{ opacity: 0.9, marginTop: 6 }}>{card.text}</div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section style={{ maxWidth: 1120, margin: "0 auto", padding: "12px 20px 28px" }}>
-          <h2 style={{ fontSize: 28, margin: "12px 0 14px" }}>{T.howTitle}</h2>
-          <ul style={{ lineHeight: 1.8 }}>
-            {T.how.map((s, i) => (
-              <li key={i}>{s}</li>
+      {/* ---------------- Why (подробно) ---------------- */}
+      <section style={{ background: COLORS.accent }}>
+        <div style={{ ...container, paddingTop: 40, paddingBottom: 40 }}>
+          <h2 style={{ margin: 0 }}>{T.whyTitle}</h2>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+              gap: 16,
+              marginTop: 16,
+            }}
+          >
+            {T.why.map((card, i) => (
+              <div key={i} style={{ background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
+                <div style={{ fontWeight: 700 }}>{card.title}</div>
+                <div style={{ marginTop: 6 }}>{card.text}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- How ---------------- */}
+      <section>
+        <div style={{ ...container, paddingTop: 40, paddingBottom: 40 }}>
+          <h2 style={{ margin: 0 }}>{T.howTitle}</h2>
+          <ul style={{ marginTop: 12, lineHeight: 1.7 }}>
+            {T.how.map((row, i) => (
+              <li key={i}>{row}</li>
             ))}
           </ul>
-        </section>
+        </div>
+      </section>
 
-        <section style={{ maxWidth: 1120, margin: "0 auto", padding: "12px 20px 28px" }}>
-          <h2 style={{ fontSize: 28, margin: "12px 0 14px" }}>{T.finTitle}</h2>
-          <ul style={{ lineHeight: 1.8 }}>
-            {T.fin.map((s, i) => (
-              <li key={i}>{s}</li>
+      {/* ---------------- Financials ---------------- */}
+      <section style={{ background: COLORS.accent }}>
+        <div style={{ ...container, paddingTop: 40, paddingBottom: 40 }}>
+          <h2 style={{ margin: 0 }}>{T.finTitle}</h2>
+          <ul style={{ marginTop: 12, lineHeight: 1.7 }}>
+            {T.fin.map((row, i) => (
+              <li key={i}>{row}</li>
             ))}
           </ul>
-        </section>
+        </div>
+      </section>
 
-        <section style={{ maxWidth: 1120, margin: "0 auto", padding: "12px 20px 28px" }}>
-          <h2 style={{ fontSize: 28, margin: "12px 0 14px" }}>{T.trustTitle}</h2>
-          <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))" }}>
+      {/* ---------------- Trust ---------------- */}
+      <section>
+        <div style={{ ...container, paddingTop: 40, paddingBottom: 40 }}>
+          <h2 style={{ margin: 0 }}>{T.trustTitle}</h2>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 16, marginTop: 16 }}>
             {T.trust.map((card, i) => (
-              <div key={i} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 18 }}>
-                <strong>{card.title}</strong>
-                <div style={{ marginTop: 8, opacity: 0.9 }}>{card.text}</div>
+              <div key={i} style={{ background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
+                <div style={{ fontWeight: 700 }}>{card.title}</div>
+                <div style={{ marginTop: 6 }}>{card.text}</div>
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        <section style={{ maxWidth: 1120, margin: "0 auto", padding: "12px 20px 40px" }}>
-          <h2 style={{ fontSize: 28, margin: "12px 0 8px" }}>{T.b2bTitle}</h2>
-          <div style={{ opacity: 0.9, marginBottom: 16 }}>{T.b2bLead}</div>
-          <div style={{ display: "grid", gap: 16, gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))" }}>
-            {T.b2b.map((card, i) => (
-              <div key={i} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 18 }}>
-                <strong>{card.title}</strong>
-                <div style={{ marginTop: 8, opacity: 0.9 }}>{card.text}</div>
+      {/* ---------------- Categories ---------------- */}
+      <section style={{ background: COLORS.accent }}>
+        <div style={{ ...container, paddingTop: 40, paddingBottom: 40 }}>
+          <h2 style={{ margin: 0 }}>{T.catsTitle}</h2>
+          <div style={{ marginTop: 12, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            {T.cats.map((c, i) => (
+              <span key={i} style={pill}>
+                {c}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- B2B ---------------- */}
+      <section>
+        <div style={{ ...container, paddingTop: 40, paddingBottom: 40 }}>
+          <h2 style={{ margin: 0 }}>{T.b2bTitle}</h2>
+          <p style={{ marginTop: 8 }}>{T.b2bLead}</p>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0,1fr))', gap: 16, marginTop: 16 }}>
+            {T.b2b.map((b, i) => (
+              <div key={i} style={{ background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
+                <div style={{ fontWeight: 700 }}>{b.title}</div>
+                <div style={{ marginTop: 6 }}>{b.text}</div>
               </div>
             ))}
           </div>
-          <div style={{ marginTop: 16 }}>
-            <a href={mailto()} style={{ background: "#0B1E5B", color: "#fff", borderRadius: 10, padding: "12px 18px", fontWeight: 600, textDecoration: "none" }}>
-              {T.ctas.partner}
-            </a>
-          </div>
-        </section>
 
-        <section style={{ maxWidth: 1120, margin: "0 auto", padding: "16px 20px 64px" }}>
-          <h2 style={{ fontSize: 28, margin: "12px 0 14px" }}>{T.contactTitle}</h2>
-          <div style={{ opacity: 0.9, marginBottom: 16 }}>{T.contactLead}</div>
+          <button style={{ ...btnPrimary, marginTop: 16 }} onClick={() => setIsModalOpen(true)}>
+            {T.ctas.partner}
+          </button>
+        </div>
+      </section>
 
-          <div style={{ display: "grid", gap: 20, gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))" }}>
-            <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 18 }}>
-              <div style={{ fontWeight: 600, marginBottom: 8 }}>{T.email}</div>
-              <a href={mailto()} style={{ color: "#0B1E5B", fontWeight: 600, textDecoration: "none" }}>
-                Wildbizshop@gmail.com
-              </a>
-              <div style={{ marginTop: 8, fontSize: 13, opacity: 0.7 }}>Если почтовый клиент не открылся — попробуйте в обычной вкладке</div>
+      {/* ---------------- Contacts ---------------- */}
+      <section id="contact" style={{ background: COLORS.accent }}>
+        <div style={{ ...container, paddingTop: 40, paddingBottom: 40 }}>
+          <h2 style={{ margin: 0 }}>{T.contactTitle}</h2>
+          <p style={{ marginTop: 8 }}>{T.contactLead}</p>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 16,
+              marginTop: 16,
+            }}
+          >
+            <div style={{ background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
+              <div style={{ fontWeight: 700, marginBottom: 8 }}>{T.email}</div>
+              <a href="mailto:Wildbizshop@gmail.com">Wildbizshop@gmail.com</a>
             </div>
 
-            <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: 16, padding: 18 }}>
-              <div style={{ fontWeight: 600, marginBottom: 8 }}>Telegram</div>
-              <a href="https://t.me/HardVassya" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", background: "#229ED9", color: "#fff", padding: "10px 14px", borderRadius: 8, textDecoration: "none", fontWeight: 600 }}>
-                @HardVassya — {T.telegramOpen}
+            <div style={{ background: COLORS.white, border: `1px solid ${COLORS.border}`, borderRadius: 16, padding: 18 }}>
+              <div style={{ fontWeight: 700, marginBottom: 8 }}>Telegram</div>
+              <a href="https://t.me/HardVassya" target="_blank" rel="noopener noreferrer">
+                @HardVassya — открыть
               </a>
-              <div style={{ marginTop: 14, fontWeight: 600 }}>WeChat</div>
-              <div style={{ fontSize: 13, opacity: 0.9 }}>{T.wechatHint}</div>
+              <div style={{ marginTop: 10, opacity: 0.8 }}>
+                WeChat: ID <b>HardVassya</b> <span style={{ opacity: 0.7 }}>({T.wechatHint})</span>
+              </div>
             </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
-      <footer style={{ background: "#EEF0F4", borderTop: "1px solid #e5e7eb" }}>
-        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "16px 20px", opacity: 0.8 }}>{T.footer}</div>
+      {/* ---------------- Footer ---------------- */}
+      <footer>
+        <div style={{ ...container, paddingTop: 24, paddingBottom: 24, color: '#6B7280' }}>{T.footer}</div>
       </footer>
+
+      {/* ---------------- Modal (Formspree) ---------------- */}
+      {isModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 20,
+          }}
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div
+            style={{ background: COLORS.white, width: 360, borderRadius: 12, padding: 20 }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ marginTop: 0 }}>{T.modalTitle}</h3>
+
+            <form onSubmit={handleSubmit}>
+              <div style={{ display: 'grid', gap: 10 }}>
+                <input
+                  placeholder={T.name}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  style={{
+                    border: `1px solid ${COLORS.border}`,
+                    borderRadius: 10,
+                    padding: '10px 12px',
+                  }}
+                />
+                <input
+                  placeholder="Email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  style={{
+                    border: `1px solid ${COLORS.border}`,
+                    borderRadius: 10,
+                    padding: '10px 12px',
+                  }}
+                />
+                <input
+                  placeholder={T.phone}
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  style={{
+                    border: `1px solid ${COLORS.border}`,
+                    borderRadius: 10,
+                    padding: '10px 12px',
+                  }}
+                />
+              </div>
+
+              <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+                <button type="submit" disabled={loading} style={{ ...btnPrimary }}>
+                  {loading ? 'Отправляем…' : T.submit}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  style={{ ...pill, borderColor: COLORS.border, background: COLORS.white }}
+                >
+                  {T.close}
+                </button>
+              </div>
+
+              <div style={{ marginTop: 10, fontSize: 12, opacity: 0.7 }}>
+                Нажимая «{T.submit}», вы соглашаетесь на обработку персональных данных.
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
