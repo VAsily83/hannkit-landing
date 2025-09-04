@@ -1,13 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
 
-/**
- * Однофайловый лендинг Hannkit (RU / EN / ZH)
- * - Нет дублирования карточек
- * - Контрастная кнопка на тёмном хедере
- * - Блок контактов: mailto, t.me и WeChat с копированием ID
- * - Кнопка "Стать партнёром" скроллит к контактам
- */
-
 type Lang = "ru" | "en" | "zh";
 
 const COLORS = {
@@ -19,17 +11,16 @@ const COLORS = {
   card: "#FFFFFF",
   border: "#E5E7EB",
   chip: "#F3F4F6",
-  danger: "#EF4444",
 };
 
-const translations: Record<
+const TDICT: Record<
   Lang,
   {
     brand: string;
     langLabel: string;
     heroTitle: string;
     heroLead: string;
-    ctas: { partner: string; b2bCta: string; toContacts: string };
+    ctas: { partner: string; b2bCta: string };
     badges: string[];
     whyTitle: string;
     why: { title: string; text: string }[];
@@ -54,7 +45,14 @@ const translations: Record<
     wcCopy: string;
     footer: string;
     mailSubject: string;
-    mailBodyIntro: string;
+    formTitle: string;
+    formName: string;
+    formEmail: string;
+    formPhone: string;
+    formSend: string;
+    formCancel: string;
+    toastOk: string;
+    toastFail: string;
   }
 > = {
   ru: {
@@ -63,11 +61,7 @@ const translations: Record<
     heroTitle: "Продавайте в России без рисков и вложений",
     heroLead:
       "Мы размещаем ваши товары на Wildberries, Ozon и Яндекс.Маркете, берём на себя маркетинг, логистику и поддержку. Вы получаете себестоимость + 30% от прибыли после продажи.",
-    ctas: {
-      partner: "Стать партнёром",
-      b2bCta: "Запросить B2B-условия",
-      toContacts: "К контактам",
-    },
+    ctas: { partner: "Стать партнёром", b2bCta: "Запросить B2B-условия" },
     badges: ["Wildberries", "Ozon", "Яндекс.Маркет"],
     whyTitle: "Почему это выгодно производителю",
     why: [
@@ -111,7 +105,14 @@ const translations: Record<
     wcCopy: "Скопировать ID",
     footer: "© 2025 Hannkit · hannkit.com. All rights reserved.",
     mailSubject: "Заявка с лендинга Hannkit",
-    mailBodyIntro: "Хочу сотрудничать. Пожалуйста, свяжитесь со мной.",
+    formTitle: "Оставьте заявку",
+    formName: "Ваше имя",
+    formEmail: "Email",
+    formPhone: "Телефон",
+    formSend: "Отправить",
+    formCancel: "Отмена",
+    toastOk: "Заявка отправлена!",
+    toastFail: "Не удалось отправить. Откроем письмо…",
   },
   en: {
     brand: "Hannkit",
@@ -119,7 +120,7 @@ const translations: Record<
     heroTitle: "Sell in Russia with zero risk and investment",
     heroLead:
       "We place your products on Wildberries, Ozon and Yandex.Market and handle marketing, logistics and support. You receive cost price + 30% of profit after sale.",
-    ctas: { partner: "Become a Partner", b2bCta: "Request B2B Terms", toContacts: "Contacts" },
+    ctas: { partner: "Become a Partner", b2bCta: "Request B2B Terms" },
     badges: ["Wildberries", "Ozon", "Yandex.Market"],
     whyTitle: "Why it’s beneficial for manufacturers",
     why: [
@@ -157,14 +158,21 @@ const translations: Record<
     wcCopy: "Copy ID",
     footer: "© 2025 Hannkit · hannkit.com. All rights reserved.",
     mailSubject: "Hannkit landing request",
-    mailBodyIntro: "I’d like to cooperate. Please contact me.",
+    formTitle: "Leave a request",
+    formName: "Your name",
+    formEmail: "Email",
+    formPhone: "Phone",
+    formSend: "Send",
+    formCancel: "Cancel",
+    toastOk: "Request sent!",
+    toastFail: "Failed to send. Opening email…",
   },
   zh: {
     brand: "Hannkit",
     langLabel: "语言",
     heroTitle: "零风险零投入进入俄罗斯市场",
     heroLead: "我们将您的产品上架至 Wildberries、Ozon 与 Yandex.Market，并负责营销、物流与支持。售出后您获得成本价 + 30% 的利润。",
-    ctas: { partner: "成为合作伙伴", b2bCta: "索取 B2B 条款", toContacts: "联系" },
+    ctas: { partner: "成为合作伙伴", b2bCta: "索取 B2B 条款" },
     badges: ["Wildberries", "Ozon", "Yandex.Market"],
     whyTitle: "对制造商的优势",
     why: [
@@ -202,24 +210,70 @@ const translations: Record<
     wcCopy: "复制 ID",
     footer: "© 2025 Hannkit · hannkit.com. All rights reserved.",
     mailSubject: "Hannkit 合作请求",
-    mailBodyIntro: "希望与您合作，请联系我。",
+    formTitle: "提交咨询",
+    formName: "姓名",
+    formEmail: "邮箱",
+    formPhone: "电话",
+    formSend: "发送",
+    formCancel: "取消",
+    toastOk: "已发送！",
+    toastFail: "发送失败，改用邮件…",
   },
 };
 
 export default function Landing() {
   const [lang, setLang] = useState<Lang>("ru");
-  const T = useMemo(() => translations[lang], [lang]);
+  const T = useMemo(() => TDICT[lang], [lang]);
+
+  const [openLead, setOpenLead] = useState(false);
+  const [name, setName] = useState("");
+  const [mail, setMail] = useState("");
+  const [phone, setPhone] = useState("");
 
   const contactRef = useRef<HTMLDivElement>(null);
 
-  const mailtoHref = () => {
-    const subject = T.mailSubject;
-    const body = `${T.mailBodyIntro}\n\n—`;
-    return `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
+  const openModal = () => setOpenLead(true);
 
-  const handlePartnerClick = () => {
-    contactRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const FORMSPREE = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
+
+  const sendLead = async () => {
+    // 1) попытка отправить на Formspree, если настроено
+    if (FORMSPREE) {
+      try {
+        const r = await fetch(FORMSPREE, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({
+            name,
+            email: mail,
+            phone,
+            source: "hannkit.com",
+            lang,
+          }),
+        });
+        if (r.ok) {
+          alert(T.toastOk);
+          setOpenLead(false);
+          setName("");
+          setMail("");
+          setPhone("");
+          return;
+        }
+      } catch {
+        // падаем в mailto
+      }
+    }
+
+    // 2) фолбэк — mailto с автотекстом
+    alert(T.toastFail);
+    const subject = T.mailSubject;
+    const body =
+      `${T.formName}: ${name || "-"}\n` +
+      `${T.formEmail}: ${mail || "-"}\n` +
+      `${T.formPhone}: ${phone || "-"}`;
+    const href = `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = href;
+    setOpenLead(false);
   };
 
   const copyWeChat = async () => {
@@ -241,16 +295,7 @@ export default function Landing() {
       }}
     >
       {/* Header */}
-      <header
-        style={{
-          background: COLORS.brand,
-          color: "#fff",
-          position: "sticky",
-          top: 0,
-          zIndex: 20,
-          borderBottom: `1px solid ${COLORS.brandSoft}`,
-        }}
-      >
+      <header style={{ background: COLORS.brand, color: "#fff", position: "sticky", top: 0, zIndex: 20, borderBottom: `1px solid ${COLORS.brandSoft}` }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "18px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ fontWeight: 700, fontSize: 22 }}>{T.brand}</div>
 
@@ -272,20 +317,9 @@ export default function Landing() {
                 {l.toUpperCase()}
               </button>
             ))}
-
             <button
-              onClick={handlePartnerClick}
-              style={{
-                marginLeft: 12,
-                padding: "8px 14px",
-                background: "#fff",
-                color: COLORS.brand,
-                border: "none",
-                borderRadius: 10,
-                fontWeight: 600,
-                boxShadow: "0 1px 0 rgba(0,0,0,.08)",
-                cursor: "pointer",
-              }}
+              onClick={openModal}
+              style={{ marginLeft: 12, padding: "8px 14px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 10, fontWeight: 600, cursor: "pointer" }}
             >
               {T.ctas.partner}
             </button>
@@ -293,24 +327,16 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Hero */}
+      {/* Hero (без карточек — чтобы не дублировать) */}
       <section style={{ background: COLORS.brand, color: "#fff" }}>
-        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "38px 20px 46px" }}>
+        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "38px 20px 34px" }}>
           <h1 style={{ fontSize: 44, lineHeight: 1.15, letterSpacing: 0.2, margin: "0 0 14px" }}>{T.heroTitle}</h1>
           <p style={{ maxWidth: 840, fontSize: 18, lineHeight: 1.6, opacity: 0.95 }}>{T.heroLead}</p>
 
           <div style={{ marginTop: 18, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <button
-              onClick={handlePartnerClick}
-              style={{
-                padding: "10px 16px",
-                background: "#fff",
-                color: COLORS.brand,
-                border: "none",
-                borderRadius: 12,
-                fontWeight: 700,
-                cursor: "pointer",
-              }}
+              onClick={openModal}
+              style={{ padding: "10px 16px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer" }}
             >
               {T.ctas.partner}
             </button>
@@ -320,28 +346,10 @@ export default function Landing() {
               </span>
             ))}
           </div>
-
-          {/* Hero cards (одна строка, без дублей внизу) */}
-          <div style={{ marginTop: 28, display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
-            {T.why.map((card, i) => (
-              <div
-                key={i}
-                style={{
-                  background: "rgba(255,255,255,.06)",
-                  border: "1px solid rgba(255,255,255,.20)",
-                  borderRadius: 14,
-                  padding: 16,
-                }}
-              >
-                <div style={{ fontWeight: 700, marginBottom: 6 }}>{card.title}</div>
-                <div style={{ opacity: 0.95 }}>{card.text}</div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
-      {/* Why (один раз, без дублей) */}
+      {/* Why — ОДИН РАЗ */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: "36px 20px 6px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 16px" }}>{T.whyTitle}</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
@@ -412,7 +420,7 @@ export default function Landing() {
           ))}
         </div>
         <button
-          onClick={handlePartnerClick}
+          onClick={openModal}
           style={{ marginTop: 12, padding: "10px 16px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 12, cursor: "pointer" }}
         >
           {T.ctas.b2bCta}
@@ -426,30 +434,20 @@ export default function Landing() {
           <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.contactLead}</p>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
-            {/* Email */}
             <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
-              <a href={mailtoHref()} style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}>
+              <a href="mailto:Wildbizshop@gmail.com" style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}>
                 Wildbizshop@gmail.com
               </a>
-              <div style={{ marginTop: 8, color: COLORS.subtext, fontSize: 13 }}>
-                {lang === "ru"
-                  ? "Если письмо не открылось — это ограничение браузера."
-                  : lang === "en"
-                  ? "If the mail app didn't open — it's a browser limitation."
-                  : "若邮件未自动打开—可能被浏览器限制。"}
-              </div>
             </div>
 
-            {/* Telegram */}
             <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
-              <div style={{ fontWeight: 700, marginBottom: 6 }}>Telegram</div>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.tgLabel}</div>
               <a href="https://t.me/HardVassya" target="_blank" rel="noopener noreferrer" style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}>
                 @HardVassya — {T.tgOpen}
               </a>
             </div>
 
-            {/* WeChat */}
             <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.wcLabel}</div>
               <div style={{ marginBottom: 8 }}>
@@ -457,13 +455,7 @@ export default function Landing() {
               </div>
               <button
                 onClick={copyWeChat}
-                style={{
-                  padding: "8px 12px",
-                  borderRadius: 10,
-                  border: `1px solid ${COLORS.border}`,
-                  background: COLORS.chip,
-                  cursor: "pointer",
-                }}
+                style={{ padding: "8px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.chip, cursor: "pointer" }}
               >
                 {T.wcCopy}
               </button>
@@ -477,6 +469,56 @@ export default function Landing() {
       <footer style={{ borderTop: `1px solid ${COLORS.border}`, background: "#fff" }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "16px 20px", color: COLORS.subtext }}>{T.footer}</div>
       </footer>
+
+      {/* Modal mini-form */}
+      {openLead && (
+        <div
+          onClick={() => setOpenLead(false)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: 380, background: "#fff", borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 18, boxShadow: "0 12px 32px rgba(0,0,0,.18)" }}
+          >
+            <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{T.formTitle}</div>
+            <div style={{ display: "grid", gap: 10 }}>
+              <input
+                placeholder={T.formName}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
+              />
+              <input
+                placeholder={T.formEmail}
+                value={mail}
+                onChange={(e) => setMail(e.target.value)}
+                type="email"
+                style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
+              />
+              <input
+                placeholder={T.formPhone}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
+              />
+            </div>
+            <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setOpenLead(false)}
+                style={{ padding: "9px 12px", background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 10, cursor: "pointer" }}
+              >
+                {T.formCancel}
+              </button>
+              <button
+                onClick={sendLead}
+                style={{ padding: "9px 14px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 10, fontWeight: 600, cursor: "pointer" }}
+              >
+                {T.formSend}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
