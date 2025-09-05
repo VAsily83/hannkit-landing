@@ -1,4 +1,6 @@
 import React, { useMemo, useRef, useState } from "react";
+import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 type Lang = "ru" | "en" | "zh";
 
@@ -12,21 +14,6 @@ const COLORS = {
   border: "#E5E7EB",
   chip: "#F3F4F6",
 };
-
-/* фирменные фоновые цвета для «таблеток» маркетплейсов */
-const MP_BG = [
-  "linear-gradient(135deg,#ff3cac 0%,#784BA0 100%)", // Wildberries
-  "#005BFF",                                        // Ozon
-  "#FFD633",                                        // Yandex Market
-] as const;
-/* цвет текста на этих фонах */
-const MP_TEXT = ["#fff", "#fff", "#111"] as const;
-/* ссылки */
-const MP_LINKS = [
-  "https://www.wildberries.ru",
-  "https://www.ozon.ru",
-  "https://market.yandex.ru",
-] as const;
 
 const TDICT: Record<
   Lang,
@@ -236,6 +223,25 @@ const TDICT: Record<
   },
 };
 
+function getBadgeStyle(label: string) {
+  const l = label.toLowerCase();
+  // Бренд-цвета
+  const wb = "#A100FF";
+  const ozon = "#005BFF";
+  const ym = "#FFD633";
+
+  if (l.includes("wildberries")) {
+    return { bg: wb, color: "#fff" };
+  }
+  if (l.includes("ozon")) {
+    return { bg: ozon, color: "#fff" };
+  }
+  if (l.includes("market")) {
+    return { bg: ym, color: "#111" };
+  }
+  return { bg: "rgba(255,255,255,.12)", color: "#fff" };
+}
+
 export default function Landing() {
   const [lang, setLang] = useState<Lang>("ru");
   const T = useMemo(() => TDICT[lang], [lang]);
@@ -243,34 +249,44 @@ export default function Landing() {
   const [openLead, setOpenLead] = useState(false);
   const [name, setName] = useState("");
   const [mail, setMail] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState<string | undefined>();
 
   const contactRef = useRef<HTMLDivElement>(null);
-
   const openModal = () => setOpenLead(true);
 
   const FORMSPREE = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
 
   const sendLead = async () => {
+    const fullPhone = phone || "";
+
     if (FORMSPREE) {
       try {
         const r = await fetch(FORMSPREE, {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify({ name, email: mail, phone, source: "hannkit.com", lang }),
+          body: JSON.stringify({ name, email: mail, phone: fullPhone, source: "hannkit.com", lang }),
         });
         if (r.ok) {
           alert(T.toastOk);
           setOpenLead(false);
-          setName(""); setMail(""); setPhone("");
+          setName("");
+          setMail("");
+          setPhone("");
           return;
         }
-      } catch {/* fallback ниже */}
+      } catch (e) {
+        // fallback ниже
+      }
     }
+
     alert(T.toastFail);
     const subject = T.mailSubject;
-    const body = `${T.formName}: ${name || "-"}\n${T.formEmail}: ${mail || "-"}\n${T.formPhone}: ${phone || "-"}`;
-    window.location.href = `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const body =
+      `${T.formName}: ${name || "-"}\n` +
+      `${T.formEmail}: ${mail || "-"}\n` +
+      `${T.formPhone}: ${fullPhone || "-"}`;
+    const href = `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = href;
     setOpenLead(false);
   };
 
@@ -325,7 +341,7 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Hero */}
+      {/* Hero (без дублирования карточек) */}
       <section style={{ background: COLORS.brand, color: "#fff" }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "38px 20px 34px" }}>
           <h1 style={{ fontSize: 44, lineHeight: 1.15, letterSpacing: 0.2, margin: "0 0 14px" }}>{T.heroTitle}</h1>
@@ -339,38 +355,29 @@ export default function Landing() {
               {T.ctas.partner}
             </button>
 
-            {/* таблетки c цветами маркетплейсов */}
-            {T.badges.map((label, i) => (
-              <a
-                key={label}
-                href={MP_LINKS[i] ?? MP_LINKS[0]}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  padding: "8px 14px",
-                  borderRadius: 999,
-                  background: MP_BG[i] ?? MP_BG[0],
-                  color: MP_TEXT[i] ?? "#fff",
-                  textDecoration: "none",
-                  fontWeight: 700,
-                  border: "1px solid rgba(255,255,255,.18)",
-                  boxShadow: "0 0 0 1px rgba(0,0,0,.04) inset",
-                  transform: "translateZ(0)",
-                  transition: "transform .12s ease, filter .12s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.filter = "brightness(1.06)")}
-                onMouseLeave={(e) => (e.currentTarget.style.filter = "brightness(1.0)")}
-              >
-                {label}
-              </a>
-            ))}
+            {T.badges.map((b, i) => {
+              const { bg, color } = getBadgeStyle(b);
+              return (
+                <span
+                  key={i}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: 999,
+                    background: bg,
+                    color,
+                    fontWeight: 600,
+                    border: "1px solid rgba(255,255,255,.12)",
+                  }}
+                >
+                  {b}
+                </span>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Why — ОДИН РАЗ */}
+      {/* Why — один раз */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: "36px 20px 6px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 16px" }}>{T.whyTitle}</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
@@ -440,7 +447,10 @@ export default function Landing() {
             </div>
           ))}
         </div>
-        <button onClick={openModal} style={{ marginTop: 12, padding: "10px 16px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 12, cursor: "pointer" }}>
+        <button
+          onClick={openModal}
+          style={{ marginTop: 12, padding: "10px 16px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 12, cursor: "pointer" }}
+        >
           {T.ctas.b2bCta}
         </button>
       </section>
@@ -471,7 +481,10 @@ export default function Landing() {
               <div style={{ marginBottom: 8 }}>
                 ID: <b>HardVassya</b>
               </div>
-              <button onClick={copyWeChat} style={{ padding: "8px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.chip, cursor: "pointer" }}>
+              <button
+                onClick={copyWeChat}
+                style={{ padding: "8px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.chip, cursor: "pointer" }}
+              >
                 {T.wcCopy}
               </button>
               <div style={{ marginTop: 8, color: COLORS.subtext, fontSize: 13 }}>{T.wcHint}</div>
@@ -487,19 +500,50 @@ export default function Landing() {
 
       {/* Modal mini-form */}
       {openLead && (
-        <div onClick={() => setOpenLead(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ width: 380, background: "#fff", borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 18, boxShadow: "0 12px 32px rgba(0,0,0,.18)" }}>
+        <div
+          onClick={() => setOpenLead(false)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: 380, background: "#fff", borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 18, boxShadow: "0 12px 32px rgba(0,0,0,.18)" }}
+          >
             <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{T.formTitle}</div>
             <div style={{ display: "grid", gap: 10 }}>
-              <input placeholder={T.formName} value={name} onChange={(e) => setName(e.target.value)} style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }} />
-              <input placeholder={T.formEmail} value={mail} onChange={(e) => setMail(e.target.value)} type="email" style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }} />
-              <input placeholder={T.formPhone} value={phone} onChange={(e) => setPhone(e.target.value)} style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }} />
+              <input
+                placeholder={T.formName}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
+              />
+              <input
+                placeholder={T.formEmail}
+                value={mail}
+                onChange={(e) => setMail(e.target.value)}
+                type="email"
+                style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
+              />
+              <div style={{ border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "6px 10px" }}>
+                <PhoneInput
+                  international
+                  defaultCountry={lang === "ru" ? "RU" : lang === "zh" ? "CN" : "US"}
+                  value={phone}
+                  onChange={setPhone}
+                  placeholder={T.formPhone}
+                />
+              </div>
             </div>
             <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" }}>
-              <button onClick={() => setOpenLead(false)} style={{ padding: "9px 12px", background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 10, cursor: "pointer" }}>
+              <button
+                onClick={() => setOpenLead(false)}
+                style={{ padding: "9px 12px", background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 10, cursor: "pointer" }}
+              >
                 {T.formCancel}
               </button>
-              <button onClick={sendLead} style={{ padding: "9px 14px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 10, fontWeight: 600, cursor: "pointer" }}>
+              <button
+                onClick={sendLead}
+                style={{ padding: "9px 14px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 10, fontWeight: 600, cursor: "pointer" }}
+              >
                 {T.formSend}
               </button>
             </div>
