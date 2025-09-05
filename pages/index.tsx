@@ -13,43 +13,15 @@ const COLORS = {
   chip: "#F3F4F6",
 };
 
-/* --- SVG ИКОНКИ МАРКЕТПЛЕЙСОВ --- */
-const IconWB = ({ size = 18 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-    <defs>
-      <linearGradient id="wbgrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor="#ff3cac" />
-        <stop offset="1" stopColor="#784BA0" />
-      </linearGradient>
-    </defs>
-    <circle cx="12" cy="12" r="10" fill="url(#wbgrad)" />
-    <text x="12" y="15" textAnchor="middle" fontSize="10" fontWeight="700" fill="#fff">
-      WB
-    </text>
-  </svg>
-);
-
-const IconOzon = ({ size = 18 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-    <rect x="2" y="4" width="20" height="16" rx="8" fill="#005BFF" />
-    <text x="12" y="15" textAnchor="middle" fontSize="9.5" fontWeight="800" fill="#fff">
-      OZON
-    </text>
-  </svg>
-);
-
-const IconYMarket = ({ size = 18 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden>
-    <rect x="2" y="2" width="20" height="20" rx="6" fill="#FFD633" />
-    <path
-      d="M9 6h6v2h-4.2l1.9 2.8c.8 1.2 1.3 2.1 1.3 3.2A3 3 0 0 1 11 17H9v-2h2a1 1 0 0 0 1-1c0-.5-.3-1.1-.9-2L9 8.4V6z"
-      fill="#111"
-    />
-  </svg>
-);
-
-/* ссылки/иконки по индексам для T.badges */
-const MP_ICONS = [IconWB, IconOzon, IconYMarket] as const;
+/* фирменные фоновые цвета для «таблеток» маркетплейсов */
+const MP_BG = [
+  "linear-gradient(135deg,#ff3cac 0%,#784BA0 100%)", // Wildberries
+  "#005BFF",                                        // Ozon
+  "#FFD633",                                        // Yandex Market
+] as const;
+/* цвет текста на этих фонах */
+const MP_TEXT = ["#fff", "#fff", "#111"] as const;
+/* ссылки */
 const MP_LINKS = [
   "https://www.wildberries.ru",
   "https://www.ozon.ru",
@@ -113,13 +85,7 @@ const TDICT: Record<
       { title: "Рост прибыли", text: "Вы получаете себестоимость + 30% от прибыли" },
     ],
     howTitle: "Как мы работаем",
-    how: [
-      "Анализ спроса и SKU",
-      "Легализация и сертификация",
-      "Поставка на склад",
-      "Продажи на маркетплейсах",
-      "Выплаты и отчёты",
-    ],
+    how: ["Анализ спроса и SKU", "Легализация и сертификация", "Поставка на склад", "Продажи на маркетплейсах", "Выплаты и отчёты"],
     finTitle: "Финансовые условия",
     fin: [
       "COGS+30% — стандартное вознаграждение",
@@ -135,14 +101,7 @@ const TDICT: Record<
       { title: "Поддержка 24/7", text: "Отвечаем на любые вопросы партнёров" },
     ],
     catsTitle: "Категории, с которыми работаем",
-    cats: [
-      "Малая бытовая техника и электроника",
-      "Товары для красоты и здоровья",
-      "Дом, кухня, уборка",
-      "Спорт и отдых",
-      "Автотовары и инструменты",
-      "Детские товары",
-    ],
+    cats: ["Малая бытовая техника и электроника", "Товары для красоты и здоровья", "Дом, кухня, уборка", "Спорт и отдых", "Автотовары и инструменты", "Детские товары"],
     b2bTitle: "B2B для продавцов маркетплейсов",
     b2bLead: "Оптовые поставки и решения для действующих селлеров.",
     b2b: [
@@ -185,21 +144,9 @@ const TDICT: Record<
       { title: "Profit growth", text: "You get cost price + 30% of profit" },
     ],
     howTitle: "How we work",
-    how: [
-      "Demand & SKU analysis",
-      "Legalization & certification",
-      "Warehouse delivery",
-      "Marketplace sales",
-      "Payouts & reports",
-    ],
+    how: ["Demand & SKU analysis", "Legalization & certification", "Warehouse delivery", "Marketplace sales", "Payouts & reports"],
     finTitle: "Financial terms",
-    fin: [
-      "COGS+30% — standard reward",
-      "Monthly payouts",
-      "We cover marketing & logistics",
-      "Transparent sales reports",
-      "Payouts SLA",
-    ],
+    fin: ["COGS+30% — standard reward", "Monthly payouts", "We cover marketing & logistics", "Transparent sales reports", "Payouts SLA"],
     trustTitle: "Assurance & transparency",
     trust: [
       { title: "Legal compliance", text: "We work with legal entities and follow all norms" },
@@ -207,14 +154,7 @@ const TDICT: Record<
       { title: "Support 24/7", text: "We answer partner questions around the clock" },
     ],
     catsTitle: "Categories we work with",
-    cats: [
-      "Small appliances & electronics",
-      "Beauty & health",
-      "Home & cleaning",
-      "Sport & outdoor",
-      "Auto goods & tools",
-      "Kids",
-    ],
+    cats: ["Small appliances & electronics", "Beauty & health", "Home & cleaning", "Sport & outdoor", "Auto goods & tools", "Kids"],
     b2bTitle: "B2B for marketplace sellers",
     b2bLead: "Wholesale supply and solutions for active sellers.",
     b2b: [
@@ -246,8 +186,7 @@ const TDICT: Record<
     brand: "Hannkit",
     langLabel: "语言",
     heroTitle: "零风险零投入进入俄罗斯市场",
-    heroLead:
-      "我们将您的产品上架至 Wildberries、Ozon 与 Yandex.Market，并负责营销、物流与支持。售出后您获得成本价 + 30% 的利润。",
+    heroLead: "我们将您的产品上架至 Wildberries、Ozon 与 Yandex.Market，并负责营销、物流与支持。售出后您获得成本价 + 30% 的利润。",
     ctas: { partner: "成为合作伙伴", b2bCta: "索取 B2B 条款" },
     badges: ["Wildberries", "Ozon", "Yandex.Market"],
     whyTitle: "对制造商的优势",
@@ -313,44 +252,25 @@ export default function Landing() {
   const FORMSPREE = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
 
   const sendLead = async () => {
-    // 1) попытка отправить на Formspree, если настроено
     if (FORMSPREE) {
       try {
         const r = await fetch(FORMSPREE, {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify({
-            name,
-            email: mail,
-            phone,
-            source: "hannkit.com",
-            lang,
-          }),
+          body: JSON.stringify({ name, email: mail, phone, source: "hannkit.com", lang }),
         });
         if (r.ok) {
           alert(T.toastOk);
           setOpenLead(false);
-          setName("");
-          setMail("");
-          setPhone("");
+          setName(""); setMail(""); setPhone("");
           return;
         }
-      } catch {
-        // падаем в mailto
-      }
+      } catch {/* fallback ниже */}
     }
-
-    // 2) фолбэк — mailto с автотекстом
     alert(T.toastFail);
     const subject = T.mailSubject;
-    const body =
-      `${T.formName}: ${name || "-"}\n` +
-      `${T.formEmail}: ${mail || "-"}\n` +
-      `${T.formPhone}: ${phone || "-"}`;
-    const href = `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(
-      subject
-    )}&body=${encodeURIComponent(body)}`;
-    window.location.href = href;
+    const body = `${T.formName}: ${name || "-"}\n${T.formEmail}: ${mail || "-"}\n${T.formPhone}: ${phone || "-"}`;
+    window.location.href = `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setOpenLead(false);
   };
 
@@ -373,26 +293,8 @@ export default function Landing() {
       }}
     >
       {/* Header */}
-      <header
-        style={{
-          background: COLORS.brand,
-          color: "#fff",
-          position: "sticky",
-          top: 0,
-          zIndex: 20,
-          borderBottom: `1px solid ${COLORS.brandSoft}`,
-        }}
-      >
-        <div
-          style={{
-            maxWidth: 1120,
-            margin: "0 auto",
-            padding: "18px 20px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
+      <header style={{ background: COLORS.brand, color: "#fff", position: "sticky", top: 0, zIndex: 20, borderBottom: `1px solid ${COLORS.brandSoft}` }}>
+        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "18px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ fontWeight: 700, fontSize: 22 }}>{T.brand}</div>
 
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -415,16 +317,7 @@ export default function Landing() {
             ))}
             <button
               onClick={openModal}
-              style={{
-                marginLeft: 12,
-                padding: "8px 14px",
-                background: "#fff",
-                color: COLORS.brand,
-                border: "none",
-                borderRadius: 10,
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
+              style={{ marginLeft: 12, padding: "8px 14px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 10, fontWeight: 600, cursor: "pointer" }}
             >
               {T.ctas.partner}
             </button>
@@ -435,63 +328,44 @@ export default function Landing() {
       {/* Hero */}
       <section style={{ background: COLORS.brand, color: "#fff" }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "38px 20px 34px" }}>
-          <h1 style={{ fontSize: 44, lineHeight: 1.15, letterSpacing: 0.2, margin: "0 0 14px" }}>
-            {T.heroTitle}
-          </h1>
-          <p style={{ maxWidth: 840, fontSize: 18, lineHeight: 1.6, opacity: 0.95 }}>
-            {T.heroLead}
-          </p>
+          <h1 style={{ fontSize: 44, lineHeight: 1.15, letterSpacing: 0.2, margin: "0 0 14px" }}>{T.heroTitle}</h1>
+          <p style={{ maxWidth: 840, fontSize: 18, lineHeight: 1.6, opacity: 0.95 }}>{T.heroLead}</p>
 
           <div style={{ marginTop: 18, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <button
               onClick={openModal}
-              style={{
-                padding: "10px 16px",
-                background: "#fff",
-                color: COLORS.brand,
-                border: "none",
-                borderRadius: 12,
-                fontWeight: 700,
-                cursor: "pointer",
-              }}
+              style={{ padding: "10px 16px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer" }}
             >
               {T.ctas.partner}
             </button>
 
-            {/* таблетки с иконками маркетплейсов */}
-            {T.badges.map((label, i) => {
-              const Icon = MP_ICONS[i] ?? MP_ICONS[0];
-              const href = MP_LINKS[i] ?? MP_LINKS[0];
-              return (
-                <a
-                  key={label}
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 8,
-                    padding: "8px 12px",
-                    borderRadius: 999,
-                    background: "rgba(255,255,255,.10)",
-                    border: "1px solid rgba(255,255,255,.22)",
-                    color: "#fff",
-                    textDecoration: "none",
-                    transition: "transform .12s ease, background .12s ease",
-                  }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.background = "rgba(255,255,255,.16)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background = "rgba(255,255,255,.10)")
-                  }
-                >
-                  <Icon size={18} />
-                  <span style={{ fontWeight: 600 }}>{label}</span>
-                </a>
-              );
-            })}
+            {/* таблетки c цветами маркетплейсов */}
+            {T.badges.map((label, i) => (
+              <a
+                key={label}
+                href={MP_LINKS[i] ?? MP_LINKS[0]}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  padding: "8px 14px",
+                  borderRadius: 999,
+                  background: MP_BG[i] ?? MP_BG[0],
+                  color: MP_TEXT[i] ?? "#fff",
+                  textDecoration: "none",
+                  fontWeight: 700,
+                  border: "1px solid rgba(255,255,255,.18)",
+                  boxShadow: "0 0 0 1px rgba(0,0,0,.04) inset",
+                  transform: "translateZ(0)",
+                  transition: "transform .12s ease, filter .12s ease",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.filter = "brightness(1.06)")}
+                onMouseLeave={(e) => (e.currentTarget.style.filter = "brightness(1.0)")}
+              >
+                {label}
+              </a>
+            ))}
           </div>
         </div>
       </section>
@@ -501,15 +375,7 @@ export default function Landing() {
         <h2 style={{ fontSize: 26, margin: "0 0 16px" }}>{T.whyTitle}</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
           {T.why.map((card, i) => (
-            <div
-              key={i}
-              style={{
-                background: COLORS.card,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 14,
-                padding: 16,
-              }}
-            >
+            <div key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{card.title}</div>
               <div style={{ color: COLORS.subtext }}>{card.text}</div>
             </div>
@@ -542,15 +408,7 @@ export default function Landing() {
         <h2 style={{ fontSize: 26, margin: "0 0 16px" }}>{T.trustTitle}</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
           {T.trust.map((card, i) => (
-            <div
-              key={i}
-              style={{
-                background: COLORS.card,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 14,
-                padding: 16,
-              }}
-            >
+            <div key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{card.title}</div>
               <div style={{ color: COLORS.subtext }}>{card.text}</div>
             </div>
@@ -563,15 +421,7 @@ export default function Landing() {
         <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.catsTitle}</h2>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           {T.cats.map((c, i) => (
-            <span
-              key={i}
-              style={{
-                background: COLORS.chip,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 999,
-                padding: "8px 12px",
-              }}
-            >
+            <span key={i} style={{ background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 999, padding: "8px 12px" }}>
               {c}
             </span>
           ))}
@@ -584,32 +434,13 @@ export default function Landing() {
         <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.b2bLead}</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
           {T.b2b.map((b, i) => (
-            <div
-              key={i}
-              style={{
-                background: COLORS.card,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 14,
-                padding: 16,
-              }}
-            >
+            <div key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{b.title}</div>
               <div style={{ color: COLORS.subtext }}>{b.text}</div>
             </div>
           ))}
         </div>
-        <button
-          onClick={openModal}
-          style={{
-            marginTop: 12,
-            padding: "10px 16px",
-            background: COLORS.brand,
-            color: "#fff",
-            border: "none",
-            borderRadius: 12,
-            cursor: "pointer",
-          }}
-        >
+        <button onClick={openModal} style={{ marginTop: 12, padding: "10px 16px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 12, cursor: "pointer" }}>
           {T.ctas.b2bCta}
         </button>
       </section>
@@ -640,10 +471,7 @@ export default function Landing() {
               <div style={{ marginBottom: 8 }}>
                 ID: <b>HardVassya</b>
               </div>
-              <button
-                onClick={copyWeChat}
-                style={{ padding: "8px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.chip, cursor: "pointer" }}
-              >
+              <button onClick={copyWeChat} style={{ padding: "8px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.chip, cursor: "pointer" }}>
                 {T.wcCopy}
               </button>
               <div style={{ marginTop: 8, color: COLORS.subtext, fontSize: 13 }}>{T.wcHint}</div>
@@ -659,76 +487,19 @@ export default function Landing() {
 
       {/* Modal mini-form */}
       {openLead && (
-        <div
-          onClick={() => setOpenLead(false)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,.45)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 50,
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              width: 380,
-              background: "#fff",
-              borderRadius: 14,
-              border: `1px solid ${COLORS.border}`,
-              padding: 18,
-              boxShadow: "0 12px 32px rgba(0,0,0,.18)",
-            }}
-          >
+        <div onClick={() => setOpenLead(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ width: 380, background: "#fff", borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 18, boxShadow: "0 12px 32px rgba(0,0,0,.18)" }}>
             <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{T.formTitle}</div>
             <div style={{ display: "grid", gap: 10 }}>
-              <input
-                placeholder={T.formName}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
-              />
-              <input
-                placeholder={T.formEmail}
-                value={mail}
-                onChange={(e) => setMail(e.target.value)}
-                type="email"
-                style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
-              />
-              <input
-                placeholder={T.formPhone}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
-              />
+              <input placeholder={T.formName} value={name} onChange={(e) => setName(e.target.value)} style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }} />
+              <input placeholder={T.formEmail} value={mail} onChange={(e) => setMail(e.target.value)} type="email" style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }} />
+              <input placeholder={T.formPhone} value={phone} onChange={(e) => setPhone(e.target.value)} style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }} />
             </div>
             <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" }}>
-              <button
-                onClick={() => setOpenLead(false)}
-                style={{
-                  padding: "9px 12px",
-                  background: COLORS.chip,
-                  border: `1px solid ${COLORS.border}`,
-                  borderRadius: 10,
-                  cursor: "pointer",
-                }}
-              >
+              <button onClick={() => setOpenLead(false)} style={{ padding: "9px 12px", background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 10, cursor: "pointer" }}>
                 {T.formCancel}
               </button>
-              <button
-                onClick={sendLead}
-                style={{
-                  padding: "9px 14px",
-                  background: COLORS.brand,
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 10,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
+              <button onClick={sendLead} style={{ padding: "9px 14px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 10, fontWeight: 600, cursor: "pointer" }}>
                 {T.formSend}
               </button>
             </div>
