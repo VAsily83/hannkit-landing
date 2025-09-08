@@ -1,6 +1,7 @@
 // pages/index.tsx
 import React, { useMemo, useRef, useState } from "react";
 import PhoneInput from "react-phone-number-input";
+import "react-phone-number-input/style.css";
 
 type Lang = "ru" | "en" | "zh";
 
@@ -13,6 +14,21 @@ const COLORS = {
   card: "#FFFFFF",
   border: "#E5E7EB",
   chip: "#F3F4F6",
+};
+
+// Бренд-цвета для чипсов маркетплейсов
+type BrandKey = "wb" | "ozon" | "ym";
+const BRAND_STYLE: Record<BrandKey, { bg: string; text: string; border?: string }> = {
+  wb: { bg: "#6E0DD0", text: "#FFFFFF" },        // Wildberries
+  ozon: { bg: "#1689FA", text: "#FFFFFF" },      // Ozon
+  ym: { bg: "#FFD633", text: "#111111", border: "#E6C300" }, // Яндекс.Маркет
+};
+const detectBrand = (label: string): BrandKey | null => {
+  const s = label.toLowerCase();
+  if (/(wildberries|вилдбер|вб)/.test(s)) return "wb";
+  if (/(ozon|озон)/.test(s)) return "ozon";
+  if (/(yandex|яндекс|маркет)/.test(s)) return "ym";
+  return null;
 };
 
 const TDICT: Record<
@@ -230,10 +246,7 @@ export default function Landing() {
   const [openLead, setOpenLead] = useState(false);
   const [name, setName] = useState("");
   const [mail, setMail] = useState("");
-  const [phone, setPhone] = useState<string | undefined>("");
-
-  const contactRef = useRef<HTMLDivElement>(null);
-  const openModal = () => setOpenLead(true);
+  const [phone, setPhone] = useState<string | undefined>();
 
   const FORMSPREE = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
 
@@ -250,12 +263,10 @@ export default function Landing() {
           setOpenLead(false);
           setName("");
           setMail("");
-          setPhone("");
+          setPhone(undefined);
           return;
         }
-      } catch {
-        /* fallback to mailto */
-      }
+      } catch {}
     }
     alert(T.toastFail);
     const subject = T.mailSubject;
@@ -309,7 +320,7 @@ export default function Landing() {
               </button>
             ))}
             <button
-              onClick={openModal}
+              onClick={() => setOpenLead(true)}
               style={{ marginLeft: 12, padding: "8px 14px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 10, fontWeight: 600, cursor: "pointer" }}
             >
               {T.ctas.partner}
@@ -326,23 +337,35 @@ export default function Landing() {
 
           <div style={{ marginTop: 18, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <button
-              onClick={openModal}
+              onClick={() => setOpenLead(true)}
               style={{ padding: "10px 16px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer" }}
             >
               {T.ctas.partner}
             </button>
-
-            {/* Чипы маркетплейсов без иконок */}
-            {T.badges.map((b, i) => (
-              <span key={i} style={{ padding: "8px 14px", borderRadius: 999, background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.22)" }}>
-                {b}
-              </span>
-            ))}
+            {T.badges.map((b, i) => {
+              const key = detectBrand(b);
+              const styles = key ? BRAND_STYLE[key] : null;
+              return (
+                <span
+                  key={i}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: 999,
+                    background: styles ? styles.bg : "rgba(255,255,255,.12)",
+                    color: styles ? styles.text : "#fff",
+                    border: styles?.border ? `1px solid ${styles.border}` : "1px solid rgba(255,255,255,.22)",
+                    fontWeight: 600,
+                  }}
+                >
+                  {b}
+                </span>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* Why (один раз, без дубля в hero) */}
+      {/* Why */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: "36px 20px 6px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 16px" }}>{T.whyTitle}</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
@@ -413,7 +436,7 @@ export default function Landing() {
           ))}
         </div>
         <button
-          onClick={openModal}
+          onClick={() => setOpenLead(true)}
           style={{ marginTop: 12, padding: "10px 16px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 12, cursor: "pointer" }}
         >
           {T.ctas.b2bCta}
@@ -421,7 +444,7 @@ export default function Landing() {
       </section>
 
       {/* Contacts */}
-      <section ref={contactRef} style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}>
+      <section style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "22px 20px 36px" }}>
           <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.contactTitle}</h2>
           <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.contactLead}</p>
@@ -447,7 +470,14 @@ export default function Landing() {
                 ID: <b>HardVassya</b>
               </div>
               <button
-                onClick={copyWeChat}
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText("HardVassya");
+                    alert(lang === "ru" ? "ID скопирован" : lang === "en" ? "ID copied" : "已复制 ID");
+                  } catch {
+                    alert(lang === "ru" ? "Не удалось скопировать" : lang === "en" ? "Copy failed" : "复制失败");
+                  }
+                }}
                 style={{ padding: "8px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.chip, cursor: "pointer" }}
               >
                 {T.wcCopy}
@@ -463,7 +493,7 @@ export default function Landing() {
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "16px 20px", color: COLORS.subtext }}>{T.footer}</div>
       </footer>
 
-      {/* Modal mini-form */}
+      {/* Modal — форма лида */}
       {openLead && (
         <div
           onClick={() => setOpenLead(false)}
@@ -488,24 +518,29 @@ export default function Landing() {
                 type="email"
                 style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
               />
-
-              {/* Телефон с префиксом страны */}
-              <div style={{ display: "grid", gap: 6 }}>
-                <PhoneInput
-                  placeholder={T.formPhone}
-                  value={phone}
-                  onChange={setPhone}
-                  defaultCountry="RU"
-                  countries={[
-                    "RU","KZ","CN","TR","AE","IN","DE","PL","LT","LV","EE","US","GB",
-                    "ES","IT","FR","VN","TH","ID","MY","SG"
-                  ]}
-                  international
-                  limitMaxLength
-                />
-              </div>
+              {/* Телефон с префиксами стран */}
+              <PhoneInput
+                placeholder={T.formPhone}
+                value={phone}
+                onChange={setPhone}
+                defaultCountry="RU"
+                international
+                countryCallingCodeEditable={false}
+                style={{}}
+                inputComponent={(props: any) => (
+                  <input
+                    {...props}
+                    style={{
+                      width: "100%",
+                      padding: "10px 12px",
+                      borderRadius: 10,
+                      border: `1px solid ${COLORS.border}`,
+                      outline: "none",
+                    }}
+                  />
+                )}
+              />
             </div>
-
             <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" }}>
               <button
                 onClick={() => setOpenLead(false)}
