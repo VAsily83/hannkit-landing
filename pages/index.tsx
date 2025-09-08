@@ -1,6 +1,6 @@
+// pages/index.tsx
 import React, { useMemo, useRef, useState } from "react";
 import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
 
 type Lang = "ru" | "en" | "zh";
 
@@ -223,25 +223,6 @@ const TDICT: Record<
   },
 };
 
-function getBadgeStyle(label: string) {
-  const l = label.toLowerCase();
-  // Бренд-цвета
-  const wb = "#A100FF";
-  const ozon = "#005BFF";
-  const ym = "#FFD633";
-
-  if (l.includes("wildberries")) {
-    return { bg: wb, color: "#fff" };
-  }
-  if (l.includes("ozon")) {
-    return { bg: ozon, color: "#fff" };
-  }
-  if (l.includes("market")) {
-    return { bg: ym, color: "#111" };
-  }
-  return { bg: "rgba(255,255,255,.12)", color: "#fff" };
-}
-
 export default function Landing() {
   const [lang, setLang] = useState<Lang>("ru");
   const T = useMemo(() => TDICT[lang], [lang]);
@@ -249,7 +230,7 @@ export default function Landing() {
   const [openLead, setOpenLead] = useState(false);
   const [name, setName] = useState("");
   const [mail, setMail] = useState("");
-  const [phone, setPhone] = useState<string | undefined>();
+  const [phone, setPhone] = useState<string | undefined>("");
 
   const contactRef = useRef<HTMLDivElement>(null);
   const openModal = () => setOpenLead(true);
@@ -257,14 +238,12 @@ export default function Landing() {
   const FORMSPREE = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
 
   const sendLead = async () => {
-    const fullPhone = phone || "";
-
     if (FORMSPREE) {
       try {
         const r = await fetch(FORMSPREE, {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify({ name, email: mail, phone: fullPhone, source: "hannkit.com", lang }),
+          body: JSON.stringify({ name, email: mail, phone, source: "hannkit.com", lang }),
         });
         if (r.ok) {
           alert(T.toastOk);
@@ -274,19 +253,17 @@ export default function Landing() {
           setPhone("");
           return;
         }
-      } catch (e) {
-        // fallback ниже
+      } catch {
+        /* fallback to mailto */
       }
     }
-
     alert(T.toastFail);
     const subject = T.mailSubject;
     const body =
       `${T.formName}: ${name || "-"}\n` +
       `${T.formEmail}: ${mail || "-"}\n` +
-      `${T.formPhone}: ${fullPhone || "-"}`;
-    const href = `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = href;
+      `${T.formPhone}: ${phone || "-"}`;
+    window.location.href = `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setOpenLead(false);
   };
 
@@ -341,7 +318,7 @@ export default function Landing() {
         </div>
       </header>
 
-      {/* Hero (без дублирования карточек) */}
+      {/* Hero */}
       <section style={{ background: COLORS.brand, color: "#fff" }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "38px 20px 34px" }}>
           <h1 style={{ fontSize: 44, lineHeight: 1.15, letterSpacing: 0.2, margin: "0 0 14px" }}>{T.heroTitle}</h1>
@@ -355,29 +332,17 @@ export default function Landing() {
               {T.ctas.partner}
             </button>
 
-            {T.badges.map((b, i) => {
-              const { bg, color } = getBadgeStyle(b);
-              return (
-                <span
-                  key={i}
-                  style={{
-                    padding: "8px 14px",
-                    borderRadius: 999,
-                    background: bg,
-                    color,
-                    fontWeight: 600,
-                    border: "1px solid rgba(255,255,255,.12)",
-                  }}
-                >
-                  {b}
-                </span>
-              );
-            })}
+            {/* Чипы маркетплейсов без иконок */}
+            {T.badges.map((b, i) => (
+              <span key={i} style={{ padding: "8px 14px", borderRadius: 999, background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.22)" }}>
+                {b}
+              </span>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Why — один раз */}
+      {/* Why (один раз, без дубля в hero) */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: "36px 20px 6px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 16px" }}>{T.whyTitle}</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
@@ -523,16 +488,24 @@ export default function Landing() {
                 type="email"
                 style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
               />
-              <div style={{ border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "6px 10px" }}>
+
+              {/* Телефон с префиксом страны */}
+              <div style={{ display: "grid", gap: 6 }}>
                 <PhoneInput
-                  international
-                  defaultCountry={lang === "ru" ? "RU" : lang === "zh" ? "CN" : "US"}
+                  placeholder={T.formPhone}
                   value={phone}
                   onChange={setPhone}
-                  placeholder={T.formPhone}
+                  defaultCountry="RU"
+                  countries={[
+                    "RU","KZ","CN","TR","AE","IN","DE","PL","LT","LV","EE","US","GB",
+                    "ES","IT","FR","VN","TH","ID","MY","SG"
+                  ]}
+                  international
+                  limitMaxLength
                 />
               </div>
             </div>
+
             <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" }}>
               <button
                 onClick={() => setOpenLead(false)}
