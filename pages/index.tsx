@@ -11,16 +11,13 @@ function useMedia(query: string, initial = false) {
     const mql = window.matchMedia(query);
     const update = () => setMatches(mql.matches);
 
-    // первичная установка
     update();
 
-    // современный API
     if (typeof mql.addEventListener === "function") {
       mql.addEventListener("change", update);
       return () => mql.removeEventListener("change", update);
     }
 
-    // устаревший API для Safari/старых браузеров
     // @ts-ignore
     mql.addListener(update);
     // @ts-ignore
@@ -369,6 +366,20 @@ export default function Landing() {
         background: COLORS.bg,
       }}
     >
+      {/* Адаптивные стили для хедера и героя */}
+      <style>{`
+        @media (max-width: 640px) {
+          .hdr__wrap { flex-wrap: wrap; row-gap: 8px; padding: 10px 12px !important; }
+          .hdr__brand { font-size: 20px !important; margin-right: auto; }
+          .hdr__label { display: none; }
+          .hdr__right { width: 100%; justify-content: flex-start; flex-wrap: wrap; gap: 6px; }
+          .hdr__langbtn { padding: 6px 10px; font-size: 14px; }
+          .hdr__cta { padding: 8px 12px !important; font-size: 14px; border-radius: 10px; }
+          .hero__title { font-size: 32px !important; line-height: 1.15; }
+          .hero__lead { font-size: 16px !important; }
+        }
+      `}</style>
+
       {/* Header */}
       <header
         style={{
@@ -381,6 +392,7 @@ export default function Landing() {
         }}
       >
         <div
+          className="hdr__wrap"
           style={{
             maxWidth: 1120,
             margin: "0 auto",
@@ -388,16 +400,22 @@ export default function Landing() {
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
+            gap: 12,
           }}
         >
-          <div style={{ fontWeight: 700, fontSize: isMobile ? 20 : 22 }}>{T.brand}</div>
+          <div className="hdr__brand" style={{ fontWeight: 700, fontSize: isMobile ? 20 : 22, lineHeight: 1 }}>
+            {T.brand}
+          </div>
 
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <span style={{ opacity: 0.85, marginRight: 6 }}>{T.langLabel}:</span>
+          <div className="hdr__right" style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
+            <span className="hdr__label" style={{ opacity: 0.85, marginRight: 6 }}>
+              {T.langLabel}:
+            </span>
             {(["ru", "en", "zh"] as Lang[]).map((l) => (
               <button
                 key={l}
                 onClick={() => setLang(l)}
+                className="hdr__langbtn"
                 style={{
                   padding: "6px 10px",
                   borderRadius: 999,
@@ -405,6 +423,7 @@ export default function Landing() {
                   background: l === lang ? "#fff" : "transparent",
                   color: l === lang ? COLORS.brand : "#fff",
                   cursor: "pointer",
+                  whiteSpace: "nowrap",
                 }}
               >
                 {l.toUpperCase()}
@@ -412,15 +431,17 @@ export default function Landing() {
             ))}
             <button
               onClick={openModal}
+              className="hdr__cta"
               style={{
                 marginLeft: 12,
                 padding: "8px 14px",
                 background: "#fff",
                 color: COLORS.brand,
                 border: "none",
-                borderRadius: 10,
-                fontWeight: 600,
+                borderRadius: 12,
+                fontWeight: 700,
                 cursor: "pointer",
+                whiteSpace: "nowrap",
               }}
             >
               {T.ctas.partner}
@@ -433,6 +454,7 @@ export default function Landing() {
       <section style={{ background: COLORS.brand, color: "#fff" }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "28px 16px 26px" : "38px 20px 34px" }}>
           <h1
+            className="hero__title"
             style={{
               fontSize: isMobile ? 30 : 44,
               lineHeight: 1.15,
@@ -442,7 +464,9 @@ export default function Landing() {
           >
             {T.heroTitle}
           </h1>
-          <p style={{ maxWidth: 840, fontSize: isMobile ? 16 : 18, lineHeight: 1.6, opacity: 0.95 }}>{T.heroLead}</p>
+          <p className="hero__lead" style={{ maxWidth: 840, fontSize: isMobile ? 16 : 18, lineHeight: 1.6, opacity: 0.95 }}>
+            {T.heroLead}
+          </p>
 
           <div
             style={{
