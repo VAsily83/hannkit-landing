@@ -1,22 +1,32 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import PhoneInput from "react-phone-number-input"; // CSS уже подключен в _app.tsx
 
-// ===== Helpers / Responsive =====
+// ===== Helpers / Responsive (fixed for TS on Vercel) =====
 function useMedia(query: string, initial = false) {
   const [matches, setMatches] = useState(initial);
+
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || !("matchMedia" in window)) return;
+
     const mql = window.matchMedia(query);
-    const onChange = (e: MediaQueryListEvent | MediaQueryList) =>
-      setMatches("matches" in e ? e.matches : e.matches);
-    setMatches(mql.matches);
-    // @ts-ignore (Safari < 14)
-    mql.addEventListener ? mql.addEventListener("change", onChange) : mql.addListener(onChange);
-    return () => {
-      // @ts-ignore (Safari < 14)
-      mql.removeEventListener ? mql.removeEventListener("change", onChange) : mql.removeListener(onChange);
-    };
+    const update = () => setMatches(mql.matches);
+
+    // первичная установка
+    update();
+
+    // современный API
+    if (typeof mql.addEventListener === "function") {
+      mql.addEventListener("change", update);
+      return () => mql.removeEventListener("change", update);
+    }
+
+    // устаревший API для Safari/старых браузеров
+    // @ts-ignore
+    mql.addListener(update);
+    // @ts-ignore
+    return () => mql.removeListener(update);
   }, [query]);
+
   return matches;
 }
 
