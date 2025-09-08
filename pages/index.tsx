@@ -1,7 +1,24 @@
-// pages/index.tsx
-import React, { useMemo, useRef, useState } from "react";
-import PhoneInput from "react-phone-number-input";
-import "react-phone-number-input/style.css";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import PhoneInput from "react-phone-number-input"; // CSS уже подключен в _app.tsx
+
+// ===== Helpers / Responsive =====
+function useMedia(query: string, initial = false) {
+  const [matches, setMatches] = useState(initial);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mql = window.matchMedia(query);
+    const onChange = (e: MediaQueryListEvent | MediaQueryList) =>
+      setMatches("matches" in e ? e.matches : e.matches);
+    setMatches(mql.matches);
+    // @ts-ignore (Safari < 14)
+    mql.addEventListener ? mql.addEventListener("change", onChange) : mql.addListener(onChange);
+    return () => {
+      // @ts-ignore (Safari < 14)
+      mql.removeEventListener ? mql.removeEventListener("change", onChange) : mql.removeListener(onChange);
+    };
+  }, [query]);
+  return matches;
+}
 
 type Lang = "ru" | "en" | "zh";
 
@@ -16,19 +33,14 @@ const COLORS = {
   chip: "#F3F4F6",
 };
 
-// Бренд-цвета для чипсов маркетплейсов
-type BrandKey = "wb" | "ozon" | "ym";
-const BRAND_STYLE: Record<BrandKey, { bg: string; text: string; border?: string }> = {
-  wb: { bg: "#6E0DD0", text: "#FFFFFF" },        // Wildberries
-  ozon: { bg: "#1689FA", text: "#FFFFFF" },      // Ozon
-  ym: { bg: "#FFD633", text: "#111111", border: "#E6C300" }, // Яндекс.Маркет
-};
-const detectBrand = (label: string): BrandKey | null => {
-  const s = label.toLowerCase();
-  if (/(wildberries|вилдбер|вб)/.test(s)) return "wb";
-  if (/(ozon|озон)/.test(s)) return "ozon";
-  if (/(yandex|яндекс|маркет)/.test(s)) return "ym";
-  return null;
+const MARKET_COLORS: Record<
+  "Wildberries" | "Ozon" | "Яндекс.Маркет" | "Yandex.Market",
+  { bg: string; text: string; border?: string }
+> = {
+  Wildberries: { bg: "#7C2AA6", text: "#FFFFFF" },
+  Ozon: { bg: "#006CFF", text: "#FFFFFF" },
+  "Яндекс.Маркет": { bg: "#FFD500", text: "#111111", border: "#E5C700" },
+  "Yandex.Market": { bg: "#FFD500", text: "#111111", border: "#E5C700" },
 };
 
 const TDICT: Record<
@@ -88,7 +100,13 @@ const TDICT: Record<
       { title: "Рост прибыли", text: "Вы получаете себестоимость + 30% от прибыли" },
     ],
     howTitle: "Как мы работаем",
-    how: ["Анализ спроса и SKU", "Легализация и сертификация", "Поставка на склад", "Продажи на маркетплейсах", "Выплаты и отчёты"],
+    how: [
+      "Анализ спроса и SKU",
+      "Легализация и сертификация",
+      "Поставка на склад",
+      "Продажи на маркетплейсах",
+      "Выплаты и отчёты",
+    ],
     finTitle: "Финансовые условия",
     fin: [
       "COGS+30% — стандартное вознаграждение",
@@ -104,7 +122,14 @@ const TDICT: Record<
       { title: "Поддержка 24/7", text: "Отвечаем на любые вопросы партнёров" },
     ],
     catsTitle: "Категории, с которыми работаем",
-    cats: ["Малая бытовая техника и электроника", "Товары для красоты и здоровья", "Дом, кухня, уборка", "Спорт и отдых", "Автотовары и инструменты", "Детские товары"],
+    cats: [
+      "Малая бытовая техника и электроника",
+      "Товары для красоты и здоровья",
+      "Дом, кухня, уборка",
+      "Спорт и отдых",
+      "Автотовары и инструменты",
+      "Детские товары",
+    ],
     b2bTitle: "B2B для продавцов маркетплейсов",
     b2bLead: "Оптовые поставки и решения для действующих селлеров.",
     b2b: [
@@ -147,9 +172,21 @@ const TDICT: Record<
       { title: "Profit growth", text: "You get cost price + 30% of profit" },
     ],
     howTitle: "How we work",
-    how: ["Demand & SKU analysis", "Legalization & certification", "Warehouse delivery", "Marketplace sales", "Payouts & reports"],
+    how: [
+      "Demand & SKU analysis",
+      "Legalization & certification",
+      "Warehouse delivery",
+      "Marketplace sales",
+      "Payouts & reports",
+    ],
     finTitle: "Financial terms",
-    fin: ["COGS+30% — standard reward", "Monthly payouts", "We cover marketing & logistics", "Transparent sales reports", "Payouts SLA"],
+    fin: [
+      "COGS+30% — standard reward",
+      "Monthly payouts",
+      "We cover marketing & logistics",
+      "Transparent sales reports",
+      "Payouts SLA",
+    ],
     trustTitle: "Assurance & transparency",
     trust: [
       { title: "Legal compliance", text: "We work with legal entities and follow all norms" },
@@ -157,7 +194,14 @@ const TDICT: Record<
       { title: "Support 24/7", text: "We answer partner questions around the clock" },
     ],
     catsTitle: "Categories we work with",
-    cats: ["Small appliances & electronics", "Beauty & health", "Home & cleaning", "Sport & outdoor", "Auto goods & tools", "Kids"],
+    cats: [
+      "Small appliances & electronics",
+      "Beauty & health",
+      "Home & cleaning",
+      "Sport & outdoor",
+      "Auto goods & tools",
+      "Kids",
+    ],
     b2bTitle: "B2B for marketplace sellers",
     b2bLead: "Wholesale supply and solutions for active sellers.",
     b2b: [
@@ -189,7 +233,8 @@ const TDICT: Record<
     brand: "Hannkit",
     langLabel: "语言",
     heroTitle: "零风险零投入进入俄罗斯市场",
-    heroLead: "我们将您的产品上架至 Wildberries、Ozon 与 Yandex.Market，并负责营销、物流与支持。售出后您获得成本价 + 30% 的利润。",
+    heroLead:
+      "我们将您的产品上架至 Wildberries、Ozon 与 Yandex.Market，并负责营销、物流与支持。售出后您获得成本价 + 30% 的利润。",
     ctas: { partner: "成为合作伙伴", b2bCta: "索取 B2B 条款" },
     badges: ["Wildberries", "Ozon", "Yandex.Market"],
     whyTitle: "对制造商的优势",
@@ -243,10 +288,16 @@ export default function Landing() {
   const [lang, setLang] = useState<Lang>("ru");
   const T = useMemo(() => TDICT[lang], [lang]);
 
+  const isTablet = useMedia("(max-width: 1024px)");
+  const isMobile = useMedia("(max-width: 640px)");
+
   const [openLead, setOpenLead] = useState(false);
   const [name, setName] = useState("");
   const [mail, setMail] = useState("");
   const [phone, setPhone] = useState<string | undefined>();
+
+  const contactRef = useRef<HTMLDivElement>(null);
+  const openModal = () => setOpenLead(true);
 
   const FORMSPREE = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
 
@@ -256,7 +307,13 @@ export default function Landing() {
         const r = await fetch(FORMSPREE, {
           method: "POST",
           headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify({ name, email: mail, phone, source: "hannkit.com", lang }),
+          body: JSON.stringify({
+            name,
+            email: mail,
+            phone,
+            source: "hannkit.com",
+            lang,
+          }),
         });
         if (r.ok) {
           alert(T.toastOk);
@@ -266,15 +323,21 @@ export default function Landing() {
           setPhone(undefined);
           return;
         }
-      } catch {}
+      } catch {
+        /* fallthrough */
+      }
     }
+
     alert(T.toastFail);
     const subject = T.mailSubject;
     const body =
       `${T.formName}: ${name || "-"}\n` +
       `${T.formEmail}: ${mail || "-"}\n` +
       `${T.formPhone}: ${phone || "-"}`;
-    window.location.href = `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const href = `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+      body
+    )}`;
+    window.location.href = href;
     setOpenLead(false);
   };
 
@@ -297,9 +360,27 @@ export default function Landing() {
       }}
     >
       {/* Header */}
-      <header style={{ background: COLORS.brand, color: "#fff", position: "sticky", top: 0, zIndex: 20, borderBottom: `1px solid ${COLORS.brandSoft}` }}>
-        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "18px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ fontWeight: 700, fontSize: 22 }}>{T.brand}</div>
+      <header
+        style={{
+          background: COLORS.brand,
+          color: "#fff",
+          position: "sticky",
+          top: 0,
+          zIndex: 20,
+          borderBottom: `1px solid ${COLORS.brandSoft}`,
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1120,
+            margin: "0 auto",
+            padding: isMobile ? "14px 16px" : "18px 20px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <div style={{ fontWeight: 700, fontSize: isMobile ? 20 : 22 }}>{T.brand}</div>
 
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <span style={{ opacity: 0.85, marginRight: 6 }}>{T.langLabel}:</span>
@@ -320,8 +401,17 @@ export default function Landing() {
               </button>
             ))}
             <button
-              onClick={() => setOpenLead(true)}
-              style={{ marginLeft: 12, padding: "8px 14px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 10, fontWeight: 600, cursor: "pointer" }}
+              onClick={openModal}
+              style={{
+                marginLeft: 12,
+                padding: "8px 14px",
+                background: "#fff",
+                color: COLORS.brand,
+                border: "none",
+                borderRadius: 10,
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
             >
               {T.ctas.partner}
             </button>
@@ -331,29 +421,58 @@ export default function Landing() {
 
       {/* Hero */}
       <section style={{ background: COLORS.brand, color: "#fff" }}>
-        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "38px 20px 34px" }}>
-          <h1 style={{ fontSize: 44, lineHeight: 1.15, letterSpacing: 0.2, margin: "0 0 14px" }}>{T.heroTitle}</h1>
-          <p style={{ maxWidth: 840, fontSize: 18, lineHeight: 1.6, opacity: 0.95 }}>{T.heroLead}</p>
+        <div style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "28px 16px 26px" : "38px 20px 34px" }}>
+          <h1
+            style={{
+              fontSize: isMobile ? 30 : 44,
+              lineHeight: 1.15,
+              letterSpacing: 0.2,
+              margin: "0 0 14px",
+            }}
+          >
+            {T.heroTitle}
+          </h1>
+          <p style={{ maxWidth: 840, fontSize: isMobile ? 16 : 18, lineHeight: 1.6, opacity: 0.95 }}>{T.heroLead}</p>
 
-          <div style={{ marginTop: 18, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <div
+            style={{
+              marginTop: 18,
+              display: "flex",
+              gap: 10,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
             <button
-              onClick={() => setOpenLead(true)}
-              style={{ padding: "10px 16px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer" }}
+              onClick={openModal}
+              style={{
+                padding: "10px 16px",
+                background: "#fff",
+                color: COLORS.brand,
+                border: "none",
+                borderRadius: 12,
+                fontWeight: 700,
+                cursor: "pointer",
+                width: isMobile ? "100%" : "auto",
+              }}
             >
               {T.ctas.partner}
             </button>
+
             {T.badges.map((b, i) => {
-              const key = detectBrand(b);
-              const styles = key ? BRAND_STYLE[key] : null;
+              const style = MARKET_COLORS[b as keyof typeof MARKET_COLORS] || {
+                bg: "rgba(255,255,255,.12)",
+                text: "#fff",
+              };
               return (
                 <span
                   key={i}
                   style={{
                     padding: "8px 14px",
                     borderRadius: 999,
-                    background: styles ? styles.bg : "rgba(255,255,255,.12)",
-                    color: styles ? styles.text : "#fff",
-                    border: styles?.border ? `1px solid ${styles.border}` : "1px solid rgba(255,255,255,.22)",
+                    background: style.bg,
+                    color: style.text,
+                    border: style.border ? `1px solid ${style.border}` : "1px solid rgba(255,255,255,.12)",
                     fontWeight: 600,
                   }}
                 >
@@ -365,10 +484,16 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Why */}
-      <section style={{ maxWidth: 1120, margin: "0 auto", padding: "36px 20px 6px" }}>
+      {/* Why — один раз */}
+      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "20px 16px 6px" : "36px 20px 6px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 16px" }}>{T.whyTitle}</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+            gap: 14,
+          }}
+        >
           {T.why.map((card, i) => (
             <div key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{card.title}</div>
@@ -379,7 +504,7 @@ export default function Landing() {
       </section>
 
       {/* How */}
-      <section style={{ maxWidth: 1120, margin: "0 auto", padding: "24px 20px" }}>
+      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "12px 16px" : "24px 20px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.howTitle}</h2>
         <ul style={{ paddingLeft: 20, lineHeight: 1.8, color: COLORS.subtext, margin: 0 }}>
           {T.how.map((li, i) => (
@@ -389,7 +514,7 @@ export default function Landing() {
       </section>
 
       {/* Financials */}
-      <section style={{ maxWidth: 1120, margin: "0 auto", padding: "12px 20px 24px" }}>
+      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "10px 16px 20px" : "12px 20px 24px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.finTitle}</h2>
         <ul style={{ paddingLeft: 20, lineHeight: 1.8, color: COLORS.subtext, margin: 0 }}>
           {T.fin.map((li, i) => (
@@ -399,9 +524,15 @@ export default function Landing() {
       </section>
 
       {/* Trust */}
-      <section style={{ maxWidth: 1120, margin: "0 auto", padding: "10px 20px 24px" }}>
+      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 20px" : "10px 20px 24px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 16px" }}>{T.trustTitle}</h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+            gap: 14,
+          }}
+        >
           {T.trust.map((card, i) => (
             <div key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{card.title}</div>
@@ -412,9 +543,9 @@ export default function Landing() {
       </section>
 
       {/* Categories */}
-      <section style={{ maxWidth: 1120, margin: "0 auto", padding: "10px 20px 28px" }}>
+      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 24px" : "10px 20px 28px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.catsTitle}</h2>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? 8 : 10 }}>
           {T.cats.map((c, i) => (
             <span key={i} style={{ background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 999, padding: "8px 12px" }}>
               {c}
@@ -424,10 +555,16 @@ export default function Landing() {
       </section>
 
       {/* B2B */}
-      <section style={{ maxWidth: 1120, margin: "0 auto", padding: "6px 20px 34px" }}>
+      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "4px 16px 28px" : "6px 20px 34px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.b2bTitle}</h2>
         <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.b2bLead}</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14 }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+            gap: 14,
+          }}
+        >
           {T.b2b.map((b, i) => (
             <div key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{b.title}</div>
@@ -436,20 +573,35 @@ export default function Landing() {
           ))}
         </div>
         <button
-          onClick={() => setOpenLead(true)}
-          style={{ marginTop: 12, padding: "10px 16px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 12, cursor: "pointer" }}
+          onClick={openModal}
+          style={{
+            marginTop: 12,
+            padding: isMobile ? "10px 14px" : "10px 16px",
+            background: COLORS.brand,
+            color: "#fff",
+            border: "none",
+            borderRadius: 12,
+            cursor: "pointer",
+            width: isMobile ? "100%" : "auto",
+          }}
         >
           {T.ctas.b2bCta}
         </button>
       </section>
 
       {/* Contacts */}
-      <section style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}>
-        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "22px 20px 36px" }}>
+      <section ref={contactRef} style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}>
+        <div style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "18px 16px 28px" : "22px 20px 36px" }}>
           <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.contactTitle}</h2>
           <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.contactLead}</p>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+              gap: 14,
+            }}
+          >
             <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
               <a href="mailto:Wildbizshop@gmail.com" style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}>
@@ -470,14 +622,7 @@ export default function Landing() {
                 ID: <b>HardVassya</b>
               </div>
               <button
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText("HardVassya");
-                    alert(lang === "ru" ? "ID скопирован" : lang === "en" ? "ID copied" : "已复制 ID");
-                  } catch {
-                    alert(lang === "ru" ? "Не удалось скопировать" : lang === "en" ? "Copy failed" : "复制失败");
-                  }
-                }}
+                onClick={copyWeChat}
                 style={{ padding: "8px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, background: COLORS.chip, cursor: "pointer" }}
               >
                 {T.wcCopy}
@@ -493,7 +638,7 @@ export default function Landing() {
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "16px 20px", color: COLORS.subtext }}>{T.footer}</div>
       </footer>
 
-      {/* Modal — форма лида */}
+      {/* Modal mini-form */}
       {openLead && (
         <div
           onClick={() => setOpenLead(false)}
@@ -501,7 +646,14 @@ export default function Landing() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{ width: 380, background: "#fff", borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 18, boxShadow: "0 12px 32px rgba(0,0,0,.18)" }}
+            style={{
+              width: isMobile ? 320 : 380,
+              background: "#fff",
+              borderRadius: 14,
+              border: `1px solid ${COLORS.border}`,
+              padding: 18,
+              boxShadow: "0 12px 32px rgba(0,0,0,.18)",
+            }}
           >
             <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{T.formTitle}</div>
             <div style={{ display: "grid", gap: 10 }}>
@@ -518,28 +670,26 @@ export default function Landing() {
                 type="email"
                 style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
               />
-              {/* Телефон с префиксами стран */}
-              <PhoneInput
-                placeholder={T.formPhone}
-                value={phone}
-                onChange={setPhone}
-                defaultCountry="RU"
-                international
-                countryCallingCodeEditable={false}
-                style={{}}
-                inputComponent={(props: any) => (
-                  <input
-                    {...props}
-                    style={{
-                      width: "100%",
+              <div style={{ display: "grid", gap: 6 }}>
+                <label style={{ fontSize: 12, color: COLORS.subtext }}>{T.formPhone}</label>
+                <PhoneInput
+                  defaultCountry="RU"
+                  international
+                  countryCallingCodeEditable={true}
+                  value={phone}
+                  onChange={setPhone}
+                  placeholder="+7 900 000-00-00"
+                  numberInputProps={{
+                    style: {
                       padding: "10px 12px",
                       borderRadius: 10,
                       border: `1px solid ${COLORS.border}`,
                       outline: "none",
-                    }}
-                  />
-                )}
-              />
+                      width: "100%",
+                    },
+                  }}
+                />
+              </div>
             </div>
             <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" }}>
               <button
