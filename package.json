@@ -10,7 +10,9 @@
   "dependencies": {
     "next": "14.2.3",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "libphonenumber-js": "^1.11.7",
+    "react-phone-number-input": "^3.4.11"
   },
   "devDependencies": {
     "@types/node": "20.11.30",
