@@ -11,13 +11,16 @@ function useMedia(query: string, initial = false) {
     const mql = window.matchMedia(query);
     const update = () => setMatches(mql.matches);
 
+    // первичная установка
     update();
 
+    // современный API
     if (typeof mql.addEventListener === "function") {
       mql.addEventListener("change", update);
       return () => mql.removeEventListener("change", update);
     }
 
+    // устаревший API для Safari/старых браузеров
     // @ts-ignore
     mql.addListener(update);
     // @ts-ignore
@@ -49,6 +52,100 @@ const MARKET_COLORS: Record<
   "Яндекс.Маркет": { bg: "#FFD500", text: "#111111", border: "#E5C700" },
   "Yandex.Market": { bg: "#FFD500", text: "#111111", border: "#E5C700" },
 };
+
+/* ---------- ДОБАВЛЕНО: типы и данные для кейсов ---------- */
+type CaseItem = {
+  id: string;
+  brand: string;
+  marketplace: "Wildberries" | "Ozon" | "Яндекс.Маркет" | "Yandex.Market";
+  cover?: string;
+  kpis?: { label: string; value: string }[];
+  actions?: string[];
+  note18?: boolean;
+  shopUrl: string;
+};
+
+const CASES: CaseItem[] = [
+  {
+    id: "ozon-omx",
+    brand: "OMX",
+    marketplace: "Ozon",
+    shopUrl: "https://www.ozon.ru/seller/omx-611623",
+    kpis: [{ label: "Категория", value: "Бытовая техника" }],
+    actions: ["Ассортимент", "SEO карточек", "Отзывы / Q&A"],
+  },
+  {
+    id: "wb-94640",
+    brand: "WB #94640",
+    marketplace: "Wildberries",
+    shopUrl: "https://www.wildberries.ru/seller/94640",
+    kpis: [{ label: "Категория", value: "Бытовая техника" }],
+    actions: ["Оптимизация карточек", "Работа с отзывами"],
+  },
+  {
+    id: "wb-235322",
+    brand: "Print Tees (#235322)",
+    marketplace: "Wildberries",
+    shopUrl: "https://www.wildberries.ru/seller/235322",
+    kpis: [{ label: "Категория", value: "Футболки с принтами" }],
+    actions: ["Контент", "Промо", "Размерные сетки"],
+  },
+  {
+    id: "wb-4499972",
+    brand: "Handmade Bags (#4499972)",
+    marketplace: "Wildberries",
+    shopUrl: "https://www.wildberries.ru/seller/4499972",
+    kpis: [{ label: "Категория", value: "Вязаные сумки и футболки" }],
+    actions: ["Витрина", "Ассортимент", "Промо"],
+  },
+  {
+    id: "ozon-wow",
+    brand: "Wow Shtuchki",
+    marketplace: "Ozon",
+    shopUrl: "https://www.ozon.ru/seller/wow-shtuchki-664611",
+    note18: true,
+    kpis: [{ label: "Категория", value: "Товары для взрослых (18+)" }],
+    actions: ["Ассортимент", "Релевантные ключи", "Политики площадки"],
+  },
+  {
+    id: "ym-sht",
+    brand: "SHT",
+    marketplace: "Яндекс.Маркет",
+    shopUrl: "https://market.yandex.ru/business--sht/51251801",
+    note18: true,
+    kpis: [{ label: "Категория", value: "Товары для взрослых (18+)" }],
+    actions: ["Контент", "Ценообразование", "Рекомендации"],
+  },
+];
+
+/* ---------- ДОБАВЛЕНО: партнёры в Китае ---------- */
+type PartnerCN = {
+  id: string;
+  name: string;
+  site: string;
+  note?: string;
+};
+
+const PARTNERS_CN: PartnerCN[] = [
+  {
+    id: "inkue",
+    name: "Guangzhou Inkue Technology Co., Ltd",
+    site: "https://inkue.en.alibaba.com",
+    note: "электроника / OEM",
+  },
+  {
+    id: "hcx",
+    name: "SHANTOU HAICHAOXING SCIENCE & TECHNOLOGY CO., LTD",
+    site: "https://hcx-co.com",
+    note: "игрушки / OEM",
+  },
+  {
+    id: "hanya",
+    name: "Ningbo Hanya Electrical Appliance Co., Ltd.",
+    site: "https://www.cn-hanya.com",
+    note: "электроприборы / OEM",
+  },
+];
 
 const TDICT: Record<
   Lang,
@@ -576,6 +673,128 @@ export default function Landing() {
         </div>
       </section>
 
+      {/* ---------- ДОБАВЛЕНО: Кейсы магазинов ---------- */}
+      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 24px" : "10px 20px 28px" }}>
+        <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>Кейсы магазинов</h2>
+        <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>
+          Несколько витрин наших и партнёрских магазинов на Wildberries, Ozon и Яндекс.Маркете.
+        </p>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+            gap: 14,
+          }}
+        >
+          {CASES.map((c) => {
+            const m = MARKET_COLORS[c.marketplace] || { bg: "rgba(0,0,0,.06)", text: COLORS.text };
+            return (
+              <article
+                key={c.id}
+                style={{
+                  background: COLORS.card,
+                  border: `1px solid ${COLORS.border}`,
+                  borderRadius: 14,
+                  overflow: "hidden",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                {/* опциональная обложка
+                {c.cover && (
+                  <img src={c.cover} alt={`${c.brand} — ${c.marketplace}`} loading="lazy"
+                       style={{ width: "100%", height: 160, objectFit: "cover" }} />
+                )} */}
+
+                <div style={{ padding: 16, display: "grid", gap: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
+                    <div style={{ fontWeight: 700, fontSize: 18 }}>
+                      {c.brand} {c.note18 ? <span style={{ fontSize: 12, opacity: 0.7 }}>(18+)</span> : null}
+                    </div>
+                    <span
+                      style={{
+                        background: m.bg,
+                        color: m.text,
+                        border: m.border ? `1px solid ${m.border}` : "transparent",
+                        borderRadius: 999,
+                        padding: "6px 10px",
+                        fontWeight: 600,
+                        whiteSpace: "nowrap",
+                        fontSize: 12,
+                      }}
+                    >
+                      {c.marketplace}
+                    </span>
+                  </div>
+
+                  {!!c.kpis?.length && (
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 8 }}>
+                      {c.kpis.slice(0, 3).map((k, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            background: COLORS.chip,
+                            border: `1px solid ${COLORS.border}`,
+                            borderRadius: 10,
+                            padding: "10px 12px",
+                          }}
+                        >
+                          <div style={{ fontSize: 12, color: COLORS.subtext }}>{k.label}</div>
+                          <div style={{ fontWeight: 700 }}>{k.value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {!!c.actions?.length && (
+                    <ul style={{ margin: 0, paddingLeft: 18, color: COLORS.subtext, lineHeight: 1.6 }}>
+                      {c.actions.slice(0, 4).map((a, i) => (
+                        <li key={i}>{a}</li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <div style={{ display: "flex", gap: 8, marginTop: 2, flexWrap: "wrap" }}>
+                    <a
+                      href={c.shopUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        padding: "10px 12px",
+                        borderRadius: 10,
+                        border: `1px solid ${COLORS.border}`,
+                        textDecoration: "none",
+                        color: COLORS.text,
+                        background: COLORS.chip,
+                        fontWeight: 600,
+                      }}
+                    >
+                      Открыть магазин
+                    </a>
+
+                    <button
+                      onClick={() => setOpenLead(true)}
+                      style={{
+                        padding: "10px 12px",
+                        borderRadius: 10,
+                        border: "none",
+                        background: COLORS.brand,
+                        color: "#fff",
+                        fontWeight: 700,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Хочу такой же запуск
+                    </button>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+
       {/* Categories */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 24px" : "10px 20px 28px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.catsTitle}</h2>
@@ -621,6 +840,72 @@ export default function Landing() {
         >
           {T.ctas.b2bCta}
         </button>
+      </section>
+
+      {/* ---------- ДОБАВЛЕНО: Партнёры в Китае ---------- */}
+      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 24px" : "10px 20px 28px" }}>
+        <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>Партнёры в Китае</h2>
+        <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>
+          Надёжные производители для OEM/White Label. Поможем согласовать условия и запустить производство.
+        </p>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+            gap: 14,
+          }}
+        >
+          {PARTNERS_CN.map((p) => (
+            <div
+              key={p.id}
+              style={{
+                background: COLORS.card,
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: 14,
+                padding: 16,
+                display: "grid",
+                gap: 8,
+              }}
+            >
+              <div style={{ fontWeight: 700 }}>{p.name}</div>
+              {p.note && <div style={{ color: COLORS.subtext }}>{p.note}</div>}
+
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <a
+                  href={p.site}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    border: `1px solid ${COLORS.border}`,
+                    textDecoration: "none",
+                    color: COLORS.text,
+                    background: COLORS.chip,
+                    fontWeight: 600,
+                  }}
+                >
+                  Перейти на сайт
+                </a>
+                <button
+                  onClick={() => setOpenLead(true)}
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    border: "none",
+                    background: COLORS.brand,
+                    color: "#fff",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                  }}
+                >
+                  Запросить условия
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
 
       {/* Contacts */}
