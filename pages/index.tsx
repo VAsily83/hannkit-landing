@@ -53,100 +53,98 @@ const MARKET_COLORS: Record<
   "Yandex.Market": { bg: "#FFD500", text: "#111111", border: "#E5C700" },
 };
 
-/* ---------- ДОБАВЛЕНО: типы и данные для кейсов ---------- */
+/* ==================== CASES DATA (языконезависимая) ==================== */
 type CaseItem = {
   id: string;
-  brand: string;
+  brand: string; // НЕ переводим
   marketplace: "Wildberries" | "Ozon" | "Яндекс.Маркет" | "Yandex.Market";
-  cover?: string;
-  kpis?: { label: string; value: string }[];
-  actions?: string[];
-  note18?: boolean;
-  shopUrl: string;
+  // image / link
+  imageUrl?: string; // если 18+, не указываем, будет текст-заглушка
+  linkUrl: string; // куда ведёт клик по рамке
+  // семантика для переводов:
+  categoryKey: "appliances" | "tees" | "handmade" | "adults";
+  actionKeys?: Array<
+    | "assortment"
+    | "seo"
+    | "reviews"
+    | "content"
+    | "promo"
+    | "sizecharts"
+    | "showcase"
+    | "pricing"
+    | "policies"
+    | "recommendedKeys"
+    | "recommendations"
+  >;
+  adults?: boolean; // 18+
 };
 
 const CASES: CaseItem[] = [
   {
+    id: "wb-omx",
+    brand: "OMX",
+    marketplace: "Wildberries",
+    imageUrl:
+      "https://basket-13.wbbasket.ru/vol1945/part194511/194511252/images/big/1.webp",
+    linkUrl:
+      "https://basket-13.wbbasket.ru/vol1945/part194511/194511252/images/big/1.webp",
+    categoryKey: "appliances",
+    actionKeys: ["assortment", "seo", "reviews"],
+  },
+  {
     id: "ozon-omx",
     brand: "OMX",
     marketplace: "Ozon",
-    shopUrl: "https://www.ozon.ru/seller/omx-611623",
-    kpis: [{ label: "Категория", value: "Бытовая техника" }],
-    actions: ["Ассортимент", "SEO карточек", "Отзывы / Q&A"],
+    imageUrl:
+      "https://ir.ozone.ru/s3/multimedia-1-p/wc1000/7372434949.jpg",
+    linkUrl:
+      "https://www.ozon.ru/product/7372434949/", // целевая страница товара (если нужна другая — подставь)
+    categoryKey: "appliances",
+    actionKeys: ["seo", "reviews"],
   },
   {
-    id: "wb-94640",
-    brand: "WB #94640",
+    id: "wb-print-tees",
+    brand: "Print Tees",
     marketplace: "Wildberries",
-    shopUrl: "https://www.wildberries.ru/seller/94640",
-    kpis: [{ label: "Категория", value: "Бытовая техника" }],
-    actions: ["Оптимизация карточек", "Работа с отзывами"],
+    imageUrl:
+      "https://basket-18.wbbasket.ru/vol2892/part289294/289294687/images/big/1.webp",
+    linkUrl:
+      "https://basket-18.wbbasket.ru/vol2892/part289294/289294687/images/big/1.webp",
+    categoryKey: "tees",
+    actionKeys: ["content", "promo", "sizecharts"],
   },
   {
-    id: "wb-235322",
-    brand: "Print Tees (#235322)",
+    id: "wb-loombloom",
+    brand: "Handmade Bags «loombloom»",
     marketplace: "Wildberries",
-    shopUrl: "https://www.wildberries.ru/seller/235322",
-    kpis: [{ label: "Категория", value: "Футболки с принтами" }],
-    actions: ["Контент", "Промо", "Размерные сетки"],
-  },
-  {
-    id: "wb-4499972",
-    brand: "Handmade Bags (#4499972)",
-    marketplace: "Wildberries",
-    shopUrl: "https://www.wildberries.ru/seller/4499972",
-    kpis: [{ label: "Категория", value: "Вязаные сумки и футболки" }],
-    actions: ["Витрина", "Ассортимент", "Промо"],
+    imageUrl:
+      "https://basket-27.wbbasket.ru/vol4951/part495135/495135155/images/big/1.webp",
+    linkUrl:
+      "https://basket-27.wbbasket.ru/vol4951/part495135/495135155/images/big/1.webp",
+    categoryKey: "handmade",
+    actionKeys: ["showcase", "assortment", "promo"],
   },
   {
     id: "ozon-wow",
     brand: "Wow Shtuchki",
     marketplace: "Ozon",
-    shopUrl: "https://www.ozon.ru/seller/wow-shtuchki-664611",
-    note18: true,
-    kpis: [{ label: "Категория", value: "Товары для взрослых (18+)" }],
-    actions: ["Ассортимент", "Релевантные ключи", "Политики площадки"],
+    linkUrl: "https://www.ozon.ru/seller/wow-shtuchki-664611",
+    adults: true,
+    categoryKey: "adults",
+    actionKeys: ["assortment", "recommendedKeys", "policies"],
   },
   {
     id: "ym-sht",
     brand: "SHT",
     marketplace: "Яндекс.Маркет",
-    shopUrl: "https://market.yandex.ru/business--sht/51251801",
-    note18: true,
-    kpis: [{ label: "Категория", value: "Товары для взрослых (18+)" }],
-    actions: ["Контент", "Ценообразование", "Рекомендации"],
+    linkUrl: "https://market.yandex.ru/business--sht/51251801",
+    adults: true,
+    categoryKey: "adults",
+    actionKeys: ["content", "pricing", "recommendations"],
   },
 ];
 
-/* ---------- ДОБАВЛЕНО: партнёры в Китае ---------- */
-type PartnerCN = {
-  id: string;
-  name: string;
-  site: string;
-  note?: string;
-};
-
-const PARTNERS_CN: PartnerCN[] = [
-  {
-    id: "inkue",
-    name: "Guangzhou Inkue Technology Co., Ltd",
-    site: "https://inkue.en.alibaba.com",
-    note: "электроника / OEM",
-  },
-  {
-    id: "hcx",
-    name: "SHANTOU HAICHAOXING SCIENCE & TECHNOLOGY CO., LTD",
-    site: "https://hcx-co.com",
-    note: "игрушки / OEM",
-  },
-  {
-    id: "hanya",
-    name: "Ningbo Hanya Electrical Appliance Co., Ltd.",
-    site: "https://www.cn-hanya.com",
-    note: "электроприборы / OEM",
-  },
-];
-
+/* ==================== ПЕРЕВОДЫ ==================== */
 const TDICT: Record<
   Lang,
   {
@@ -164,6 +162,16 @@ const TDICT: Record<
     fin: string[];
     trustTitle: string;
     trust: { title: string; text: string }[];
+    /* cases */
+    casesTitle: string;
+    casesLead: string;
+    casesCategory: string; // "Категория"
+    casesShop: string; // "Открыть магазин"
+    casesCTA: string; // "Хочу такой же запуск"
+    casesAdults: string; // "Товар для взрослых 18+"
+    caseCats: Record<CaseItem["categoryKey"], string>;
+    caseActions: Record<NonNullable<CaseItem["actionKeys"]>[number], string>;
+    /* categories section etc. */
     catsTitle: string;
     cats: string[];
     b2bTitle: string;
@@ -225,6 +233,34 @@ const TDICT: Record<
       { title: "Прозрачные отчёты", text: "Регулярные дашборды и статистика" },
       { title: "Поддержка 24/7", text: "Отвечаем на любые вопросы партнёров" },
     ],
+    /* cases */
+    casesTitle: "Кейсы магазинов",
+    casesLead:
+      "Несколько витрин наших и партнёрских магазинов на Wildberries, Ozon и Яндекс.Маркете.",
+    casesCategory: "Категория",
+    casesShop: "Открыть магазин",
+    casesCTA: "Хочу такой же запуск",
+    casesAdults: "Товар для взрослых 18+",
+    caseCats: {
+      appliances: "Бытовая техника",
+      tees: "Футболки с принтами",
+      handmade: "Вязаные сумки и футболки",
+      adults: "Товары для взрослых (18+)",
+    },
+    caseActions: {
+      assortment: "Ассортимент",
+      seo: "SEO карточек",
+      reviews: "Отзывы / Q&A",
+      content: "Контент",
+      promo: "Промо",
+      sizecharts: "Размерные сетки",
+      showcase: "Витрина",
+      pricing: "Ценообразование",
+      policies: "Политики площадки",
+      recommendedKeys: "Релевантные ключи",
+      recommendations: "Рекомендации",
+    },
+    /* categories etc. */
     catsTitle: "Категории, с которыми работаем",
     cats: [
       "Малая бытовая техника и электроника",
@@ -297,6 +333,32 @@ const TDICT: Record<
       { title: "Transparent reports", text: "Regular dashboards and statistics" },
       { title: "Support 24/7", text: "We answer partner questions around the clock" },
     ],
+    casesTitle: "Store cases",
+    casesLead:
+      "A few storefronts from our own and partner stores on Wildberries, Ozon and Yandex.Market.",
+    casesCategory: "Category",
+    casesShop: "Open store",
+    casesCTA: "I want the same launch",
+    casesAdults: "Adults-only product 18+",
+    caseCats: {
+      appliances: "Small appliances",
+      tees: "Printed T-shirts",
+      handmade: "Knitted bags & tees",
+      adults: "Adults products (18+)",
+    },
+    caseActions: {
+      assortment: "Assortment",
+      seo: "SEO for listings",
+      reviews: "Reviews / Q&A",
+      content: "Content",
+      promo: "Promo",
+      sizecharts: "Size charts",
+      showcase: "Storefront",
+      pricing: "Pricing",
+      policies: "Marketplace policies",
+      recommendedKeys: "Relevant keywords",
+      recommendations: "Recommendations",
+    },
     catsTitle: "Categories we work with",
     cats: [
       "Small appliances & electronics",
@@ -357,6 +419,31 @@ const TDICT: Record<
       { title: "透明报表", text: "定期看板与统计" },
       { title: "7×24 支持", text: "随时解答合作伙伴问题" },
     ],
+    casesTitle: "店铺案例",
+    casesLead: "我们与合作伙伴在 Wildberries、Ozon、Yandex.Market 的部分店铺。",
+    casesCategory: "品类",
+    casesShop: "打开店铺",
+    casesCTA: "我要同样的启动",
+    casesAdults: "仅限成人 18+",
+    caseCats: {
+      appliances: "小家电",
+      tees: "印花 T 恤",
+      handmade: "针织包与 T 恤",
+      adults: "成人用品（18+）",
+    },
+    caseActions: {
+      assortment: "品类规划",
+      seo: "商品 SEO",
+      reviews: "评价 / 问答",
+      content: "内容",
+      promo: "促销",
+      sizecharts: "尺码表",
+      showcase: "店铺橱窗",
+      pricing: "定价",
+      policies: "平台政策",
+      recommendedKeys: "关键词匹配",
+      recommendations: "建议",
+    },
     catsTitle: "合作品类",
     cats: ["小家电与电子", "美容与健康", "家居与清洁", "运动与户外", "汽车用品与工具", "母婴童品"],
     b2bTitle: "面向平台卖家的 B2B",
@@ -463,7 +550,7 @@ export default function Landing() {
         background: COLORS.bg,
       }}
     >
-      {/* Адаптивные стили для хедера и героя */}
+      {/* Адаптив для хедера/героя */}
       <style>{`
         @media (max-width: 640px) {
           .hdr__wrap { flex-wrap: wrap; row-gap: 8px; padding: 10px 12px !important; }
@@ -550,30 +637,14 @@ export default function Landing() {
       {/* Hero */}
       <section style={{ background: COLORS.brand, color: "#fff" }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "28px 16px 26px" : "38px 20px 34px" }}>
-          <h1
-            className="hero__title"
-            style={{
-              fontSize: isMobile ? 30 : 44,
-              lineHeight: 1.15,
-              letterSpacing: 0.2,
-              margin: "0 0 14px",
-            }}
-          >
+          <h1 className="hero__title" style={{ fontSize: isMobile ? 30 : 44, lineHeight: 1.15, letterSpacing: 0.2, margin: "0 0 14px" }}>
             {T.heroTitle}
           </h1>
           <p className="hero__lead" style={{ maxWidth: 840, fontSize: isMobile ? 16 : 18, lineHeight: 1.6, opacity: 0.95 }}>
             {T.heroLead}
           </p>
 
-          <div
-            style={{
-              marginTop: 18,
-              display: "flex",
-              gap: 10,
-              alignItems: "center",
-              flexWrap: "wrap",
-            }}
-          >
+          <div style={{ marginTop: 18, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
             <button
               onClick={openModal}
               style={{
@@ -591,10 +662,7 @@ export default function Landing() {
             </button>
 
             {T.badges.map((b, i) => {
-              const style = MARKET_COLORS[b as keyof typeof MARKET_COLORS] || {
-                bg: "rgba(255,255,255,.12)",
-                text: "#fff",
-              };
+              const style = MARKET_COLORS[b as keyof typeof MARKET_COLORS] || { bg: "rgba(255,255,255,.12)", text: "#fff" };
               return (
                 <span
                   key={i}
@@ -615,16 +683,10 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Why — один раз */}
+      {/* Why */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "20px 16px 6px" : "36px 20px 6px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 16px" }}>{T.whyTitle}</h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-            gap: 14,
-          }}
-        >
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
           {T.why.map((card, i) => (
             <div key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{card.title}</div>
@@ -657,13 +719,7 @@ export default function Landing() {
       {/* Trust */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 20px" : "10px 20px 24px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 16px" }}>{T.trustTitle}</h2>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-            gap: 14,
-          }}
-        >
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
           {T.trust.map((card, i) => (
             <div key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{card.title}</div>
@@ -673,20 +729,12 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ---------- ДОБАВЛЕНО: Кейсы магазинов ---------- */}
+      {/* ==================== CASES (обновлено) ==================== */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 24px" : "10px 20px 28px" }}>
-        <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>Кейсы магазинов</h2>
-        <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>
-          Несколько витрин наших и партнёрских магазинов на Wildberries, Ozon и Яндекс.Маркете.
-        </p>
+        <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.casesTitle}</h2>
+        <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.casesLead}</p>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-            gap: 14,
-          }}
-        >
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
           {CASES.map((c) => {
             const m = MARKET_COLORS[c.marketplace] || { bg: "rgba(0,0,0,.06)", text: COLORS.text };
             return (
@@ -701,16 +749,66 @@ export default function Landing() {
                   flexDirection: "column",
                 }}
               >
-                {/* опциональная обложка
-                {c.cover && (
-                  <img src={c.cover} alt={`${c.brand} — ${c.marketplace}`} loading="lazy"
-                       style={{ width: "100%", height: 160, objectFit: "cover" }} />
-                )} */}
+                {/* Блок-рамка одинакового размера (3:4) */}
+                <a
+                  href={c.linkUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none", color: "inherit" }}
+                >
+                  <div
+                    style={{
+                      margin: "16px 16px 0",
+                      borderRadius: 14,
+                      border: "2px solid #111",
+                      position: "relative",
+                      width: "calc(100% - 32px)",
+                      // 3:4 -> высота = ширина * 4/3 -> paddingTop = 133.33%
+                      paddingTop: "133.33%",
+                      overflow: "hidden",
+                      background: "#fff",
+                    }}
+                  >
+                    {c.adults ? (
+                      <div
+                        style={{
+                          position: "absolute",
+                          inset: 0,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: 12,
+                          textAlign: "center",
+                          fontWeight: 800,
+                          fontSize: 20,
+                        }}
+                      >
+                        {T.casesAdults}
+                      </div>
+                    ) : (
+                      c.imageUrl && (
+                        <img
+                          src={c.imageUrl}
+                          alt={`${c.brand} — ${c.marketplace}`}
+                          loading="lazy"
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                      )
+                    )}
+                  </div>
+                </a>
 
+                {/* Текст */}
                 <div style={{ padding: 16, display: "grid", gap: 10 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 10, justifyContent: "space-between" }}>
                     <div style={{ fontWeight: 700, fontSize: 18 }}>
-                      {c.brand} {c.note18 ? <span style={{ fontSize: 12, opacity: 0.7 }}>(18+)</span> : null}
+                      {c.brand} {c.adults ? <span style={{ fontSize: 12, opacity: 0.7 }}>(18+)</span> : null}
                     </div>
                     <span
                       style={{
@@ -728,36 +826,33 @@ export default function Landing() {
                     </span>
                   </div>
 
-                  {!!c.kpis?.length && (
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3, minmax(0,1fr))", gap: 8 }}>
-                      {c.kpis.slice(0, 3).map((k, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            background: COLORS.chip,
-                            border: `1px solid ${COLORS.border}`,
-                            borderRadius: 10,
-                            padding: "10px 12px",
-                          }}
-                        >
-                          <div style={{ fontSize: 12, color: COLORS.subtext }}>{k.label}</div>
-                          <div style={{ fontWeight: 700 }}>{k.value}</div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  {/* KPI: Категория */}
+                  <div
+                    style={{
+                      background: COLORS.chip,
+                      border: `1px solid ${COLORS.border}`,
+                      borderRadius: 10,
+                      padding: "10px 12px",
+                      width: "fit-content",
+                    }}
+                  >
+                    <div style={{ fontSize: 12, color: COLORS.subtext }}>{T.casesCategory}</div>
+                    <div style={{ fontWeight: 700 }}>{T.caseCats[c.categoryKey]}</div>
+                  </div>
 
-                  {!!c.actions?.length && (
+                  {/* Действия */}
+                  {!!c.actionKeys?.length && (
                     <ul style={{ margin: 0, paddingLeft: 18, color: COLORS.subtext, lineHeight: 1.6 }}>
-                      {c.actions.slice(0, 4).map((a, i) => (
-                        <li key={i}>{a}</li>
+                      {c.actionKeys.slice(0, 4).map((k) => (
+                        <li key={k}>{T.caseActions[k]}</li>
                       ))}
                     </ul>
                   )}
 
+                  {/* Кнопки */}
                   <div style={{ display: "flex", gap: 8, marginTop: 2, flexWrap: "wrap" }}>
                     <a
-                      href={c.shopUrl}
+                      href={c.linkUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
@@ -770,7 +865,7 @@ export default function Landing() {
                         fontWeight: 600,
                       }}
                     >
-                      Открыть магазин
+                      {T.casesShop}
                     </a>
 
                     <button
@@ -785,7 +880,7 @@ export default function Landing() {
                         cursor: "pointer",
                       }}
                     >
-                      Хочу такой же запуск
+                      {T.casesCTA}
                     </button>
                   </div>
                 </div>
@@ -811,13 +906,7 @@ export default function Landing() {
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "4px 16px 28px" : "6px 20px 34px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.b2bTitle}</h2>
         <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.b2bLead}</p>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
-            gap: 14,
-          }}
-        >
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 14 }}>
           {T.b2b.map((b, i) => (
             <div key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{b.title}</div>
@@ -842,85 +931,13 @@ export default function Landing() {
         </button>
       </section>
 
-      {/* ---------- ДОБАВЛЕНО: Партнёры в Китае ---------- */}
-      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 24px" : "10px 20px 28px" }}>
-        <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>Партнёры в Китае</h2>
-        <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>
-          Надёжные производители для OEM/White Label. Поможем согласовать условия и запустить производство.
-        </p>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-            gap: 14,
-          }}
-        >
-          {PARTNERS_CN.map((p) => (
-            <div
-              key={p.id}
-              style={{
-                background: COLORS.card,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 14,
-                padding: 16,
-                display: "grid",
-                gap: 8,
-              }}
-            >
-              <div style={{ fontWeight: 700 }}>{p.name}</div>
-              {p.note && <div style={{ color: COLORS.subtext }}>{p.note}</div>}
-
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <a
-                  href={p.site}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    padding: "10px 12px",
-                    borderRadius: 10,
-                    border: `1px solid ${COLORS.border}`,
-                    textDecoration: "none",
-                    color: COLORS.text,
-                    background: COLORS.chip,
-                    fontWeight: 600,
-                  }}
-                >
-                  Перейти на сайт
-                </a>
-                <button
-                  onClick={() => setOpenLead(true)}
-                  style={{
-                    padding: "10px 12px",
-                    borderRadius: 10,
-                    border: "none",
-                    background: COLORS.brand,
-                    color: "#fff",
-                    fontWeight: 700,
-                    cursor: "pointer",
-                  }}
-                >
-                  Запросить условия
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* Contacts */}
       <section ref={contactRef} style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "18px 16px 28px" : "22px 20px 36px" }}>
           <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.contactTitle}</h2>
           <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.contactLead}</p>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-              gap: 14,
-            }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
             <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
               <a href="mailto:Wildbizshop@gmail.com" style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}>
