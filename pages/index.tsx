@@ -349,13 +349,14 @@ const CASE_BULLETS: Record<Lang, Record<NonNullable<CaseCard["bulletsKey"][numbe
   zh: { assort: "商品结构", seo: "SEO 优化", reviews: "评价 / 问答", optCards: "卡片优化", content: "内容", promo: "促销", sizes: "尺码表", showcase: "橱窗", relevantKeys: "相关关键词", policies: "平台政策", pricing: "定价", recs: "建议" },
 };
 
-// --------- PARTNERS WE WORK WITH (with logo box) ---------
+// --------- PARTNERS WE WORK WITH (with logo box + bg) ---------
 type PartnerCN = {
   id: string;
   name: string;
   site: string;
   cat: { ru: string; en: string; zh: string };
   logo?: string;
+  logoBg?: string; // <— НОВОЕ: фон плашки под логотип
 };
 
 const PARTNERS_CN: PartnerCN[] = [
@@ -364,14 +365,16 @@ const PARTNERS_CN: PartnerCN[] = [
     name: "Guangzhou Inkue Technology Co., Ltd",
     site: "https://inkue.en.alibaba.com",
     cat: { ru: "Аппараты для косметологии", en: "Aesthetic devices", zh: "美容仪器" },
-    logo: "/logos/inkue.png", // /public/logos/inkue.png
+    logo: "/logos/inkue.png",
+    logoBg: "#FFFFFF", // белый
   },
   {
     id: "hcx",
     name: "SHANTOU HAICHAOXING SCIENCE & TECHNOLOGY CO., LTD",
     site: "https://www.hcx-co.com",
     cat: { ru: "Бытовая техника", en: "Home appliances", zh: "家电" },
-    logo: "/logos/hcx.png", // /public/logos/hcx.png
+    logo: "/logos/hcx.png",
+    logoBg: "#F2F3F5", // светло-серый под фон логотипа HCX
   },
   {
     id: "hanya",
@@ -379,6 +382,7 @@ const PARTNERS_CN: PartnerCN[] = [
     site: "https://www.cn-hanya.com",
     cat: { ru: "Электроприборы", en: "Electrical appliances", zh: "电器" },
     logo: "https://www.cn-hanya.com/template/en/images/logo.png",
+    logoBg: "#F2F3F5", // светло-серый
   },
 ];
 
