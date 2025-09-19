@@ -729,7 +729,7 @@ export default function Landing() {
         </button>
       </section>
 
-   {/* WE COOPERATE (partners) */}
+  {/* WE COOPERATE (partners) */}
 <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 28px" : "10px 20px 32px" }}>
   <h2 style={{ fontSize: 26, margin: "0 0 8px" }}>{T.coopTitle}</h2>
   <p style={{ color: COLORS.subtext, margin: "0 0 14px", maxWidth: 860 }}>{T.coopLead}</p>
@@ -754,7 +754,7 @@ export default function Landing() {
           gridTemplateRows: "auto auto auto auto",
           gap: 12,
           minHeight: 260,
-          boxShadow: "0 6px 18px rgba(11, 30, 91, 0.06)", // лёгкая тень всей карточке
+          boxShadow: "0 6px 18px rgba(11, 30, 91, 0.06)", // лёгкая тень карточке
         }}
       >
         {/* Название */}
@@ -775,14 +775,14 @@ export default function Landing() {
           {p.cat[lang]}
         </div>
 
-        {/* Плашка с логотипом — единая высота 100px, по одной оси */}
+        {/* Плашка с логотипом — одинаковая высота, серый фон, выравнивание */}
         <a href={p.site} target="_blank" rel="noopener noreferrer" aria-label={`${p.name} website`} style={{ textDecoration: "none" }}>
           <div
             style={{
-              height: 100,                          // !!! фиксированная высота
+              height: 120,                                // фиксированная высота
               borderRadius: 12,
-              border: `1px solid ${COLORS.border}`, // без пунктира
-              background: "#fff",
+              border: `1px solid ${COLORS.border}`,
+              background: "#F9FAFB",                      // единый светло-серый фон
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -794,13 +794,18 @@ export default function Landing() {
               <img
                 src={p.logo}
                 alt={`${p.name} logo`}
-                style={{ maxHeight: 70, maxWidth: "80%", objectFit: "contain", display: "block" }}
+                style={{
+                  maxHeight: 70,
+                  maxWidth: "80%",
+                  objectFit: "contain",
+                  display: "block",
+                }}
                 onError={(e) => {
                   const el = e.currentTarget as HTMLImageElement;
                   el.style.display = "none";
                   const parent = el.parentElement!;
                   parent.innerHTML = `<div style="color:#6B7280;font-size:13px;">${
-                    lang === "ru" ? "логотип недоступен" : lang === "en" ? "logo unavailable" : "Logo 不可用"
+                    lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"
                   }</div>`;
                 }}
               />
@@ -812,7 +817,7 @@ export default function Landing() {
           </div>
         </a>
 
-        {/* Кнопки — у всех карточек на одной линии за счёт grid */}
+        {/* Кнопки */}
         <div style={{ display: "flex", gap: 8, marginTop: 2, alignItems: "center", flexWrap: "wrap" }}>
           <a
             href={p.site}
