@@ -72,13 +72,13 @@ const TDICT: Record<
     b2bLead: string;
     b2b: { title: string; text: string }[];
 
-    // --- NEW: Partners in China
+    // Partners in China (cards + CTA)
     partnersTitle: string;
     partnersLead: string;
-    partnersCtas: { wechat: string; telegram: string; email: string };
-    partnersBullets: string[];
+    partnerGo: string;
+    partnerAsk: string;
 
-    // --- NEW: Factory mini-FAQ
+    // Factory mini-FAQ
     faqTitle: string;
     faq: { q: string; a: string }[];
 
@@ -147,41 +147,18 @@ const TDICT: Record<
       { title: "Готовая логистика", text: "Доставка на склады маркетплейсов без вашего участия." },
     ],
 
-    // --- Partners in China (RU)
     partnersTitle: "Партнёры в Китае",
-    partnersLead:
-      "Русско- и китайскоязычная команда в CST. Работаем по консигнации (COGS + 30%), контракты CN/EN. WeChat — основной канал связи.",
-    partnersCtas: { wechat: "Добавить в WeChat", telegram: "Написать в Telegram", email: "Написать на email" },
-    partnersBullets: [
-      "Контракты CN/EN + расчёты CN/RU",
-      "Консигнация: себестоимость + 30% прибыли",
-      "Аналитика спроса по SKU перед запуском",
-      "Полный цикл: сертификация, логистика, маркетинг",
-    ],
+    partnersLead: "Надёжные производители для OEM/White Label. Поможем согласовать условия и запустить продажи.",
+    partnerGo: "Перейти на сайт",
+    partnerAsk: "Запросить условия",
 
-    // --- Factory FAQ (RU)
     faqTitle: "FAQ для фабрик",
     faq: [
-      {
-        q: "Какой MOQ?",
-        a: "Базово работаем от 200–500 шт. на SKU. Для пилота и тестов допускаем меньшие партии при согласовании (с калькуляцией логистики и таможни).",
-      },
-      {
-        q: "Какие Incoterms используете?",
-        a: "Предпочтительно FOB China / FCA склад перевозчика в Китае. Возможны EXW/DDP при особых условиях и расчёте маржинальности.",
-      },
-      {
-        q: "Нужны ли образцы?",
-        a: "Да. 1–3 образца на SKU для фото-контента, тестов качества и сертификации. Доставка за счёт фабрики либо компенсируется из первой партии.",
-      },
-      {
-        q: "Сертификация нужна?",
-        a: "Да, для РФ требуются документы (ЕАЭС, РУ, декларации). Мы берём на себя процесс, от вас — техдокументы и стабильность спецификаций.",
-      },
-      {
-        q: "Как происходит таможня и логистика?",
-        a: "Мы организуем доставку и растаможку. В прайс закладываем фрахт, страховку, пошлины. Фабрика пакует и маркирует по нашему гайдлайну.",
-      },
+      { q: "Какой MOQ?", a: "Обычно 200–500 шт. на SKU. Для пилота можем согласовать меньше при отдельном расчёте логистики и таможни." },
+      { q: "Incoterms?", a: "Предпочтительно FOB China / FCA склад перевозчика в Китае. EXW/DDP возможны при согласовании маржинальности." },
+      { q: "Образцы нужны?", a: "Да, 1–3 шт. на SKU для контента, тестов и сертификации. Доставка за счёт фабрики или компенсируется из первой партии." },
+      { q: "Сертификация?", a: "Оформляем под РФ/ЕАЭС. От фабрики — техдоки и стабильность спецификаций." },
+      { q: "Логистика и таможня?", a: "Берём на себя доставку и растаможку. В цене учитываем фрахт, страховку, пошлины. Требуется упаковка/маркировка по гайду." },
     ],
 
     contactTitle: "Связаться с нами",
@@ -243,38 +220,17 @@ const TDICT: Record<
     ],
 
     partnersTitle: "Partners in China",
-    partnersLead:
-      "Bilingual RU/ZH/EN team in CST. Consignment (COGS + 30%), CN/EN contracts. WeChat is the primary channel.",
-    partnersCtas: { wechat: "Add on WeChat", telegram: "Message on Telegram", email: "Send Email" },
-    partnersBullets: [
-      "CN/EN contracts + CN/RU billing",
-      "Consignment: cost + 30% profit share",
-      "SKU demand analytics prior to launch",
-      "Full cycle: certification, logistics, marketing",
-    ],
+    partnersLead: "Trusted OEM/White-Label factories. We help align terms and launch sales.",
+    partnerGo: "Open website",
+    partnerAsk: "Request terms",
 
     faqTitle: "Factory mini-FAQ",
     faq: [
-      {
-        q: "What is the MOQ?",
-        a: "Typically 200–500 pcs per SKU. Smaller pilot runs are possible upon agreement (with logistics and customs costed in).",
-      },
-      {
-        q: "Which Incoterms do you use?",
-        a: "Prefer FOB China / FCA carrier’s warehouse in China. EXW/DDP are possible if margins allow and terms are aligned.",
-      },
-      {
-        q: "Do you require samples?",
-        a: "Yes. 1–3 pcs per SKU for content, quality checks and certification. Shipping covered by factory or reimbursed from the first batch.",
-      },
-      {
-        q: "Is certification needed?",
-        a: "Yes, RU/EAEU documents are required. We run the process; you provide tech docs and keep specs stable.",
-      },
-      {
-        q: "How do customs & logistics work?",
-        a: "We handle shipping and clearance. Pricing includes freight, insurance and duties. Factory packs & labels per our guideline.",
-      },
+      { q: "What is the MOQ?", a: "Typically 200–500 pcs per SKU. Smaller pilot runs are possible with separate logistics/customs costing." },
+      { q: "Incoterms?", a: "Prefer FOB China / FCA carrier warehouse in China. EXW/DDP are possible subject to margins." },
+      { q: "Samples?", a: "Yes, 1–3 pcs per SKU for content, QA and certification. Shipping by factory or reimbursed from the first batch." },
+      { q: "Certification?", a: "We arrange EAEU/RU documents; you provide tech docs and keep specs stable." },
+      { q: "Logistics & customs?", a: "We handle shipping and clearance; pricing includes freight, insurance and duties. You pack/label per our guide." },
     ],
 
     contactTitle: "Contact us",
@@ -335,38 +291,17 @@ const TDICT: Record<
     ],
 
     partnersTitle: "中国合作方",
-    partnersLead:
-      "中俄英团队（CST）。寄售模式（成本价 + 30% 利润），支持中/英合同。首选联系渠道：WeChat。",
-    partnersCtas: { wechat: "添加 WeChat", telegram: "联系 Telegram", email: "发送邮箱" },
-    partnersBullets: [
-      "中/英合同 + 中/俄结算",
-      "寄售：成本 + 30% 分成",
-      "上架前进行 SKU 需求分析",
-      "全链路：认证、物流、营销",
-    ],
+    partnersLead: "值得信赖的 OEM/白标工厂。我们帮助对齐条款并快速启动销售。",
+    partnerGo: "访问官网",
+    partnerAsk: "索取条款",
 
     faqTitle: "工厂常见问答",
     faq: [
-      {
-        q: "MOQ 是多少？",
-        a: "通常每个 SKU 200–500 件。试销可协商更小批量（需计入物流与清关成本）。",
-      },
-      {
-        q: "使用哪些贸易术语（Incoterms）？",
-        a: "优先 FOB 中国 / FCA 中国承运仓。若利润允许并约定到位，可用 EXW/DDP。",
-      },
-      {
-        q: "是否需要样品？",
-        a: "需要。每个 SKU 1–3 件，用于内容拍摄、质检与认证。运费由工厂承担或在首单中抵扣。",
-      },
-      {
-        q: "是否需要认证？",
-        a: "进入俄罗斯/欧亚市场需要相关证书。我们负责流程，贵司提供技术文件并保持规格稳定。",
-      },
-      {
-        q: "清关与物流如何安排？",
-        a: "由我们负责运输及清关。报价会包含运费、保险与关税。工厂按我们的规范进行包装与贴标。",
-      },
+      { q: "MOQ 是多少？", a: "通常每个 SKU 200–500 件。试销可协商更小批量（需单独核算物流/清关成本）。" },
+      { q: "Incoterms？", a: "优先 FOB 中国 / FCA 中国承运仓。若利润允许，可用 EXW/DDP。" },
+      { q: "需要样品吗？", a: "需要。每个 SKU 1–3 件，用于内容拍摄、质检和认证。运费由工厂承担或在首单中抵扣。" },
+      { q: "认证如何处理？", a: "我们负责俄/欧亚认证流程；贵司提供技术文件并保持规格稳定。" },
+      { q: "物流与清关？", a: "我们负责运输与清关；报价含运费、保险与关税。工厂按规范进行包装与贴标。" },
     ],
 
     contactTitle: "联系我们",
@@ -395,122 +330,50 @@ type CaseCard = {
   brand: string;
   market: "Wildberries" | "Ozon" | "Яндекс.Маркет" | "Yandex.Market";
   category: { ru: string; en: string; zh: string };
-  bulletsKey: (
-    | "assort"
-    | "seo"
-    | "reviews"
-    | "optCards"
-    | "content"
-    | "promo"
-    | "sizes"
-    | "showcase"
-    | "relevantKeys"
-    | "policies"
-    | "pricing"
-    | "recs"
-  )[];
-  img?: string; // if absent — show 18+ stub
-  click: string; // link to store
+  bulletsKey: ("assort" | "seo" | "reviews" | "optCards" | "content" | "promo" | "sizes" | "showcase" | "relevantKeys" | "policies" | "pricing" | "recs")[];
+  img?: string;
+  click: string;
 };
 
 const CASES: CaseCard[] = [
-  {
-    brand: "OMX",
-    market: "Wildberries",
-    category: { ru: "Бытовая техника", en: "Small appliances", zh: "小家电" },
-    bulletsKey: ["assort", "seo", "reviews"],
-    img: "https://basket-13.wbbasket.ru/vol1945/part194511/194511252/images/big/1.webp",
-    click: "https://www.wildberries.ru/seller/94640",
-  },
-  {
-    brand: "OMX",
-    market: "Ozon",
-    category: { ru: "Бытовая техника", en: "Small appliances", zh: "小家电" },
-    bulletsKey: ["optCards", "reviews"],
-    img: "https://ir.ozone.ru/s3/multimedia-1-p/wc1000/7372434949.jpg",
-    click: "https://www.ozon.ru/seller/omx-611623",
-  },
-  {
-    brand: "Print Tees",
-    market: "Wildberries",
-    category: { ru: "Футболки с принтами", en: "Printed tees", zh: "印花T恤" },
-    bulletsKey: ["content", "promo", "sizes"],
-    img: "https://basket-18.wbbasket.ru/vol2892/part289294/289294687/images/big/1.webp",
-    click: "https://www.wildberries.ru/seller/235322",
-  },
-  {
-    brand: "Handmade Bags «loombloom»",
-    market: "Wildberries",
-    category: { ru: "Вязаные сумки и футболки", en: "Crochet bags & tees", zh: "钩织包与T恤" },
-    bulletsKey: ["showcase", "assort", "promo"],
-    img: "https://basket-27.wbbasket.ru/vol4951/part495135/495135155/images/big/1.webp",
-    click: "https://www.wildberries.ru/seller/4499972",
-  },
-  {
-    brand: "Wow Shtuchki (18+)",
-    market: "Ozon",
-    category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" },
-    bulletsKey: ["assort", "relevantKeys", "policies"],
-    // no image -> 18+ stub
-    click: "https://www.ozon.ru/seller/wow-shtuchki-664611",
-  },
-  {
-    brand: "SHT (18+)",
-    market: "Яндекс.Маркет",
-    category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" },
-    bulletsKey: ["content", "pricing", "recs"],
-    click: "https://market.yandex.ru/business--sht/51251801?generalContext=t%3DshopInShop%3Bi%3D1%3Bbi%3D51251801%3B&rs=eJwzkv_EKMPBKLDwEKsEg8aufwflNd53HJLX2Nt1Sl7j-6pT8gC_dg1E&searchContext=sins_ctx",
-  },
+  { brand: "OMX", market: "Wildberries", category: { ru: "Бытовая техника", en: "Small appliances", zh: "小家电" }, bulletsKey: ["assort", "seo", "reviews"], img: "https://basket-13.wbbasket.ru/vol1945/part194511/194511252/images/big/1.webp", click: "https://www.wildberries.ru/seller/94640" },
+  { brand: "OMX", market: "Ozon", category: { ru: "Бытовая техника", en: "Small appliances", zh: "小家电" }, bulletsKey: ["optCards", "reviews"], img: "https://ir.ozone.ru/s3/multimedia-1-p/wc1000/7372434949.jpg", click: "https://www.ozon.ru/seller/omx-611623" },
+  { brand: "Print Tees", market: "Wildberries", category: { ru: "Футболки с принтами", en: "Printed tees", zh: "印花T恤" }, bulletsKey: ["content", "promo", "sizes"], img: "https://basket-18.wbbasket.ru/vol2892/part289294/289294687/images/big/1.webp", click: "https://www.wildberries.ru/seller/235322" },
+  { brand: "Handmade Bags «loombloom»", market: "Wildberries", category: { ru: "Вязаные сумки и футболки", en: "Crochet bags & tees", zh: "钩织包与T恤" }, bulletsKey: ["showcase", "assort", "promo"], img: "https://basket-27.wbbasket.ru/vol4951/part495135/495135155/images/big/1.webp", click: "https://www.wildberries.ru/seller/4499972" },
+  { brand: "Wow Shtuchki (18+)", market: "Ozon", category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" }, bulletsKey: ["assort", "relevantKeys", "policies"], click: "https://www.ozon.ru/seller/wow-shtuchki-664611" },
+  { brand: "SHT (18+)", market: "Яндекс.Маркет", category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" }, bulletsKey: ["content", "pricing", "recs"], click: "https://market.yandex.ru/business--sht/51251801?generalContext=t%3DshopInShop%3Bi%3D1%3Bbi%3D51251801%3B&rs=eJwzkv_EKMPBKLDwEKsEg8aufwflNd53HJLX2Nt1Sl7j-6pT8gC_dg1E&searchContext=sins_ctx" },
 ];
 
 // локализованные буллеты для кейсов
-const CASE_BULLETS: Record<
-  Lang,
-  Record<NonNullable<CaseCard["bulletsKey"][number]>, string>
-> = {
-  ru: {
-    assort: "Ассортимент",
-    seo: "SEO карточек",
-    reviews: "Отзывы / Q&A",
-    optCards: "Оптимизация карточек",
-    content: "Контент",
-    promo: "Промо",
-    sizes: "Размерные сетки",
-    showcase: "Витрина",
-    relevantKeys: "Релевантные ключи",
-    policies: "Политики площадки",
-    pricing: "Ценообразование",
-    recs: "Рекомендации",
-  },
-  en: {
-    assort: "Assortment",
-    seo: "SEO cards",
-    reviews: "Reviews / Q&A",
-    optCards: "Card optimization",
-    content: "Content",
-    promo: "Promotions",
-    sizes: "Size charts",
-    showcase: "Showcase",
-    relevantKeys: "Relevant keywords",
-    policies: "Platform policies",
-    pricing: "Pricing",
-    recs: "Recommendations",
-  },
-  zh: {
-    assort: "商品结构",
-    seo: "SEO 优化",
-    reviews: "评价 / 问答",
-    optCards: "卡片优化",
-    content: "内容",
-    promo: "促销",
-    sizes: "尺码表",
-    showcase: "橱窗",
-    relevantKeys: "相关关键词",
-    policies: "平台政策",
-    pricing: "定价",
-    recs: "建议",
-  },
+const CASE_BULLETS: Record<Lang, Record<NonNullable<CaseCard["bulletsKey"][number]>, string>> = {
+  ru: { assort: "Ассортимент", seo: "SEO карточек", reviews: "Отзывы / Q&A", optCards: "Оптимизация карточек", content: "Контент", promo: "Промо", sizes: "Размерные сетки", showcase: "Витрина", relevantKeys: "Релевантные ключи", policies: "Политики площадки", pricing: "Ценообразование", recs: "Рекомендации" },
+  en: { assort: "Assortment", seo: "SEO cards", reviews: "Reviews / Q&A", optCards: "Card optimization", content: "Content", promo: "Promotions", sizes: "Size charts", showcase: "Showcase", relevantKeys: "Relevant keywords", policies: "Platform policies", pricing: "Pricing", recs: "Recommendations" },
+  zh: { assort: "商品结构", seo: "SEO 优化", reviews: "评价 / 问答", optCards: "卡片优化", content: "内容", promo: "促销", sizes: "尺码表", showcase: "橱窗", relevantKeys: "相关关键词", policies: "平台政策", pricing: "定价", recs: "建议" },
 };
+
+// --------- EXISTING CHINA PARTNERS (from earlier chat) ---------
+type PartnerCN = { id: string; name: string; site: string; note?: string; note2?: string };
+
+const PARTNERS_CN: PartnerCN[] = [
+  {
+    id: "inkue",
+    name: "Guangzhou Inkue Technology Co., Ltd",
+    site: "https://inkue.en.alibaba.com",
+    note: "электроника / OEM",
+  },
+  {
+    id: "hcx",
+    name: "SHANTOU HAICHAOXING SCIENCE & TECHNOLOGY CO., LTD",
+    site: "https://hcx-co.com",
+    note: "игрушки / OEM",
+  },
+  {
+    id: "hanya",
+    name: "Ningbo Hanya Electrical Appliance Co., Ltd.",
+    site: "https://www.cn-hanya.com",
+    note: "электроприборы / OEM",
+  },
+];
 
 export default function Landing() {
   const [lang, setLang] = useState<Lang>("ru");
@@ -566,9 +429,7 @@ export default function Landing() {
 
   // Close modal by Esc
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpenLead(false);
-    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpenLead(false); };
     if (typeof window !== "undefined") {
       window.addEventListener("keydown", onKey);
       return () => window.removeEventListener("keydown", onKey);
@@ -600,18 +461,11 @@ export default function Landing() {
 
       {/* Header */}
       <header style={{ background: COLORS.brand, color: "#fff", position: "sticky", top: 0, zIndex: 20, borderBottom: `1px solid ${COLORS.brandSoft}` }}>
-        <div
-          className="hdr__wrap"
-          style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "14px 16px" : "18px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}
-        >
-          <div className="hdr__brand" style={{ fontWeight: 700, fontSize: isMobile ? 20 : 22, lineHeight: 1 }}>
-            {T.brand}
-          </div>
+        <div className="hdr__wrap" style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "14px 16px" : "18px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
+          <div className="hdr__brand" style={{ fontWeight: 700, fontSize: isMobile ? 20 : 22, lineHeight: 1 }}>{T.brand}</div>
 
           <div className="hdr__right" style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
-            <span className="hdr__label" style={{ opacity: 0.85, marginRight: 6 }}>
-              {T.langLabel}:
-            </span>
+            <span className="hdr__label" style={{ opacity: 0.85, marginRight: 6 }}>{T.langLabel}:</span>
             {(["ru", "en", "zh"] as Lang[]).map((l) => (
               <button
                 key={l}
@@ -630,11 +484,7 @@ export default function Landing() {
                 {l.toUpperCase()}
               </button>
             ))}
-            <button
-              onClick={openModal}
-              className="hdr__cta"
-              style={{ marginLeft: 12, padding: "8px 14px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
-            >
+            <button onClick={openModal} className="hdr__cta" style={{ marginLeft: 12, padding: "8px 14px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
               {T.ctas.partner}
             </button>
           </div>
@@ -648,27 +498,14 @@ export default function Landing() {
           <p className="hero__lead" style={{ maxWidth: 840, fontSize: isMobile ? 16 : 18, lineHeight: 1.6, opacity: 0.95 }}>{T.heroLead}</p>
 
           <div style={{ marginTop: 18, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-            <button
-              onClick={openModal}
-              style={{ padding: "10px 16px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer", width: isMobile ? "100%" : "auto" }}
-            >
+            <button onClick={openModal} style={{ padding: "10px 16px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer", width: isMobile ? "100%" : "auto" }}>
               {T.ctas.partner}
             </button>
 
             {T.badges.map((b, i) => {
               const style = MARKET_COLORS[b as keyof typeof MARKET_COLORS] || { bg: "rgba(255,255,255,.12)", text: "#fff" };
               return (
-                <span
-                  key={i}
-                  style={{
-                    padding: "8px 14px",
-                    borderRadius: 999,
-                    background: style.bg,
-                    color: style.text,
-                    border: style.border ? `1px solid ${style.border}` : "1px solid rgba(255,255,255,.12)",
-                    fontWeight: 600,
-                  }}
-                >
+                <span key={i} style={{ padding: "8px 14px", borderRadius: 999, background: style.bg, color: style.text, border: style.border ? `1px solid ${style.border}` : "1px solid rgba(255,255,255,.12)", fontWeight: 600 }}>
                   {b}
                 </span>
               );
@@ -690,26 +527,16 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* How + Financials (вместе, две колонки) */}
+      {/* How + Financials */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "12px 16px" : "24px 20px" }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20, alignItems: "start" }}>
-          {/* How */}
           <div>
             <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.howTitle}</h2>
-            <ul style={{ paddingLeft: 20, lineHeight: 1.8, color: COLORS.subtext, margin: 0 }}>
-              {T.how.map((li, i) => (
-                <li key={i}>{li}</li>
-              ))}
-            </ul>
+            <ul style={{ paddingLeft: 20, lineHeight: 1.8, color: COLORS.subtext, margin: 0 }}>{T.how.map((li, i) => (<li key={i}>{li}</li>))}</ul>
           </div>
-          {/* Financials */}
           <div>
             <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.finTitle}</h2>
-            <ul style={{ paddingLeft: 20, lineHeight: 1.8, color: COLORS.subtext, margin: 0 }}>
-              {T.fin.map((li, i) => (
-                <li key={i}>{li}</li>
-              ))}
-            </ul>
+            <ul style={{ paddingLeft: 20, lineHeight: 1.8, color: COLORS.subtext, margin: 0 }}>{T.fin.map((li, i) => (<li key={i}>{li}</li>))}</ul>
           </div>
         </div>
       </section>
@@ -732,9 +559,7 @@ export default function Landing() {
         <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.catsTitle}</h2>
         <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? 8 : 10 }}>
           {T.cats.map((c, i) => (
-            <span key={i} style={{ background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 999, padding: "8px 12px" }}>
-              {c}
-            </span>
+            <span key={i} style={{ background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 999, padding: "8px 12px" }}>{c}</span>
           ))}
         </div>
       </section>
@@ -743,26 +568,13 @@ export default function Landing() {
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 28px" : "10px 20px 32px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.casesTitle}</h2>
         <p style={{ color: COLORS.subtext, margin: "0 0 16px" }}>{T.casesLead}</p>
-
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 18 }}>
           {CASES.map((c, idx) => {
             const mcolor = MARKET_COLORS[c.market === "Yandex.Market" ? "Yandex.Market" : (c.market as any)];
             return (
               <div key={idx} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, overflow: "hidden" }}>
-                {/* Image / 18+ */}
                 <a href={c.click} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: 16 }}>
-                  <div
-                    style={{
-                      border: `2px solid ${COLORS.border}`,
-                      borderRadius: 12,
-                      height: 340,
-                      overflow: "hidden",
-                      background: "#fff",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
+                  <div style={{ border: `2px solid ${COLORS.border}`, borderRadius: 12, height: 340, overflow: "hidden", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {c.img ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={c.img} alt={c.brand} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -775,63 +587,25 @@ export default function Landing() {
                 <div style={{ padding: 16, paddingTop: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 12 }}>
                     <div style={{ fontWeight: 700 }}>{c.brand}</div>
-                    <span
-                      style={{
-                        padding: "6px 10px",
-                        borderRadius: 999,
-                        background: mcolor.bg,
-                        color: mcolor.text,
-                        fontSize: 12,
-                        fontWeight: 700,
-                      }}
-                    >
-                      {c.market}
-                    </span>
+                    <span style={{ padding: "6px 10px", borderRadius: 999, background: mcolor.bg, color: mcolor.text, fontSize: 12, fontWeight: 700 }}>{c.market}</span>
                   </div>
 
                   <div style={{ marginTop: 10 }}>
                     <div style={{ fontSize: 12, color: COLORS.subtext, marginBottom: 6 }}>{T.caseCategory}</div>
-                    <div
-                      style={{
-                        display: "inline-block",
-                        background: COLORS.chip,
-                        border: `1px solid ${COLORS.border}`,
-                        borderRadius: 10,
-                        padding: "6px 10px",
-                        fontWeight: 700,
-                      }}
-                    >
+                    <div style={{ display: "inline-block", background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "6px 10px", fontWeight: 700 }}>
                       {c.category[lang]}
                     </div>
                   </div>
 
                   <ul style={{ margin: "10px 0 0", paddingLeft: 20, color: COLORS.subtext, lineHeight: 1.7 }}>
-                    {c.bulletsKey.map((k, i) => (
-                      <li key={i}>{CASE_BULLETS[lang][k]}</li>
-                    ))}
+                    {c.bulletsKey.map((k, i) => (<li key={i}>{CASE_BULLETS[lang][k]}</li>))}
                   </ul>
 
                   <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
-                    <a
-                      href={c.click}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        padding: "10px 14px",
-                        borderRadius: 10,
-                        background: COLORS.chip,
-                        border: `1px solid ${COLORS.border}`,
-                        textDecoration: "none",
-                        color: COLORS.text,
-                        fontWeight: 600,
-                      }}
-                    >
+                    <a href={c.click} target="_blank" rel="noopener noreferrer" style={{ padding: "10px 14px", borderRadius: 10, background: COLORS.chip, border: `1px solid ${COLORS.border}`, textDecoration: "none", color: COLORS.text, fontWeight: 600 }}>
                       {T.ctas.caseOpen}
                     </a>
-                    <button
-                      onClick={openModal}
-                      style={{ padding: "10px 14px", borderRadius: 10, background: COLORS.brand, color: "#fff", border: "none", fontWeight: 700, cursor: "pointer" }}
-                    >
+                    <button onClick={openModal} style={{ padding: "10px 14px", borderRadius: 10, background: COLORS.brand, color: "#fff", border: "none", fontWeight: 700, cursor: "pointer" }}>
                       {T.ctas.caseSame}
                     </button>
                   </div>
@@ -854,73 +628,57 @@ export default function Landing() {
             </div>
           ))}
         </div>
-        <button
-          onClick={openModal}
-          style={{ marginTop: 12, padding: isMobile ? "10px 14px" : "10px 16px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 12, cursor: "pointer", width: isMobile ? "100%" : "auto" }}
-        >
+        <button onClick={openModal} style={{ marginTop: 12, padding: isMobile ? "10px 14px" : "10px 16px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 12, cursor: "pointer", width: isMobile ? "100%" : "auto" }}>
           {T.ctas.b2bCta}
         </button>
       </section>
 
-      {/* Partners in China */}
+      {/* Partners in China — EXISTING LIST */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 28px" : "10px 20px 32px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 8px" }}>{T.partnersTitle}</h2>
         <p style={{ color: COLORS.subtext, margin: "0 0 14px", maxWidth: 860 }}>{T.partnersLead}</p>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
-            gap: 14,
-          }}
-        >
-          {T.partnersBullets.map((b, i) => (
-            <div key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
-              <div style={{ fontWeight: 700, marginBottom: 6 }}>{String(i + 1).padStart(2, "0")}</div>
-              <div style={{ color: COLORS.subtext }}>{b}</div>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
+          {PARTNERS_CN.map((p) => (
+            <div key={p.id} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16, display: "grid", gap: 8 }}>
+              <div style={{ fontWeight: 700 }}>{p.name}</div>
+              {p.note && <div style={{ color: COLORS.subtext }}>{p.note}</div>}
+
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                <a
+                  href={p.site}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    border: `1px solid ${COLORS.border}`,
+                    textDecoration: "none",
+                    color: COLORS.text,
+                    background: COLORS.chip,
+                    fontWeight: 600,
+                  }}
+                >
+                  {T.partnerGo}
+                </a>
+                <button
+                  onClick={() => setOpenLead(true)}
+                  style={{ padding: "10px 12px", borderRadius: 10, border: "none", background: COLORS.brand, color: "#fff", fontWeight: 700, cursor: "pointer" }}
+                >
+                  {T.partnerAsk}
+                </button>
+              </div>
             </div>
           ))}
-        </div>
-
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 14 }}>
-          <button
-            onClick={copyWeChat}
-            style={{ padding: "10px 14px", borderRadius: 12, background: COLORS.brand, color: "#fff", border: "none", fontWeight: 700, cursor: "pointer" }}
-          >
-            {T.partnersCtas.wechat} · ID: HardVassya
-          </button>
-          <a
-            href="https://t.me/HardVassya"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ padding: "10px 14px", borderRadius: 12, background: COLORS.chip, border: `1px solid ${COLORS.border}`, textDecoration: "none", color: COLORS.text, fontWeight: 600 }}
-          >
-            {T.partnersCtas.telegram}
-          </a>
-          <a
-            href="mailto:Wildbizshop@gmail.com?subject=China%20partnership"
-            style={{ padding: "10px 14px", borderRadius: 12, background: COLORS.chip, border: `1px solid ${COLORS.border}`, textDecoration: "none", color: COLORS.text, fontWeight: 600 }}
-          >
-            {T.partnersCtas.email}
-          </a>
         </div>
       </section>
 
       {/* Factory mini-FAQ */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "6px 16px 28px" : "8px 20px 34px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 10px" }}>{T.faqTitle}</h2>
-
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
           {T.faq.map((item, i) => (
-            <details
-              key={i}
-              style={{
-                background: COLORS.card,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 12,
-                padding: 12,
-              }}
-            >
+            <details key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: 12 }}>
               <summary style={{ cursor: "pointer", fontWeight: 700, outline: "none" }}>{item.q}</summary>
               <div style={{ marginTop: 8, color: COLORS.subtext, lineHeight: 1.7 }}>{item.a}</div>
             </details>
@@ -937,9 +695,7 @@ export default function Landing() {
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
             <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
-              <a href="mailto:Wildbizshop@gmail.com" style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}>
-                Wildbizshop@gmail.com
-              </a>
+              <a href="mailto:Wildbizshop@gmail.com" style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}>Wildbizshop@gmail.com</a>
             </div>
 
             <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
@@ -971,10 +727,7 @@ export default function Landing() {
       {/* Modal mini-form */}
       {openLead && (
         <div onClick={() => setOpenLead(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}>
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{ width: isMobile ? 320 : 380, background: "#fff", borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 18, boxShadow: "0 12px 32px rgba(0,0,0,.18)" }}
-          >
+          <div onClick={(e) => e.stopPropagation()} style={{ width: isMobile ? 320 : 380, background: "#fff", borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 18, boxShadow: "0 12px 32px rgba(0,0,0,.18)" }}>
             <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{T.formTitle}</div>
             <div style={{ display: "grid", gap: 10 }}>
               <input placeholder={T.formName} value={name} onChange={(e) => setName(e.target.value)} style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }} />
@@ -988,9 +741,7 @@ export default function Landing() {
                   value={phone}
                   onChange={setPhone}
                   placeholder="+7 900 000-00-00"
-                  numberInputProps={{
-                    style: { padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none", width: "100%" },
-                  }}
+                  numberInputProps={{ style: { padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none", width: "100%" } }}
                 />
               </div>
             </div>
