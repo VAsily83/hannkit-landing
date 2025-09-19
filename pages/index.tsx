@@ -729,75 +729,114 @@ export default function Landing() {
         </button>
       </section>
 
-      {/* WE COOPERATE (partners) */}
-      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 28px" : "10px 20px 32px" }}>
-        <h2 style={{ fontSize: 26, margin: "0 0 8px" }}>{T.coopTitle}</h2>
-        <p style={{ color: COLORS.subtext, margin: "0 0 14px", maxWidth: 860 }}>{T.coopLead}</p>
+     {/* WE COOPERATE (partners) */}
+<section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 28px" : "10px 20px 32px" }}>
+  <h2 style={{ fontSize: 26, margin: "0 0 8px" }}>{T.coopTitle}</h2>
+  <p style={{ color: COLORS.subtext, margin: "0 0 14px", maxWidth: 860 }}>{T.coopLead}</p>
 
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
-          {PARTNERS_CN.map((p) => (
-            <div key={p.id} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16, display: "grid", gap: 10 }}>
-              <div style={{ fontWeight: 700 }}>{p.name}</div>
+  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
+    {PARTNERS_CN.map((p) => (
+      <div
+        key={p.id}
+        style={{
+          background: COLORS.card,
+          border: `1px solid ${COLORS.border}`,
+          borderRadius: 14,
+          padding: 16,
+          display: "grid",
+          gridTemplateRows: "auto auto 1fr auto", // выравнивание высоты карточек и кнопок
+          gap: 10,
+          minHeight: 260,
+        }}
+      >
+        {/* Название */}
+        <div style={{ fontWeight: 700, lineHeight: 1.3 }}>{p.name}</div>
 
-              <div style={{ display: "inline-block", background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "6px 10px", fontWeight: 700, width: "fit-content" }}>
-                {p.cat[lang]}
-              </div>
-
-              {/* Лого в рамке (кликабельно) */}
-              <a href={p.site} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
-                <div
-                  style={{
-                    height: 96,
-                    borderRadius: 12,
-                    border: `2px dashed ${COLORS.border}`,
-                    background: "#fff",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    overflow: "hidden",
-                  }}
-                >
-                  {p.logo ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={p.logo}
-                      alt={`${p.name} logo`}
-                      style={{ maxHeight: 64, maxWidth: "80%", objectFit: "contain" }}
-                    />
-                  ) : (
-                    <div style={{ color: COLORS.subtext, fontSize: 13 }}>{lang === "ru" ? "логотип" : lang === "en" ? "logo" : "标志"}</div>
-                  )}
-                </div>
-              </a>
-
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                <a
-                  href={p.site}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    padding: "10px 12px",
-                    borderRadius: 10,
-                    border: `1px solid ${COLORS.border}`,
-                    textDecoration: "none",
-                    color: COLORS.text,
-                    background: COLORS.chip,
-                    fontWeight: 600,
-                  }}
-                >
-                  {T.partnerGo}
-                </a>
-                <button
-                  onClick={() => setOpenLead(true)}
-                  style={{ padding: "10px 12px", borderRadius: 10, border: "none", background: COLORS.brand, color: "#fff", fontWeight: 700, cursor: "pointer" }}
-                >
-                  {T.partnerAsk}
-                </button>
-              </div>
-            </div>
-          ))}
+        {/* Категория */}
+        <div
+          style={{
+            display: "inline-block",
+            background: COLORS.chip,
+            border: `1px solid ${COLORS.border}`,
+            borderRadius: 10,
+            padding: "6px 10px",
+            fontWeight: 700,
+            width: "fit-content",
+          }}
+        >
+          {p.cat[lang]}
         </div>
-      </section>
+
+        {/* Плашка с логотипом (кликабельная) */}
+        <a
+          href={p.site}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`${p.name} website`}
+          style={{ textDecoration: "none" }}
+        >
+          <div
+            style={{
+              height: 120,
+              borderRadius: 12,
+              border: `2px dashed ${COLORS.border}`,
+              background: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              overflow: "hidden",
+            }}
+          >
+            {p.logo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={p.logo}
+                alt={`${p.name} logo`}
+                style={{ maxHeight: 76, maxWidth: "80%", objectFit: "contain", display: "block" }}
+                onError={(e) => {
+                  const el = e.currentTarget as HTMLImageElement;
+                  el.style.display = "none";
+                  const parent = el.parentElement!;
+                  parent.innerHTML = `<div style="color:#6B7280;font-size:13px;">${lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"}</div>`;
+                }}
+              />
+            ) : (
+              <div style={{ color: COLORS.subtext, fontSize: 13 }}>
+                {lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"}
+              </div>
+            )}
+          </div>
+        </a>
+
+        {/* Кнопки */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <a
+            href={p.site}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              padding: "10px 12px",
+              borderRadius: 10,
+              border: `1px solid ${COLORS.border}`,
+              textDecoration: "none",
+              color: COLORS.text,
+              background: COLORS.chip,
+              fontWeight: 600,
+            }}
+          >
+            {T.partnerGo}
+          </a>
+          <button
+            onClick={() => setOpenLead(true)}
+            style={{ padding: "10px 12px", borderRadius: 10, border: "none", background: COLORS.brand, color: "#fff", fontWeight: 700, cursor: "pointer" }}
+          >
+            {T.partnerAsk}
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
 
       {/* Factory mini-FAQ */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "6px 16px 28px" : "8px 20px 34px" }}>
