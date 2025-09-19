@@ -72,9 +72,9 @@ const TDICT: Record<
     b2bLead: string;
     b2b: { title: string; text: string }[];
 
-    // Partners in China (cards + CTA)
-    partnersTitle: string;
-    partnersLead: string;
+    // ---- UPDATED: "Мы сотрудничаем"
+    coopTitle: string;
+    coopLead: string;
     partnerGo: string;
     partnerAsk: string;
 
@@ -147,8 +147,8 @@ const TDICT: Record<
       { title: "Готовая логистика", text: "Доставка на склады маркетплейсов без вашего участия." },
     ],
 
-    partnersTitle: "Партнёры в Китае",
-    partnersLead: "Надёжные производители для OEM/White Label. Поможем согласовать условия и запустить продажи.",
+    coopTitle: "Мы сотрудничаем",
+    coopLead: "Наши надёжные партнёры-производители для OEM/White label.",
     partnerGo: "Перейти на сайт",
     partnerAsk: "Запросить условия",
 
@@ -219,8 +219,8 @@ const TDICT: Record<
       { title: "Ready logistics", text: "Delivery to marketplace warehouses without your participation." },
     ],
 
-    partnersTitle: "Partners in China",
-    partnersLead: "Trusted OEM/White-Label factories. We help align terms and launch sales.",
+    coopTitle: "We work with",
+    coopLead: "Our trusted OEM/White-Label manufacturing partners.",
     partnerGo: "Open website",
     partnerAsk: "Request terms",
 
@@ -290,15 +290,15 @@ const TDICT: Record<
       { title: "成套物流", text: "无需参与即可直送平台仓。" },
     ],
 
-    partnersTitle: "中国合作方",
-    partnersLead: "值得信赖的 OEM/白标工厂。我们帮助对齐条款并快速启动销售。",
+    coopTitle: "我们的合作方",
+    coopLead: "我们的 OEM/白标生产合作伙伴。",
     partnerGo: "访问官网",
     partnerAsk: "索取条款",
 
     faqTitle: "工厂常见问答",
     faq: [
       { q: "MOQ 是多少？", a: "通常每个 SKU 200–500 件。试销可协商更小批量（需单独核算物流/清关成本）。" },
-      { q: "Incoterms？", a: "优先 FOB 中国 / FCA 中国承运仓。若利润允许，可用 EXW/DDP。" },
+      { q: "Incoterms？", a: "优先 FOB 中国 / FCA 中国承运仓；若利润允许，可用 EXW/DDP。" },
       { q: "需要样品吗？", a: "需要。每个 SKU 1–3 件，用于内容拍摄、质检和认证。运费由工厂承担或在首单中抵扣。" },
       { q: "认证如何处理？", a: "我们负责俄/欧亚认证流程；贵司提供技术文件并保持规格稳定。" },
       { q: "物流与清关？", a: "我们负责运输与清关；报价含运费、保险与关税。工厂按规范进行包装与贴标。" },
@@ -351,27 +351,32 @@ const CASE_BULLETS: Record<Lang, Record<NonNullable<CaseCard["bulletsKey"][numbe
   zh: { assort: "商品结构", seo: "SEO 优化", reviews: "评价 / 问答", optCards: "卡片优化", content: "内容", promo: "促销", sizes: "尺码表", showcase: "橱窗", relevantKeys: "相关关键词", policies: "平台政策", pricing: "定价", recs: "建议" },
 };
 
-// --------- EXISTING CHINA PARTNERS (from earlier chat) ---------
-type PartnerCN = { id: string; name: string; site: string; note?: string; note2?: string };
+// --------- PARTNERS WE WORK WITH (updated categories) ---------
+type PartnerCN = {
+  id: string;
+  name: string;
+  site: string;
+  cat: { ru: string; en: string; zh: string };
+};
 
 const PARTNERS_CN: PartnerCN[] = [
   {
     id: "inkue",
     name: "Guangzhou Inkue Technology Co., Ltd",
     site: "https://inkue.en.alibaba.com",
-    note: "электроника / OEM",
+    cat: { ru: "Косметологические аппараты", en: "Aesthetic devices", zh: "美容仪器" },
   },
   {
     id: "hcx",
     name: "SHANTOU HAICHAOXING SCIENCE & TECHNOLOGY CO., LTD",
     site: "https://hcx-co.com",
-    note: "игрушки / OEM",
+    cat: { ru: "Бытовая техника", en: "Home appliances", zh: "家电" },
   },
   {
     id: "hanya",
     name: "Ningbo Hanya Electrical Appliance Co., Ltd.",
     site: "https://www.cn-hanya.com",
-    note: "электроприборы / OEM",
+    cat: { ru: "Электроприборы", en: "Electrical appliances", zh: "电器" },
   },
 ];
 
@@ -429,7 +434,9 @@ export default function Landing() {
 
   // Close modal by Esc
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpenLead(false); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpenLead(false);
+    };
     if (typeof window !== "undefined") {
       window.addEventListener("keydown", onKey);
       return () => window.removeEventListener("keydown", onKey);
@@ -461,11 +468,18 @@ export default function Landing() {
 
       {/* Header */}
       <header style={{ background: COLORS.brand, color: "#fff", position: "sticky", top: 0, zIndex: 20, borderBottom: `1px solid ${COLORS.brandSoft}` }}>
-        <div className="hdr__wrap" style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "14px 16px" : "18px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
-          <div className="hdr__brand" style={{ fontWeight: 700, fontSize: isMobile ? 20 : 22, lineHeight: 1 }}>{T.brand}</div>
+        <div
+          className="hdr__wrap"
+          style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "14px 16px" : "18px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12 }}
+        >
+          <div className="hdr__brand" style={{ fontWeight: 700, fontSize: isMobile ? 20 : 22, lineHeight: 1 }}>
+            {T.brand}
+          </div>
 
           <div className="hdr__right" style={{ display: "flex", gap: 8, alignItems: "center", flexShrink: 0 }}>
-            <span className="hdr__label" style={{ opacity: 0.85, marginRight: 6 }}>{T.langLabel}:</span>
+            <span className="hdr__label" style={{ opacity: 0.85, marginRight: 6 }}>
+              {T.langLabel}:
+            </span>
             {(["ru", "en", "zh"] as Lang[]).map((l) => (
               <button
                 key={l}
@@ -484,7 +498,11 @@ export default function Landing() {
                 {l.toUpperCase()}
               </button>
             ))}
-            <button onClick={openModal} className="hdr__cta" style={{ marginLeft: 12, padding: "8px 14px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>
+            <button
+              onClick={openModal}
+              className="hdr__cta"
+              style={{ marginLeft: 12, padding: "8px 14px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}
+            >
               {T.ctas.partner}
             </button>
           </div>
@@ -498,14 +516,27 @@ export default function Landing() {
           <p className="hero__lead" style={{ maxWidth: 840, fontSize: isMobile ? 16 : 18, lineHeight: 1.6, opacity: 0.95 }}>{T.heroLead}</p>
 
           <div style={{ marginTop: 18, display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" }}>
-            <button onClick={openModal} style={{ padding: "10px 16px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer", width: isMobile ? "100%" : "auto" }}>
+            <button
+              onClick={openModal}
+              style={{ padding: "10px 16px", background: "#fff", color: COLORS.brand, border: "none", borderRadius: 12, fontWeight: 700, cursor: "pointer", width: isMobile ? "100%" : "auto" }}
+            >
               {T.ctas.partner}
             </button>
 
             {T.badges.map((b, i) => {
               const style = MARKET_COLORS[b as keyof typeof MARKET_COLORS] || { bg: "rgba(255,255,255,.12)", text: "#fff" };
               return (
-                <span key={i} style={{ padding: "8px 14px", borderRadius: 999, background: style.bg, color: style.text, border: style.border ? `1px solid ${style.border}` : "1px solid rgba(255,255,255,.12)", fontWeight: 600 }}>
+                <span
+                  key={i}
+                  style={{
+                    padding: "8px 14px",
+                    borderRadius: 999,
+                    background: style.bg,
+                    color: style.text,
+                    border: style.border ? `1px solid ${style.border}` : "1px solid rgba(255,255,255,.12)",
+                    fontWeight: 600,
+                  }}
+                >
                   {b}
                 </span>
               );
@@ -532,11 +563,19 @@ export default function Landing() {
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20, alignItems: "start" }}>
           <div>
             <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.howTitle}</h2>
-            <ul style={{ paddingLeft: 20, lineHeight: 1.8, color: COLORS.subtext, margin: 0 }}>{T.how.map((li, i) => (<li key={i}>{li}</li>))}</ul>
+            <ul style={{ paddingLeft: 20, lineHeight: 1.8, color: COLORS.subtext, margin: 0 }}>
+              {T.how.map((li, i) => (
+                <li key={i}>{li}</li>
+              ))}
+            </ul>
           </div>
           <div>
             <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.finTitle}</h2>
-            <ul style={{ paddingLeft: 20, lineHeight: 1.8, color: COLORS.subtext, margin: 0 }}>{T.fin.map((li, i) => (<li key={i}>{li}</li>))}</ul>
+            <ul style={{ paddingLeft: 20, lineHeight: 1.8, color: COLORS.subtext, margin: 0 }}>
+              {T.fin.map((li, i) => (
+                <li key={i}>{li}</li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
@@ -559,7 +598,9 @@ export default function Landing() {
         <h2 style={{ fontSize: 26, margin: "0 0 12px" }}>{T.catsTitle}</h2>
         <div style={{ display: "flex", flexWrap: "wrap", gap: isMobile ? 8 : 10 }}>
           {T.cats.map((c, i) => (
-            <span key={i} style={{ background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 999, padding: "8px 12px" }}>{c}</span>
+            <span key={i} style={{ background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 999, padding: "8px 12px" }}>
+              {c}
+            </span>
           ))}
         </div>
       </section>
@@ -568,13 +609,25 @@ export default function Landing() {
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 28px" : "10px 20px 32px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.casesTitle}</h2>
         <p style={{ color: COLORS.subtext, margin: "0 0 16px" }}>{T.casesLead}</p>
+
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 18 }}>
           {CASES.map((c, idx) => {
             const mcolor = MARKET_COLORS[c.market === "Yandex.Market" ? "Yandex.Market" : (c.market as any)];
             return (
               <div key={idx} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 16, overflow: "hidden" }}>
                 <a href={c.click} target="_blank" rel="noopener noreferrer" style={{ display: "block", padding: 16 }}>
-                  <div style={{ border: `2px solid ${COLORS.border}`, borderRadius: 12, height: 340, overflow: "hidden", background: "#fff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div
+                    style={{
+                      border: `2px solid ${COLORS.border}`,
+                      borderRadius: 12,
+                      height: 340,
+                      overflow: "hidden",
+                      background: "#fff",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                     {c.img ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={c.img} alt={c.brand} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -587,25 +640,63 @@ export default function Landing() {
                 <div style={{ padding: 16, paddingTop: 0 }}>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 12 }}>
                     <div style={{ fontWeight: 700 }}>{c.brand}</div>
-                    <span style={{ padding: "6px 10px", borderRadius: 999, background: mcolor.bg, color: mcolor.text, fontSize: 12, fontWeight: 700 }}>{c.market}</span>
+                    <span
+                      style={{
+                        padding: "6px 10px",
+                        borderRadius: 999,
+                        background: mcolor.bg,
+                        color: mcolor.text,
+                        fontSize: 12,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {c.market}
+                    </span>
                   </div>
 
                   <div style={{ marginTop: 10 }}>
                     <div style={{ fontSize: 12, color: COLORS.subtext, marginBottom: 6 }}>{T.caseCategory}</div>
-                    <div style={{ display: "inline-block", background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "6px 10px", fontWeight: 700 }}>
+                    <div
+                      style={{
+                        display: "inline-block",
+                        background: COLORS.chip,
+                        border: `1px solid ${COLORS.border}`,
+                        borderRadius: 10,
+                        padding: "6px 10px",
+                        fontWeight: 700,
+                      }}
+                    >
                       {c.category[lang]}
                     </div>
                   </div>
 
                   <ul style={{ margin: "10px 0 0", paddingLeft: 20, color: COLORS.subtext, lineHeight: 1.7 }}>
-                    {c.bulletsKey.map((k, i) => (<li key={i}>{CASE_BULLETS[lang][k]}</li>))}
+                    {c.bulletsKey.map((k, i) => (
+                      <li key={i}>{CASE_BULLETS[lang][k]}</li>
+                    ))}
                   </ul>
 
                   <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
-                    <a href={c.click} target="_blank" rel="noopener noreferrer" style={{ padding: "10px 14px", borderRadius: 10, background: COLORS.chip, border: `1px solid ${COLORS.border}`, textDecoration: "none", color: COLORS.text, fontWeight: 600 }}>
+                    <a
+                      href={c.click}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        padding: "10px 14px",
+                        borderRadius: 10,
+                        background: COLORS.chip,
+                        border: `1px solid ${COLORS.border}`,
+                        textDecoration: "none",
+                        color: COLORS.text,
+                        fontWeight: 600,
+                      }}
+                    >
                       {T.ctas.caseOpen}
                     </a>
-                    <button onClick={openModal} style={{ padding: "10px 14px", borderRadius: 10, background: COLORS.brand, color: "#fff", border: "none", fontWeight: 700, cursor: "pointer" }}>
+                    <button
+                      onClick={openModal}
+                      style={{ padding: "10px 14px", borderRadius: 10, background: COLORS.brand, color: "#fff", border: "none", fontWeight: 700, cursor: "pointer" }}
+                    >
                       {T.ctas.caseSame}
                     </button>
                   </div>
@@ -628,21 +719,26 @@ export default function Landing() {
             </div>
           ))}
         </div>
-        <button onClick={openModal} style={{ marginTop: 12, padding: isMobile ? "10px 14px" : "10px 16px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 12, cursor: "pointer", width: isMobile ? "100%" : "auto" }}>
+        <button
+          onClick={openModal}
+          style={{ marginTop: 12, padding: isMobile ? "10px 14px" : "10px 16px", background: COLORS.brand, color: "#fff", border: "none", borderRadius: 12, cursor: "pointer", width: isMobile ? "100%" : "auto" }}
+        >
           {T.ctas.b2bCta}
         </button>
       </section>
 
-      {/* Partners in China — EXISTING LIST */}
+      {/* WE COOPERATE (partners) */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 28px" : "10px 20px 32px" }}>
-        <h2 style={{ fontSize: 26, margin: "0 0 8px" }}>{T.partnersTitle}</h2>
-        <p style={{ color: COLORS.subtext, margin: "0 0 14px", maxWidth: 860 }}>{T.partnersLead}</p>
+        <h2 style={{ fontSize: 26, margin: "0 0 8px" }}>{T.coopTitle}</h2>
+        <p style={{ color: COLORS.subtext, margin: "0 0 14px", maxWidth: 860 }}>{T.coopLead}</p>
 
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
           {PARTNERS_CN.map((p) => (
             <div key={p.id} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16, display: "grid", gap: 8 }}>
               <div style={{ fontWeight: 700 }}>{p.name}</div>
-              {p.note && <div style={{ color: COLORS.subtext }}>{p.note}</div>}
+              <div style={{ display: "inline-block", background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "6px 10px", fontWeight: 700, width: "fit-content" }}>
+                {p.cat[lang]}
+              </div>
 
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <a
@@ -676,9 +772,18 @@ export default function Landing() {
       {/* Factory mini-FAQ */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "6px 16px 28px" : "8px 20px 34px" }}>
         <h2 style={{ fontSize: 26, margin: "0 0 10px" }}>{T.faqTitle}</h2>
+
         <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
           {T.faq.map((item, i) => (
-            <details key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 12, padding: 12 }}>
+            <details
+              key={i}
+              style={{
+                background: COLORS.card,
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: 12,
+                padding: 12,
+              }}
+            >
               <summary style={{ cursor: "pointer", fontWeight: 700, outline: "none" }}>{item.q}</summary>
               <div style={{ marginTop: 8, color: COLORS.subtext, lineHeight: 1.7 }}>{item.a}</div>
             </details>
@@ -695,7 +800,9 @@ export default function Landing() {
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
             <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
-              <a href="mailto:Wildbizshop@gmail.com" style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}>Wildbizshop@gmail.com</a>
+              <a href="mailto:Wildbizshop@gmail.com" style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}>
+                Wildbizshop@gmail.com
+              </a>
             </div>
 
             <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
@@ -727,7 +834,10 @@ export default function Landing() {
       {/* Modal mini-form */}
       {openLead && (
         <div onClick={() => setOpenLead(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}>
-          <div onClick={(e) => e.stopPropagation()} style={{ width: isMobile ? 320 : 380, background: "#fff", borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 18, boxShadow: "0 12px 32px rgba(0,0,0,.18)" }}>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ width: isMobile ? 320 : 380, background: "#fff", borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 18, boxShadow: "0 12px 32px rgba(0,0,0,.18)" }}
+          >
             <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{T.formTitle}</div>
             <div style={{ display: "grid", gap: 10 }}>
               <input placeholder={T.formName} value={name} onChange={(e) => setName(e.target.value)} style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }} />
@@ -741,7 +851,9 @@ export default function Landing() {
                   value={phone}
                   onChange={setPhone}
                   placeholder="+7 900 000-00-00"
-                  numberInputProps={{ style: { padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none", width: "100%" } }}
+                  numberInputProps={{
+                    style: { padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none", width: "100%" },
+                  }}
                 />
               </div>
             </div>
