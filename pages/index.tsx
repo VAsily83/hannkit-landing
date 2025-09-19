@@ -741,134 +741,136 @@ export default function Landing() {
       gap: 14,
     }}
   >
-    {PARTNERS_CN.map((p) => (
-      <div
-        key={p.id}
-        style={{
-          background: COLORS.card,
-          border: `1px solid ${COLORS.border}`,
-          borderRadius: 14,
-          padding: 16,
-          display: "grid",
-          gridTemplateRows: "auto auto 1fr auto",
-          gap: 14,
-          minHeight: 280,
-          transition: "transform .25s ease, box-shadow .25s ease",
-          boxShadow: "0 2px 4px rgba(0,0,0,.05)",
-          cursor: "default",
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
-          (e.currentTarget as HTMLDivElement).style.boxShadow = "0 8px 20px rgba(0,0,0,.08)";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLDivElement).style.transform = "translateY(0)";
-          (e.currentTarget as HTMLDivElement).style.boxShadow = "0 2px 4px rgba(0,0,0,.05)";
-        }}
-      >
-        {/* Шапка с названием и категорией (выровнены по одной оси) */}
+    {PARTNERS_CN.map((p) => {
+      const headMinHeight = isMobile ? 132 : isTablet ? 112 : 112;
+
+      return (
         <div
+          key={p.id}
           style={{
-            minHeight: isMobile ? 132 : isTablet ? 112 : 112,
+            background: COLORS.card,
+            border: `1px solid ${COLORS.border}`,
+            borderRadius: 14,
+            padding: 16,
             display: "grid",
-            gridTemplateRows: "1fr auto",
-            gap: 10,
+            gridTemplateRows: "auto auto 1fr auto",
+            gap: 14,
+            minHeight: 300,
+            transition: "transform 0.25s ease, box-shadow 0.25s ease",
+            cursor: "default",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
+            (e.currentTarget as HTMLDivElement).style.boxShadow = "0 6px 20px rgba(0,0,0,.08)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLDivElement).style.transform = "none";
+            (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
           }}
         >
-          <div style={{ fontWeight: 700, lineHeight: 1.3 }}>{p.name}</div>
+          {/* HEADER: фиксированная высота, чип прижат вниз */}
           <div
             style={{
-              display: "inline-block",
-              background: COLORS.chip,
-              border: `1px solid ${COLORS.border}`,
-              borderRadius: 10,
-              padding: "6px 10px",
-              fontWeight: 700,
-              width: "fit-content",
+              minHeight: headMinHeight,
+              display: "grid",
+              gridTemplateRows: "1fr auto",
+              gap: 10,
             }}
           >
-            {p.cat[lang]}
+            <div style={{ fontWeight: 700, lineHeight: 1.3 }}>{p.name}</div>
+            <div
+              style={{
+                display: "inline-block",
+                background: COLORS.chip,
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: 10,
+                padding: "6px 10px",
+                fontWeight: 700,
+                width: "fit-content",
+              }}
+            >
+              {p.cat[lang]}
+            </div>
           </div>
-        </div>
 
-        {/* Плашка с логотипом (кликабельная) */}
-        <a
-          href={p.site}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`${p.name} website`}
-          style={{ textDecoration: "none" }}
-        >
-          <div
-            style={{
-              height: 120,
-              borderRadius: 12,
-              border: `2px dashed ${COLORS.border}`,
-              background: "#F9FAFB",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-            }}
-          >
-            {p.logo ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={p.logo}
-                alt={`${p.name} logo`}
-                style={{ maxHeight: 76, maxWidth: "80%", objectFit: "contain", display: "block" }}
-                onError={(e) => {
-                  const el = e.currentTarget as HTMLImageElement;
-                  el.style.display = "none";
-                  const parent = el.parentElement!;
-                  parent.innerHTML = `<div style="color:#6B7280;font-size:13px;">${
-                    lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"
-                  }</div>`;
-                }}
-              />
-            ) : (
-              <div style={{ color: COLORS.subtext, fontSize: 13 }}>
-                {lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"}
-              </div>
-            )}
-          </div>
-        </a>
-
-        {/* Кнопки */}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          {/* Плашка с логотипом */}
           <a
             href={p.site}
             target="_blank"
             rel="noopener noreferrer"
-            style={{
-              padding: "10px 12px",
-              borderRadius: 10,
-              border: `1px solid ${COLORS.border}`,
-              textDecoration: "none",
-              color: COLORS.text,
-              background: COLORS.chip,
-              fontWeight: 600,
-            }}
+            aria-label={`${p.name} website`}
+            style={{ textDecoration: "none" }}
           >
-            {T.partnerGo}
+            <div
+              style={{
+                height: 120,
+                borderRadius: 12,
+                border: `1px solid ${COLORS.border}`,
+                background: p.logoBg || "#F9FAFB", // индивидуальный фон
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+              }}
+            >
+              {p.logo ? (
+                <img
+                  src={p.logo}
+                  alt={`${p.name} logo`}
+                  style={{ maxHeight: 76, maxWidth: "80%", objectFit: "contain", display: "block" }}
+                  onError={(e) => {
+                    const el = e.currentTarget as HTMLImageElement;
+                    el.style.display = "none";
+                    const parent = el.parentElement!;
+                    parent.innerHTML = `<div style="color:#6B7280;font-size:13px;">${
+                      lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"
+                    }</div>`;
+                  }}
+                />
+              ) : (
+                <div style={{ color: COLORS.subtext, fontSize: 13 }}>
+                  {lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"}
+                </div>
+              )}
+            </div>
           </a>
-          <button
-            onClick={() => setOpenLead(true)}
-            style={{
-              padding: "10px 12px",
-              borderRadius: 10,
-              border: "none",
-              background: COLORS.brand,
-              color: "#fff",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            {T.partnerAsk}
-          </button>
+
+          {/* Кнопки */}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <a
+              href={p.site}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: `1px solid ${COLORS.border}`,
+                textDecoration: "none",
+                color: COLORS.text,
+                background: COLORS.chip,
+                fontWeight: 600,
+              }}
+            >
+              {T.partnerGo}
+            </a>
+            <button
+              onClick={() => setOpenLead(true)}
+              style={{
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: "none",
+                background: COLORS.brand,
+                color: "#fff",
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              {T.partnerAsk}
+            </button>
+          </div>
         </div>
-      </div>
-    ))}
+      );
+    })}
   </div>
 </section>
 
