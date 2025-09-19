@@ -72,13 +72,11 @@ const TDICT: Record<
     b2bLead: string;
     b2b: { title: string; text: string }[];
 
-    // ---- UPDATED: "Мы сотрудничаем"
     coopTitle: string;
     coopLead: string;
     partnerGo: string;
     partnerAsk: string;
 
-    // Factory mini-FAQ
     faqTitle: string;
     faq: { q: string; a: string }[];
 
@@ -325,7 +323,7 @@ const TDICT: Record<
   },
 };
 
-// --------- Cases data (images + click URLs) ---------
+// --------- Cases data ---------
 type CaseCard = {
   brand: string;
   market: "Wildberries" | "Ozon" | "Яндекс.Маркет" | "Yandex.Market";
@@ -344,19 +342,20 @@ const CASES: CaseCard[] = [
   { brand: "SHT (18+)", market: "Яндекс.Маркет", category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" }, bulletsKey: ["content", "pricing", "recs"], click: "https://market.yandex.ru/business--sht/51251801?generalContext=t%3DshopInShop%3Bi%3D1%3Bbi%3D51251801%3B&rs=eJwzkv_EKMPBKLDwEKsEg8aufwflNd53HJLX2Nt1Sl7j-6pT8gC_dg1E&searchContext=sins_ctx" },
 ];
 
-// локализованные буллеты для кейсов
+// локализованные буллеты
 const CASE_BULLETS: Record<Lang, Record<NonNullable<CaseCard["bulletsKey"][number]>, string>> = {
   ru: { assort: "Ассортимент", seo: "SEO карточек", reviews: "Отзывы / Q&A", optCards: "Оптимизация карточек", content: "Контент", promo: "Промо", sizes: "Размерные сетки", showcase: "Витрина", relevantKeys: "Релевантные ключи", policies: "Политики площадки", pricing: "Ценообразование", recs: "Рекомендации" },
   en: { assort: "Assortment", seo: "SEO cards", reviews: "Reviews / Q&A", optCards: "Card optimization", content: "Content", promo: "Promotions", sizes: "Size charts", showcase: "Showcase", relevantKeys: "Relevant keywords", policies: "Platform policies", pricing: "Pricing", recs: "Recommendations" },
   zh: { assort: "商品结构", seo: "SEO 优化", reviews: "评价 / 问答", optCards: "卡片优化", content: "内容", promo: "促销", sizes: "尺码表", showcase: "橱窗", relevantKeys: "相关关键词", policies: "平台政策", pricing: "定价", recs: "建议" },
 };
 
-// --------- PARTNERS WE WORK WITH (updated categories) ---------
+// --------- PARTNERS WE WORK WITH (with logo box) ---------
 type PartnerCN = {
   id: string;
   name: string;
   site: string;
   cat: { ru: string; en: string; zh: string };
+  logo?: string; // optional
 };
 
 const PARTNERS_CN: PartnerCN[] = [
@@ -364,19 +363,24 @@ const PARTNERS_CN: PartnerCN[] = [
     id: "inkue",
     name: "Guangzhou Inkue Technology Co., Ltd",
     site: "https://inkue.en.alibaba.com",
-    cat: { ru: "Косметологические аппараты", en: "Aesthetic devices", zh: "美容仪器" },
+    cat: { ru: "Аппараты для косметологии", en: "Aesthetic devices", zh: "美容仪器" },
+    // TODO: вставить прямой URL логотипа Inkue (png/svg) как только дадите ссылку
+    // logo: "https://...",
   },
   {
     id: "hcx",
     name: "SHANTOU HAICHAOXING SCIENCE & TECHNOLOGY CO., LTD",
-    site: "https://hcx-co.com",
+    site: "https://www.hcx-co.com",
     cat: { ru: "Бытовая техника", en: "Home appliances", zh: "家电" },
+    // TODO: вставить прямой URL логотипа HCX
+    // logo: "https://...",
   },
   {
     id: "hanya",
     name: "Ningbo Hanya Electrical Appliance Co., Ltd.",
     site: "https://www.cn-hanya.com",
     cat: { ru: "Электроприборы", en: "Electrical appliances", zh: "电器" },
+    logo: "https://www.cn-hanya.com/template/en/images/logo.png", // официальный логотип
   },
 ];
 
@@ -734,11 +738,39 @@ export default function Landing() {
 
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
           {PARTNERS_CN.map((p) => (
-            <div key={p.id} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16, display: "grid", gap: 8 }}>
+            <div key={p.id} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16, display: "grid", gap: 10 }}>
               <div style={{ fontWeight: 700 }}>{p.name}</div>
+
               <div style={{ display: "inline-block", background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 10, padding: "6px 10px", fontWeight: 700, width: "fit-content" }}>
                 {p.cat[lang]}
               </div>
+
+              {/* Лого в рамке (кликабельно) */}
+              <a href={p.site} target="_blank" rel="noopener noreferrer" style={{ display: "block" }}>
+                <div
+                  style={{
+                    height: 96,
+                    borderRadius: 12,
+                    border: `2px dashed ${COLORS.border}`,
+                    background: "#fff",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    overflow: "hidden",
+                  }}
+                >
+                  {p.logo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={p.logo}
+                      alt={`${p.name} logo`}
+                      style={{ maxHeight: 64, maxWidth: "80%", objectFit: "contain" }}
+                    />
+                  ) : (
+                    <div style={{ color: COLORS.subtext, fontSize: 13 }}>{lang === "ru" ? "логотип" : lang === "en" ? "logo" : "标志"}</div>
+                  )}
+                </div>
+              </a>
 
               <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                 <a
