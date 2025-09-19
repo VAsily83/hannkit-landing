@@ -401,7 +401,7 @@ export default function Landing() {
   const contactRef = useRef<HTMLDivElement>(null);
   const openModal = () => setOpenLead(true);
 
-  const FORMSPREE = process.env.NEXT_PUBLIC_FORMSPREE_ENDPOINT;
+  const FORMSPREE = "/api/lead";
 
   const sendLead = async () => {
     if (FORMSPREE) {
