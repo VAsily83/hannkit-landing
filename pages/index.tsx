@@ -729,12 +729,19 @@ export default function Landing() {
         </button>
       </section>
 
-     {/* WE COOPERATE (partners) */}
+   {/* WE COOPERATE (partners) */}
 <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 28px" : "10px 20px 32px" }}>
   <h2 style={{ fontSize: 26, margin: "0 0 8px" }}>{T.coopTitle}</h2>
   <p style={{ color: COLORS.subtext, margin: "0 0 14px", maxWidth: 860 }}>{T.coopLead}</p>
 
-  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)", gap: 14 }}>
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+      gap: 14,
+      alignItems: "stretch",
+    }}
+  >
     {PARTNERS_CN.map((p) => (
       <div
         key={p.id}
@@ -744,9 +751,10 @@ export default function Landing() {
           borderRadius: 14,
           padding: 16,
           display: "grid",
-          gridTemplateRows: "auto auto 1fr auto", // выравнивание высоты карточек и кнопок
-          gap: 10,
+          gridTemplateRows: "auto auto auto auto",
+          gap: 12,
           minHeight: 260,
+          boxShadow: "0 6px 18px rgba(11, 30, 91, 0.06)", // лёгкая тень всей карточке
         }}
       >
         {/* Название */}
@@ -767,19 +775,13 @@ export default function Landing() {
           {p.cat[lang]}
         </div>
 
-        {/* Плашка с логотипом (кликабельная) */}
-        <a
-          href={p.site}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={`${p.name} website`}
-          style={{ textDecoration: "none" }}
-        >
+        {/* Плашка с логотипом — единая высота 100px, по одной оси */}
+        <a href={p.site} target="_blank" rel="noopener noreferrer" aria-label={`${p.name} website`} style={{ textDecoration: "none" }}>
           <div
             style={{
-              height: 120,
+              height: 100,                          // !!! фиксированная высота
               borderRadius: 12,
-              border: `2px dashed ${COLORS.border}`,
+              border: `1px solid ${COLORS.border}`, // без пунктира
               background: "#fff",
               display: "flex",
               alignItems: "center",
@@ -792,12 +794,14 @@ export default function Landing() {
               <img
                 src={p.logo}
                 alt={`${p.name} logo`}
-                style={{ maxHeight: 76, maxWidth: "80%", objectFit: "contain", display: "block" }}
+                style={{ maxHeight: 70, maxWidth: "80%", objectFit: "contain", display: "block" }}
                 onError={(e) => {
                   const el = e.currentTarget as HTMLImageElement;
                   el.style.display = "none";
                   const parent = el.parentElement!;
-                  parent.innerHTML = `<div style="color:#6B7280;font-size:13px;">${lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"}</div>`;
+                  parent.innerHTML = `<div style="color:#6B7280;font-size:13px;">${
+                    lang === "ru" ? "логотип недоступен" : lang === "en" ? "logo unavailable" : "Logo 不可用"
+                  }</div>`;
                 }}
               />
             ) : (
@@ -808,8 +812,8 @@ export default function Landing() {
           </div>
         </a>
 
-        {/* Кнопки */}
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {/* Кнопки — у всех карточек на одной линии за счёт grid */}
+        <div style={{ display: "flex", gap: 8, marginTop: 2, alignItems: "center", flexWrap: "wrap" }}>
           <a
             href={p.site}
             target="_blank"
@@ -828,7 +832,15 @@ export default function Landing() {
           </a>
           <button
             onClick={() => setOpenLead(true)}
-            style={{ padding: "10px 12px", borderRadius: 10, border: "none", background: COLORS.brand, color: "#fff", fontWeight: 700, cursor: "pointer" }}
+            style={{
+              padding: "10px 12px",
+              borderRadius: 10,
+              border: "none",
+              background: COLORS.brand,
+              color: "#fff",
+              fontWeight: 700,
+              cursor: "pointer",
+            }}
           >
             {T.partnerAsk}
           </button>
