@@ -71,6 +71,17 @@ const TDICT: Record<
     b2bTitle: string;
     b2bLead: string;
     b2b: { title: string; text: string }[];
+
+    // --- NEW: Partners in China
+    partnersTitle: string;
+    partnersLead: string;
+    partnersCtas: { wechat: string; telegram: string; email: string };
+    partnersBullets: string[];
+
+    // --- NEW: Factory mini-FAQ
+    faqTitle: string;
+    faq: { q: string; a: string }[];
+
     contactTitle: string;
     contactLead: string;
     emailLabel: string;
@@ -135,6 +146,44 @@ const TDICT: Record<
       { title: "Аналитика трендов", text: "Рекомендации по SKU и ассортименту на основе данных." },
       { title: "Готовая логистика", text: "Доставка на склады маркетплейсов без вашего участия." },
     ],
+
+    // --- Partners in China (RU)
+    partnersTitle: "Партнёры в Китае",
+    partnersLead:
+      "Русско- и китайскоязычная команда в CST. Работаем по консигнации (COGS + 30%), контракты CN/EN. WeChat — основной канал связи.",
+    partnersCtas: { wechat: "Добавить в WeChat", telegram: "Написать в Telegram", email: "Написать на email" },
+    partnersBullets: [
+      "Контракты CN/EN + расчёты CN/RU",
+      "Консигнация: себестоимость + 30% прибыли",
+      "Аналитика спроса по SKU перед запуском",
+      "Полный цикл: сертификация, логистика, маркетинг",
+    ],
+
+    // --- Factory FAQ (RU)
+    faqTitle: "FAQ для фабрик",
+    faq: [
+      {
+        q: "Какой MOQ?",
+        a: "Базово работаем от 200–500 шт. на SKU. Для пилота и тестов допускаем меньшие партии при согласовании (с калькуляцией логистики и таможни).",
+      },
+      {
+        q: "Какие Incoterms используете?",
+        a: "Предпочтительно FOB China / FCA склад перевозчика в Китае. Возможны EXW/DDP при особых условиях и расчёте маржинальности.",
+      },
+      {
+        q: "Нужны ли образцы?",
+        a: "Да. 1–3 образца на SKU для фото-контента, тестов качества и сертификации. Доставка за счёт фабрики либо компенсируется из первой партии.",
+      },
+      {
+        q: "Сертификация нужна?",
+        a: "Да, для РФ требуются документы (ЕАЭС, РУ, декларации). Мы берём на себя процесс, от вас — техдокументы и стабильность спецификаций.",
+      },
+      {
+        q: "Как происходит таможня и логистика?",
+        a: "Мы организуем доставку и растаможку. В прайс закладываем фрахт, страховку, пошлины. Фабрика пакует и маркирует по нашему гайдлайну.",
+      },
+    ],
+
     contactTitle: "Связаться с нами",
     contactLead: "Получите расчёт спроса и тестовую матрицу SKU за 48 часов.",
     emailLabel: "Email",
@@ -192,6 +241,42 @@ const TDICT: Record<
       { title: "Trend analytics", text: "SKU and assortment recommendations based on data." },
       { title: "Ready logistics", text: "Delivery to marketplace warehouses without your participation." },
     ],
+
+    partnersTitle: "Partners in China",
+    partnersLead:
+      "Bilingual RU/ZH/EN team in CST. Consignment (COGS + 30%), CN/EN contracts. WeChat is the primary channel.",
+    partnersCtas: { wechat: "Add on WeChat", telegram: "Message on Telegram", email: "Send Email" },
+    partnersBullets: [
+      "CN/EN contracts + CN/RU billing",
+      "Consignment: cost + 30% profit share",
+      "SKU demand analytics prior to launch",
+      "Full cycle: certification, logistics, marketing",
+    ],
+
+    faqTitle: "Factory mini-FAQ",
+    faq: [
+      {
+        q: "What is the MOQ?",
+        a: "Typically 200–500 pcs per SKU. Smaller pilot runs are possible upon agreement (with logistics and customs costed in).",
+      },
+      {
+        q: "Which Incoterms do you use?",
+        a: "Prefer FOB China / FCA carrier’s warehouse in China. EXW/DDP are possible if margins allow and terms are aligned.",
+      },
+      {
+        q: "Do you require samples?",
+        a: "Yes. 1–3 pcs per SKU for content, quality checks and certification. Shipping covered by factory or reimbursed from the first batch.",
+      },
+      {
+        q: "Is certification needed?",
+        a: "Yes, RU/EAEU documents are required. We run the process; you provide tech docs and keep specs stable.",
+      },
+      {
+        q: "How do customs & logistics work?",
+        a: "We handle shipping and clearance. Pricing includes freight, insurance and duties. Factory packs & labels per our guideline.",
+      },
+    ],
+
     contactTitle: "Contact us",
     contactLead: "Get demand estimation and a trial SKU matrix within 48 hours.",
     emailLabel: "Email",
@@ -248,6 +333,42 @@ const TDICT: Record<
       { title: "趋势分析", text: "基于数据给出 SKU 与品类建议。" },
       { title: "成套物流", text: "无需参与即可直送平台仓。" },
     ],
+
+    partnersTitle: "中国合作方",
+    partnersLead:
+      "中俄英团队（CST）。寄售模式（成本价 + 30% 利润），支持中/英合同。首选联系渠道：WeChat。",
+    partnersCtas: { wechat: "添加 WeChat", telegram: "联系 Telegram", email: "发送邮箱" },
+    partnersBullets: [
+      "中/英合同 + 中/俄结算",
+      "寄售：成本 + 30% 分成",
+      "上架前进行 SKU 需求分析",
+      "全链路：认证、物流、营销",
+    ],
+
+    faqTitle: "工厂常见问答",
+    faq: [
+      {
+        q: "MOQ 是多少？",
+        a: "通常每个 SKU 200–500 件。试销可协商更小批量（需计入物流与清关成本）。",
+      },
+      {
+        q: "使用哪些贸易术语（Incoterms）？",
+        a: "优先 FOB 中国 / FCA 中国承运仓。若利润允许并约定到位，可用 EXW/DDP。",
+      },
+      {
+        q: "是否需要样品？",
+        a: "需要。每个 SKU 1–3 件，用于内容拍摄、质检与认证。运费由工厂承担或在首单中抵扣。",
+      },
+      {
+        q: "是否需要认证？",
+        a: "进入俄罗斯/欧亚市场需要相关证书。我们负责流程，贵司提供技术文件并保持规格稳定。",
+      },
+      {
+        q: "清关与物流如何安排？",
+        a: "由我们负责运输及清关。报价会包含运费、保险与关税。工厂按我们的规范进行包装与贴标。",
+      },
+    ],
+
     contactTitle: "联系我们",
     contactLead: "48 小时内提供需求评估与试用 SKU 矩阵。",
     emailLabel: "邮箱",
@@ -274,7 +395,20 @@ type CaseCard = {
   brand: string;
   market: "Wildberries" | "Ozon" | "Яндекс.Маркет" | "Yandex.Market";
   category: { ru: string; en: string; zh: string };
-  bulletsKey: ("assort" | "seo" | "reviews" | "optCards" | "content" | "promo" | "sizes" | "showcase" | "relevantKeys" | "policies" | "pricing" | "recs")[];
+  bulletsKey: (
+    | "assort"
+    | "seo"
+    | "reviews"
+    | "optCards"
+    | "content"
+    | "promo"
+    | "sizes"
+    | "showcase"
+    | "relevantKeys"
+    | "policies"
+    | "pricing"
+    | "recs"
+  )[];
   img?: string; // if absent — show 18+ stub
   click: string; // link to store
 };
@@ -417,7 +551,7 @@ export default function Landing() {
     const subject = T.mailSubject;
     const body = `${T.formName}: ${name || "-"}\n${T.formEmail}: ${mail || "-"}\n${T.formPhone}: ${phone || "-"}`;
     const href = `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = href;
+    if (typeof window !== "undefined") window.location.href = href;
     setOpenLead(false);
   };
 
@@ -429,6 +563,17 @@ export default function Landing() {
       alert(lang === "ru" ? "Не удалось скопировать" : lang === "en" ? "Copy failed" : "复制失败");
     }
   };
+
+  // Close modal by Esc
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpenLead(false);
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("keydown", onKey);
+      return () => window.removeEventListener("keydown", onKey);
+    }
+  }, []);
 
   return (
     <div
@@ -715,6 +860,72 @@ export default function Landing() {
         >
           {T.ctas.b2bCta}
         </button>
+      </section>
+
+      {/* Partners in China */}
+      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 28px" : "10px 20px 32px" }}>
+        <h2 style={{ fontSize: 26, margin: "0 0 8px" }}>{T.partnersTitle}</h2>
+        <p style={{ color: COLORS.subtext, margin: "0 0 14px", maxWidth: 860 }}>{T.partnersLead}</p>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+            gap: 14,
+          }}
+        >
+          {T.partnersBullets.map((b, i) => (
+            <div key={i} style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>{String(i + 1).padStart(2, "0")}</div>
+              <div style={{ color: COLORS.subtext }}>{b}</div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 14 }}>
+          <button
+            onClick={copyWeChat}
+            style={{ padding: "10px 14px", borderRadius: 12, background: COLORS.brand, color: "#fff", border: "none", fontWeight: 700, cursor: "pointer" }}
+          >
+            {T.partnersCtas.wechat} · ID: HardVassya
+          </button>
+          <a
+            href="https://t.me/HardVassya"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ padding: "10px 14px", borderRadius: 12, background: COLORS.chip, border: `1px solid ${COLORS.border}`, textDecoration: "none", color: COLORS.text, fontWeight: 600 }}
+          >
+            {T.partnersCtas.telegram}
+          </a>
+          <a
+            href="mailto:Wildbizshop@gmail.com?subject=China%20partnership"
+            style={{ padding: "10px 14px", borderRadius: 12, background: COLORS.chip, border: `1px solid ${COLORS.border}`, textDecoration: "none", color: COLORS.text, fontWeight: 600 }}
+          >
+            {T.partnersCtas.email}
+          </a>
+        </div>
+      </section>
+
+      {/* Factory mini-FAQ */}
+      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "6px 16px 28px" : "8px 20px 34px" }}>
+        <h2 style={{ fontSize: 26, margin: "0 0 10px" }}>{T.faqTitle}</h2>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
+          {T.faq.map((item, i) => (
+            <details
+              key={i}
+              style={{
+                background: COLORS.card,
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: 12,
+                padding: 12,
+              }}
+            >
+              <summary style={{ cursor: "pointer", fontWeight: 700, outline: "none" }}>{item.q}</summary>
+              <div style={{ marginTop: 8, color: COLORS.subtext, lineHeight: 1.7 }}>{item.a}</div>
+            </details>
+          ))}
+        </div>
       </section>
 
       {/* Contacts */}
