@@ -364,14 +364,14 @@ const PARTNERS_CN: PartnerCN[] = [
     name: "Guangzhou Inkue Technology Co., Ltd",
     site: "https://inkue.en.alibaba.com",
     cat: { ru: "Аппараты для косметологии", en: "Aesthetic devices", zh: "美容仪器" },
-    logo: "/logos/inkue.png", // ← /public/logos/inkue.png
+    logo: "/logos/inkue.png", // /public/logos/inkue.png
   },
   {
     id: "hcx",
     name: "SHANTOU HAICHAOXING SCIENCE & TECHNOLOGY CO., LTD",
     site: "https://www.hcx-co.com",
     cat: { ru: "Бытовая техника", en: "Home appliances", zh: "家电" },
-    logo: "/logos/hcx.png", // ← /public/logos/hcx.png
+    logo: "/logos/hcx.png", // /public/logos/hcx.png
   },
   {
     id: "hanya",
