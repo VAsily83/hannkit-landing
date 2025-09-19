@@ -355,7 +355,7 @@ type PartnerCN = {
   name: string;
   site: string;
   cat: { ru: string; en: string; zh: string };
-  logo?: string; // optional
+  logo?: string;
 };
 
 const PARTNERS_CN: PartnerCN[] = [
@@ -364,23 +364,21 @@ const PARTNERS_CN: PartnerCN[] = [
     name: "Guangzhou Inkue Technology Co., Ltd",
     site: "https://inkue.en.alibaba.com",
     cat: { ru: "Аппараты для косметологии", en: "Aesthetic devices", zh: "美容仪器" },
-    // TODO: вставить прямой URL логотипа Inkue (png/svg) как только дадите ссылку
-    // logo: "https://...",
+    logo: "/logos/inkue.png", // ← /public/logos/inkue.png
   },
   {
     id: "hcx",
     name: "SHANTOU HAICHAOXING SCIENCE & TECHNOLOGY CO., LTD",
     site: "https://www.hcx-co.com",
     cat: { ru: "Бытовая техника", en: "Home appliances", zh: "家电" },
-    // TODO: вставить прямой URL логотипа HCX
-    // logo: "https://...",
+    logo: "/logos/hcx.png", // ← /public/logos/hcx.png
   },
   {
     id: "hanya",
     name: "Ningbo Hanya Electrical Appliance Co., Ltd.",
     site: "https://www.cn-hanya.com",
     cat: { ru: "Электроприборы", en: "Electrical appliances", zh: "电器" },
-    logo: "https://www.cn-hanya.com/template/en/images/logo.png", // официальный логотип
+    logo: "https://www.cn-hanya.com/template/en/images/logo.png",
   },
 ];
 
