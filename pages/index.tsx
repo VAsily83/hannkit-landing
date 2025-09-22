@@ -901,7 +901,7 @@ export default function Landing() {
         </div>
       </section>
 
-     {/* Contacts */}
+    {/* Contacts */}
 <section
   ref={contactRef}
   style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}
@@ -919,11 +919,7 @@ export default function Landing() {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: isMobile
-          ? "1fr"
-          : isTablet
-          ? "repeat(2, 1fr)"
-          : "repeat(3, 1fr)",
+        gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
         gap: 14,
       }}
     >
@@ -939,17 +935,13 @@ export default function Landing() {
         <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
         <a
           href="mailto:Wildbizshop@gmail.com"
-          style={{
-            color: COLORS.brand,
-            textDecoration: "none",
-            fontWeight: 600,
-          }}
+          style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
         >
           Wildbizshop@gmail.com
         </a>
       </div>
 
-      {/* Telegram */}
+      {/* Telegram → BOT */}
       <div
         style={{
           background: COLORS.card,
@@ -960,16 +952,12 @@ export default function Landing() {
       >
         <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.tgLabel}</div>
         <a
-          href="https://t.me/HardVassya"
+          href={`https://t.me/HannkitBot?start=webform_${lang}`}
           target="_blank"
           rel="noopener noreferrer"
-          style={{
-            color: COLORS.brand,
-            textDecoration: "none",
-            fontWeight: 600,
-          }}
+          style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
         >
-          @HardVassya — {T.tgOpen}
+          @HannkitBot — {T.tgOpen}
         </a>
       </div>
 
