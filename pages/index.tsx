@@ -914,10 +914,15 @@ export default function Landing() {
               </a>
             </div>
 
-            <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
+            <div 
               <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.tgLabel}</div>
-              <a href="https://t.me/HardVassya" target="_blank" rel="noopener noreferrer" style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}>
-                @HardVassya — {T.tgOpen}
+              <a
+                href="https://t.me/<HannkitBot>?start=webform"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
+              >
+                {lang === "ru" ? "Заполнить в Telegram" : lang === "en" ? "Fill in Telegram" : "在 Telegram 填写"}
               </a>
             </div>
 
