@@ -901,7 +901,7 @@ export default function Landing() {
         </div>
       </section>
 
-    {/* Contacts */}
+   {/* Contacts */}
 <section
   ref={contactRef}
   style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}
@@ -941,7 +941,7 @@ export default function Landing() {
         </a>
       </div>
 
-      {/* Telegram → BOT */}
+      {/* Telegram → bot */}
       <div
         style={{
           background: COLORS.card,
