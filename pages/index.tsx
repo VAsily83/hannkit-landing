@@ -901,7 +901,7 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Contacts */}
+     {/* Contacts */}
 <section
   ref={contactRef}
   style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}
