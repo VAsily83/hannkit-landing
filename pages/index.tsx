@@ -338,7 +338,7 @@ const CASES: CaseCard[] = [
   { brand: "OMX", market: "Ozon", category: { ru: "Бытовая техника", en: "Small appliances", zh: "小家电" }, bulletsKey: ["optCards", "reviews"], img: "https://ir.ozone.ru/s3/multimedia-1-p/wc1000/7372434949.jpg", click: "https://www.ozon.ru/seller/omx-611623" },
   { brand: "Print Tees", market: "Wildberries", category: { ru: "Футболки с принтами", en: "Printed tees", zh: "印花T恤" }, bulletsKey: ["content", "promo", "sizes"], img: "https://basket-18.wbbasket.ru/vol2892/part289294/289294687/images/big/1.webp", click: "https://www.wildberries.ru/seller/235322" },
   { brand: "Handmade Bags «loombloom»", market: "Wildberries", category: { ru: "Вязаные сумки и футболки", en: "Crochet bags & tees", zh: "钩织包与T恤" }, bulletsKey: ["showcase", "assort", "promo"], img: "https://basket-27.wbbasket.ru/vol4951/part495135/495135155/images/big/1.webp", click: "https://www.wildberries.ru/seller/4499972" },
-  { brand: "Wow Shtuchki (18+)", market: "Ozon", category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" }, bulletsKey: ["assort", "relevantKeys", "policies"], click: "https://www.ozon.ru/seller/wow-shtuchki-664611" },
+  { brand: "Wow Shtuchki (18+)", market: "Ozon", category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" }, bulletsKey: ["assort", "relevantKeys", "policies"], click: "https://www.озon.ru/seller/wow-shtuchki-664611" },
   { brand: "SHT (18+)", market: "Яндекс.Маркет", category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" }, bulletsKey: ["content", "pricing", "recs"], click: "https://market.yandex.ru/business--sht/51251801?generalContext=t%3DshopInShop%3Bi%3D1%3Bbi%3D51251801%3B&rs=eJwzkv_EKMPBKLDwEKsEg8aufwflNd53HJLX2Nt1Sl7j-6pT8gC_dg1E&searchContext=sins_ctx" },
 ];
 
@@ -356,7 +356,7 @@ type PartnerCN = {
   site: string;
   cat: { ru: string; en: string; zh: string };
   logo?: string;
-  logoBg?: string; // <— НОВОЕ: фон плашки под логотип
+  logoBg?: string; // фон плашки под логотип
 };
 
 const PARTNERS_CN: PartnerCN[] = [
@@ -366,7 +366,7 @@ const PARTNERS_CN: PartnerCN[] = [
     site: "https://inkue.en.alibaba.com",
     cat: { ru: "Аппараты для косметологии", en: "Aesthetic devices", zh: "美容仪器" },
     logo: "/logos/inkue.png",
-    logoBg: "#FFFFFF", // белый
+    logoBg: "#FFFFFF",
   },
   {
     id: "hcx",
@@ -374,7 +374,7 @@ const PARTNERS_CN: PartnerCN[] = [
     site: "https://www.hcx-co.com",
     cat: { ru: "Бытовая техника", en: "Home appliances", zh: "家电" },
     logo: "/logos/hcx.png",
-    logoBg: "#F2F3F5", // светло-серый под фон логотипа HCX
+    logoBg: "#F2F3F5",
   },
   {
     id: "hanya",
@@ -382,7 +382,7 @@ const PARTNERS_CN: PartnerCN[] = [
     site: "https://www.cn-hanya.com",
     cat: { ru: "Электроприборы", en: "Electrical appliances", zh: "电器" },
     logo: "https://www.cn-hanya.com/template/en/images/logo.png",
-    logoBg: "#F2F3F5", // светло-серый
+    logoBg: "#F2F3F5",
   },
 ];
 
@@ -733,150 +733,151 @@ export default function Landing() {
         </button>
       </section>
 
-  {/* WE COOPERATE (partners) */}
-<section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 28px" : "10px 20px 32px" }}>
-  <h2 style={{ fontSize: 26, margin: "0 0 8px" }}>{T.coopTitle}</h2>
-  <p style={{ color: COLORS.subtext, margin: "0 0 14px", maxWidth: 860 }}>{T.coopLead}</p>
+      {/* WE COOPERATE (partners) */}
+      <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "8px 16px 28px" : "10px 20px 32px" }}>
+        <h2 style={{ fontSize: 26, margin: "0 0 8px" }}>{T.coopTitle}</h2>
+        <p style={{ color: COLORS.subtext, margin: "0 0 14px", maxWidth: 860 }}>{T.coopLead}</p>
 
-  <div
-    style={{
-      display: "grid",
-      gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-      gap: 14,
-    }}
-  >
-    {PARTNERS_CN.map((p) => {
-      const headMinHeight = isMobile ? 132 : isTablet ? 112 : 112;
-
-      return (
         <div
-          key={p.id}
           style={{
-            background: COLORS.card,
-            border: `1px solid ${COLORS.border}`,
-            borderRadius: 14,
-            padding: 16,
             display: "grid",
-            gridTemplateRows: "auto auto 1fr auto",
+            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
             gap: 14,
-            minHeight: 300,
-            transition: "transform 0.25s ease, box-shadow 0.25s ease",
-            cursor: "default",
-          }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
-            (e.currentTarget as HTMLDivElement).style.boxShadow = "0 6px 20px rgba(0,0,0,.08)";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLDivElement).style.transform = "none";
-            (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
           }}
         >
-          {/* HEADER: фиксированная высота, чип прижат вниз */}
-          <div
-            style={{
-              minHeight: headMinHeight,
-              display: "grid",
-              gridTemplateRows: "1fr auto",
-              gap: 10,
-            }}
-          >
-            <div style={{ fontWeight: 700, lineHeight: 1.3 }}>{p.name}</div>
-            <div
-              style={{
-                display: "inline-block",
-                background: COLORS.chip,
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 10,
-                padding: "6px 10px",
-                fontWeight: 700,
-                width: "fit-content",
-              }}
-            >
-              {p.cat[lang]}
-            </div>
-          </div>
+          {PARTNERS_CN.map((p) => {
+            const headMinHeight = isMobile ? 132 : isTablet ? 112 : 112;
 
-          {/* Плашка с логотипом */}
-          <a
-            href={p.site}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`${p.name} website`}
-            style={{ textDecoration: "none" }}
-          >
-            <div
-              style={{
-                height: 120,
-                borderRadius: 12,
-                border: `1px solid ${COLORS.border}`,
-                background: p.logoBg || "#F9FAFB", // индивидуальный фон
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
-              {p.logo ? (
-                <img
-                  src={p.logo}
-                  alt={`${p.name} logo`}
-                  style={{ maxHeight: 76, maxWidth: "80%", objectFit: "contain", display: "block" }}
-                  onError={(e) => {
-                    const el = e.currentTarget as HTMLImageElement;
-                    el.style.display = "none";
-                    const parent = el.parentElement!;
-                    parent.innerHTML = `<div style="color:#6B7280;font-size:13px;">${
-                      lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"
-                    }</div>`;
+            return (
+              <div
+                key={p.id}
+                style={{
+                  background: COLORS.card,
+                  border: `1px solid ${COLORS.border}`,
+                  borderRadius: 14,
+                  padding: 16,
+                  display: "grid",
+                  gridTemplateRows: "auto auto 1fr auto",
+                  gap: 14,
+                  minHeight: 300,
+                  transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                  cursor: "default",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.transform = "translateY(-4px)";
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = "0 6px 20px rgba(0,0,0,.08)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLDivElement).style.transform = "none";
+                  (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
+                }}
+              >
+                {/* HEADER: фиксированная высота, чип прижат вниз */}
+                <div
+                  style={{
+                    minHeight: headMinHeight,
+                    display: "grid",
+                    gridTemplateRows: "1fr auto",
+                    gap: 10,
                   }}
-                />
-              ) : (
-                <div style={{ color: COLORS.subtext, fontSize: 13 }}>
-                  {lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"}
+                >
+                  <div style={{ fontWeight: 700, lineHeight: 1.3 }}>{p.name}</div>
+                  <div
+                    style={{
+                      display: "inline-block",
+                      background: COLORS.chip,
+                      border: `1px solid ${COLORS.border}`,
+                      borderRadius: 10,
+                      padding: "6px 10px",
+                      fontWeight: 700,
+                      width: "fit-content",
+                    }}
+                  >
+                    {p.cat[lang]}
+                  </div>
                 </div>
-              )}
-            </div>
-          </a>
 
-          {/* Кнопки */}
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <a
-              href={p.site}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: "10px 12px",
-                borderRadius: 10,
-                border: `1px solid ${COLORS.border}`,
-                textDecoration: "none",
-                color: COLORS.text,
-                background: COLORS.chip,
-                fontWeight: 600,
-              }}
-            >
-              {T.partnerGo}
-            </a>
-            <button
-              onClick={() => setOpenLead(true)}
-              style={{
-                padding: "10px 12px",
-                borderRadius: 10,
-                border: "none",
-                background: COLORS.brand,
-                color: "#fff",
-                fontWeight: 700,
-                cursor: "pointer",
-              }}
-            >
-              {T.partnerAsk}
-            </button>
-          </div>
+                {/* Плашка с логотипом */}
+                <a
+                  href={p.site}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`${p.name} website`}
+                  style={{ textDecoration: "none" }}
+                >
+                  <div
+                    style={{
+                      height: 120,
+                      borderRadius: 12,
+                      border: `1px solid ${COLORS.border}`,
+                      background: p.logoBg || "#F9FAFB",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {p.logo ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={p.logo}
+                        alt={`${p.name} logo`}
+                        style={{ maxHeight: 76, maxWidth: "80%", objectFit: "contain", display: "block" }}
+                        onError={(e) => {
+                          const el = e.currentTarget as HTMLImageElement;
+                          el.style.display = "none";
+                          const parent = el.parentElement!;
+                          parent.innerHTML = `<div style="color:#6B7280;font-size:13px;">${
+                            lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"
+                          }</div>`;
+                        }}
+                      />
+                    ) : (
+                      <div style={{ color: COLORS.subtext, fontSize: 13 }}>
+                        {lang === "ru" ? "логотип скоро" : lang === "en" ? "logo soon" : "Logo 稍后"}
+                      </div>
+                    )}
+                  </div>
+                </a>
+
+                {/* Кнопки */}
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <a
+                    href={p.site}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      padding: "10px 12px",
+                      borderRadius: 10,
+                      border: `1px solid ${COLORS.border}`,
+                      textDecoration: "none",
+                      color: COLORS.text,
+                      background: COLORS.chip,
+                      fontWeight: 600,
+                    }}
+                  >
+                    {T.partnerGo}
+                  </a>
+                  <button
+                    onClick={() => setOpenLead(true)}
+                    style={{
+                      padding: "10px 12px",
+                      borderRadius: 10,
+                      border: "none",
+                      background: COLORS.brand,
+                      color: "#fff",
+                      fontWeight: 700,
+                      cursor: "pointer",
+                    }}
+                  >
+                    {T.partnerAsk}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
-      );
-    })}
-  </div>
-</section>
+      </section>
 
       {/* Factory mini-FAQ */}
       <section style={{ maxWidth: 1120, margin: "0 auto", padding: isMobile ? "6px 16px 28px" : "8px 20px 34px" }}>
@@ -901,95 +902,95 @@ export default function Landing() {
       </section>
 
       {/* Contacts */}
-<section
-  ref={contactRef}
-  style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}
->
-  <div
-    style={{
-      maxWidth: 1120,
-      margin: "0 auto",
-      padding: isMobile ? "18px 16px 28px" : "22px 20px 36px",
-    }}
-  >
-    <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.contactTitle}</h2>
-    <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.contactLead}</p>
-
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-        gap: 14,
-      }}
-    >
-      {/* Email */}
-      <div
-        style={{
-          background: COLORS.card,
-          border: `1px solid ${COLORS.border}`,
-          borderRadius: 14,
-          padding: 16,
-        }}
+      <section
+        ref={contactRef}
+        style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}
       >
-        <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
-        <a
-          href="mailto:Wildbizshop@gmail.com"
-          style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
-        >
-          Wildbizshop@gmail.com
-        </a>
-      </div>
-
-      {/* Telegram */}
-      <div
-        style={{
-          background: COLORS.card,
-          border: `1px solid ${COLORS.border}`,
-          borderRadius: 14,
-          padding: 16,
-        }}
-      >
-        <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.tgLabel}</div>
-        <a
-          href="https://t.me/HardVassya"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
-        >
-          @HardVassya — {T.tgOpen}
-        </a>
-      </div>
-
-      {/* WeChat */}
-      <div
-        style={{
-          background: COLORS.card,
-          border: `1px solid ${COLORS.border}`,
-          borderRadius: 14,
-          padding: 16,
-        }}
-      >
-        <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.wcLabel}</div>
-        <div style={{ marginBottom: 8 }}>
-          ID: <b>HardVassya</b>
-        </div>
-        <button
-          onClick={copyWeChat}
+        <div
           style={{
-            padding: "8px 12px",
-            borderRadius: 10,
-            border: `1px solid ${COLORS.border}`,
-            background: COLORS.chip,
-            cursor: "pointer",
+            maxWidth: 1120,
+            margin: "0 auto",
+            padding: isMobile ? "18px 16px 28px" : "22px 20px 36px",
           }}
         >
-          {T.wcCopy}
-        </button>
-        <div style={{ marginTop: 8, color: COLORS.subtext, fontSize: 13 }}>{T.wcHint}</div>
-      </div>
-    </div>
-  </div>
-</section>
+          <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.contactTitle}</h2>
+          <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.contactLead}</p>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+              gap: 14,
+            }}
+          >
+            {/* Email */}
+            <div
+              style={{
+                background: COLORS.card,
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: 14,
+                padding: 16,
+              }}
+            >
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
+              <a
+                href="mailto:Wildbizshop@gmail.com"
+                style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
+              >
+                Wildbizshop@gmail.com
+              </a>
+            </div>
+
+            {/* Telegram */}
+            <div
+              style={{
+                background: COLORS.card,
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: 14,
+                padding: 16,
+              }}
+            >
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.tgLabel}</div>
+              <a
+                href="https://t.me/HardVassya"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
+              >
+                @HardVassya — {T.tgOpen}
+              </a>
+            </div>
+
+            {/* WeChat */}
+            <div
+              style={{
+                background: COLORS.card,
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: 14,
+                padding: 16,
+              }}
+            >
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.wcLabel}</div>
+              <div style={{ marginBottom: 8 }}>
+                ID: <b>HardVassya</b>
+              </div>
+              <button
+                onClick={copyWeChat}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: `1px solid ${COLORS.border}`,
+                  background: COLORS.chip,
+                  cursor: "pointer",
+                }}
+              >
+                {T.wcCopy}
+              </button>
+              <div style={{ marginTop: 8, color: COLORS.subtext, fontSize: 13 }}>{T.wcHint}</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer style={{ borderTop: `1px solid ${COLORS.border}`, background: "#fff" }}>
