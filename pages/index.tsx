@@ -919,7 +919,11 @@ export default function Landing() {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+        gridTemplateColumns: isMobile
+          ? "1fr"
+          : isTablet
+          ? "repeat(2, 1fr)"
+          : "repeat(3, 1fr)",
         gap: 14,
       }}
     >
@@ -935,7 +939,11 @@ export default function Landing() {
         <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
         <a
           href="mailto:Wildbizshop@gmail.com"
-          style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
+          style={{
+            color: COLORS.brand,
+            textDecoration: "none",
+            fontWeight: 600,
+          }}
         >
           Wildbizshop@gmail.com
         </a>
@@ -955,7 +963,11 @@ export default function Landing() {
           href="https://t.me/HardVassya"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
+          style={{
+            color: COLORS.brand,
+            textDecoration: "none",
+            fontWeight: 600,
+          }}
         >
           @HardVassya — {T.tgOpen}
         </a>
