@@ -941,7 +941,7 @@ export default function Landing() {
         </a>
       </div>
 
-      {/* Telegram → bot */}
+      {/* Telegram → бот */}
       <div
         style={{
           background: COLORS.card,
