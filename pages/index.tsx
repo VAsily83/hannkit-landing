@@ -902,7 +902,7 @@ export default function Landing() {
       </section>
 
    {/* Contacts */}
-<section ref={contactRef} style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}>
+<div ref={contactRef} style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}>
 
   <div
     style={{
@@ -910,6 +910,7 @@ export default function Landing() {
       margin: "0 auto",
       padding: isMobile ? "18px 16px 28px" : "22px 20px 36px",
     }}>
+    
     <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.contactTitle}</h2>
     <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.contactLead}</p>
 
@@ -953,7 +954,8 @@ export default function Landing() {
           target="_blank"
           rel="noopener noreferrer"
           style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
-        >
+          >
+          
           @HannkitBot — {T.tgOpen}
         </a>
       </div>
@@ -989,7 +991,7 @@ export default function Landing() {
       </div>
     </div>
   </div>
-</section>
+</div>
 
       {/* Footer */}
       <footer style={{ borderTop: `1px solid ${COLORS.border}`, background: "#fff" }}>
