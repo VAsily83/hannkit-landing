@@ -902,15 +902,17 @@ export default function Landing() {
       </section>
 
    {/* Contacts */}
-<div ref={contactRef} style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}>
-
+<section
+  ref={contactRef}
+  style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}
+>
   <div
     style={{
       maxWidth: 1120,
       margin: "0 auto",
       padding: isMobile ? "18px 16px 28px" : "22px 20px 36px",
-    }}>
-    
+    }}
+  >
     <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.contactTitle}</h2>
     <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.contactLead}</p>
 
@@ -919,8 +921,8 @@ export default function Landing() {
         display: "grid",
         gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
         gap: 14,
-      }}>
-      
+      }}
+    >
       {/* Email */}
       <div
         style={{
@@ -928,8 +930,8 @@ export default function Landing() {
           border: `1px solid ${COLORS.border}`,
           borderRadius: 14,
           padding: 16,
-        }}>
-        
+        }}
+      >
         <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
         <a
           href="mailto:Wildbizshop@gmail.com"
@@ -946,16 +948,15 @@ export default function Landing() {
           border: `1px solid ${COLORS.border}`,
           borderRadius: 14,
           padding: 16,
-        }}>
-        
+        }}
+      >
         <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.tgLabel}</div>
         <a
           href={`https://t.me/HannkitBot?start=webform_${lang}`}
           target="_blank"
           rel="noopener noreferrer"
           style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
-          >
-          
+        >
           @HannkitBot — {T.tgOpen}
         </a>
       </div>
@@ -967,8 +968,8 @@ export default function Landing() {
           border: `1px solid ${COLORS.border}`,
           borderRadius: 14,
           padding: 16,
-        }}>
-        
+        }}
+      >
         <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.wcLabel}</div>
         <div style={{ marginBottom: 8 }}>
           ID: <b>HardVassya</b>
@@ -981,8 +982,8 @@ export default function Landing() {
             border: `1px solid ${COLORS.border}`,
             background: COLORS.chip,
             cursor: "pointer",
-          }}>
-          
+          }}
+        >
           {T.wcCopy}
         </button>
         <div style={{ marginTop: 8, color: COLORS.subtext, fontSize: 13 }}>
@@ -991,8 +992,8 @@ export default function Landing() {
       </div>
     </div>
   </div>
-</div>
-
+</section>
+      
       {/* Footer */}
       <footer style={{ borderTop: `1px solid ${COLORS.border}`, background: "#fff" }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "16px 20px", color: COLORS.subtext }}>{T.footer}</div>
