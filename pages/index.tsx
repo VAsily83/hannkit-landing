@@ -902,7 +902,7 @@ export default function Landing() {
       </section>
 
    {/* Contacts */}
-<section
+<div
   ref={contactRef}
   style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}
 >
@@ -992,7 +992,7 @@ export default function Landing() {
       </div>
     </div>
   </div>
-</section>
+</div>
       
       {/* Footer */}
       <footer style={{ borderTop: `1px solid ${COLORS.border}`, background: "#fff" }}>
