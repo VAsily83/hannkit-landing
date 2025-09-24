@@ -328,7 +328,20 @@ type CaseCard = {
   brand: string;
   market: "Wildberries" | "Ozon" | "Яндекс.Маркет" | "Yandex.Market";
   category: { ru: string; en: string; zh: string };
-  bulletsKey: ("assort" | "seo" | "reviews" | "optCards" | "content" | "promo" | "sizes" | "showcase" | "relevantKeys" | "policies" | "pricing" | "recs")[];
+  bulletsKey: (
+    | "assort"
+    | "seo"
+    | "reviews"
+    | "optCards"
+    | "content"
+    | "promo"
+    | "sizes"
+    | "showcase"
+    | "relevantKeys"
+    | "policies"
+    | "pricing"
+    | "recs"
+  )[];
   img?: string;
   click: string;
 };
@@ -342,7 +355,6 @@ const CASES: CaseCard[] = [
   { brand: "SHT (18+)", market: "Яндекс.Маркет", category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" }, bulletsKey: ["content", "pricing", "recs"], click: "https://market.yandex.ru/business--sht/51251801?generalContext=t%3DshopInShop%3Bi%3D1%3Bbi%3D51251801%3B&rs=eJwzkv_EKMPBKLDwEKsEg8aufwflNd53HJLX2Nt1Sl7j-6pT8gC_dg1E&searchContext=sins_ctx" },
 ];
 
-// локализованные буллеты
 const CASE_BULLETS: Record<Lang, Record<NonNullable<CaseCard["bulletsKey"][number]>, string>> = {
   ru: { assort: "Ассортимент", seo: "SEO карточек", reviews: "Отзывы / Q&A", optCards: "Оптимизация карточек", content: "Контент", promo: "Промо", sizes: "Размерные сетки", showcase: "Витрина", relevantKeys: "Релевантные ключи", policies: "Политики площадки", pricing: "Ценообразование", recs: "Рекомендации" },
   en: { assort: "Assortment", seo: "SEO cards", reviews: "Reviews / Q&A", optCards: "Card optimization", content: "Content", promo: "Promotions", sizes: "Size charts", showcase: "Showcase", relevantKeys: "Relevant keywords", policies: "Platform policies", pricing: "Pricing", recs: "Recommendations" },
@@ -356,7 +368,7 @@ type PartnerCN = {
   site: string;
   cat: { ru: string; en: string; zh: string };
   logo?: string;
-  logoBg?: string; // фон плашки под логотип
+  logoBg?: string;
 };
 
 const PARTNERS_CN: PartnerCN[] = [
@@ -398,7 +410,7 @@ export default function Landing() {
   const [mail, setMail] = useState("");
   const [phone, setPhone] = useState<string | undefined>();
 
-  const contactRef = useRef<HTMLDivElement>(null);
+  const contactRef = useRef<HTMLElement>(null); // section => HTMLElement
   const openModal = () => setOpenLead(true);
 
   const FORMSPREE = "/api/lead";
@@ -772,7 +784,7 @@ export default function Landing() {
                   (e.currentTarget as HTMLDivElement).style.boxShadow = "none";
                 }}
               >
-                {/* HEADER: фиксированная высота, чип прижат вниз */}
+                {/* HEADER */}
                 <div
                   style={{
                     minHeight: headMinHeight,
@@ -797,14 +809,8 @@ export default function Landing() {
                   </div>
                 </div>
 
-                {/* Плашка с логотипом */}
-                <a
-                  href={p.site}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={`${p.name} website`}
-                  style={{ textDecoration: "none" }}
-                >
+                {/* Logo plate */}
+                <a href={p.site} target="_blank" rel="noopener noreferrer" aria-label={`${p.name} website`} style={{ textDecoration: "none" }}>
                   <div
                     style={{
                       height: 120,
@@ -840,7 +846,7 @@ export default function Landing() {
                   </div>
                 </a>
 
-                {/* Кнопки */}
+                {/* Buttons */}
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                   <a
                     href={p.site}
@@ -901,99 +907,70 @@ export default function Landing() {
         </div>
       </section>
 
-   {/* Contacts */}
-<div
-  ref={contactRef}
-  style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}
->
-  <div
-    style={{
-      maxWidth: 1120,
-      margin: "0 auto",
-      padding: isMobile ? "18px 16px 28px" : "22px 20px 36px",
-    }}
-  >
-    <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.contactTitle}</h2>
-    <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.contactLead}</p>
-
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
-        gap: 14,
-      }}
-    >
-      {/* Email */}
-      <div
-        style={{
-          background: COLORS.card,
-          border: `1px solid ${COLORS.border}`,
-          borderRadius: 14,
-          padding: 16,
-        }}
-      >
-        <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
-        <a
-          href="mailto:Wildbizshop@gmail.com"
-          style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
-        >
-          Wildbizshop@gmail.com
-        </a>
-      </div>
-
-      {/* Telegram → бот */}
-      <div
-        style={{
-          background: COLORS.card,
-          border: `1px solid ${COLORS.border}`,
-          borderRadius: 14,
-          padding: 16,
-        }}
-      >
-        <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.tgLabel}</div>
-        <a
-          href={`https://t.me/HannkitBot?start=webform_${lang}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
-        >
-          @HannkitBot — {T.tgOpen}
-        </a>
-      </div>
-
-      {/* WeChat */}
-      <div
-        style={{
-          background: COLORS.card,
-          border: `1px solid ${COLORS.border}`,
-          borderRadius: 14,
-          padding: 16,
-        }}
-      >
-        <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.wcLabel}</div>
-        <div style={{ marginBottom: 8 }}>
-          ID: <b>HardVassya</b>
-        </div>
-        <button
-          onClick={copyWeChat}
+      {/* Contacts */}
+      <section ref={contactRef} style={{ background: COLORS.bg, borderTop: `1px solid ${COLORS.border}` }}>
+        <div
           style={{
-            padding: "8px 12px",
-            borderRadius: 10,
-            border: `1px solid ${COLORS.border}`,
-            background: COLORS.chip,
-            cursor: "pointer",
+            maxWidth: 1120,
+            margin: "0 auto",
+            padding: isMobile ? "18px 16px 28px" : "22px 20px 36px",
           }}
         >
-          {T.wcCopy}
-        </button>
-        <div style={{ marginTop: 8, color: COLORS.subtext, fontSize: 13 }}>
-          {T.wcHint}
+          <h2 style={{ fontSize: 26, margin: "0 0 6px" }}>{T.contactTitle}</h2>
+          <p style={{ color: COLORS.subtext, margin: "0 0 14px" }}>{T.contactLead}</p>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr" : isTablet ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+              gap: 14,
+            }}
+          >
+            {/* Email */}
+            <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.emailLabel}</div>
+              <a href="mailto:Wildbizshop@gmail.com" style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}>
+                Wildbizshop@gmail.com
+              </a>
+            </div>
+
+            {/* Telegram → бот */}
+            <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.tgLabel}</div>
+              <a
+                href={`https://t.me/HannkitBot?start=webform_${lang}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: COLORS.brand, textDecoration: "none", fontWeight: 600 }}
+              >
+                @HannkitBot — {T.tgOpen}
+              </a>
+            </div>
+
+            {/* WeChat */}
+            <div style={{ background: COLORS.card, border: `1px solid ${COLORS.border}`, borderRadius: 14, padding: 16 }}>
+              <div style={{ fontWeight: 700, marginBottom: 6 }}>{T.wcLabel}</div>
+              <div style={{ marginBottom: 8 }}>
+                ID: <b>HardVassya</b>
+              </div>
+              <button
+                onClick={copyWeChat}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 10,
+                  border: `1px solid ${COLORS.border}`,
+                  background: COLORS.chip,
+                  cursor: "pointer",
+                }}
+              >
+                {T.wcCopy}
+              </button>
+              <div style={{ marginTop: 8, color: COLORS.subtext, fontSize: 13 }}>{T.wcHint}</div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
-      
+      </section>
+
       {/* Footer */}
       <footer style={{ borderTop: `1px solid ${COLORS.border}`, background: "#fff" }}>
         <div style={{ maxWidth: 1120, margin: "0 auto", padding: "16px 20px", color: COLORS.subtext }}>{T.footer}</div>
@@ -1001,7 +978,10 @@ export default function Landing() {
 
       {/* Modal mini-form */}
       {openLead && (
-        <div onClick={() => setOpenLead(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}>
+        <div
+          onClick={() => setOpenLead(false)}
+          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}
+        >
           <div
             onClick={(e) => e.stopPropagation()}
             style={{ width: isMobile ? 320 : 380, background: "#fff", borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 18, boxShadow: "0 12px 32px rgba(0,0,0,.18)" }}
