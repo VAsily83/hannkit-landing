@@ -111,7 +111,6 @@ export default function TgFormPage() {
         const wa = W.Telegram.WebApp;
         wa.ready?.();
         wa.expand?.(); // чтобы занять доступную высоту
-        // Светлая/тёмная темы Telegram применяются нативно, цвета берем нейтральные
       }
     } catch {
       /* ignore */
@@ -128,14 +127,59 @@ export default function TgFormPage() {
     }
   };
 
-  const closeMiniApp = () => {
+  // Универсальное закрытие с каскадом фолбэков
+  const closeWithFallbacks = () => {
+    let closed = false;
+
     try {
       if (isTg) {
+        // Основной путь — закрыть мини-апп
         window.Telegram!.WebApp.close();
+        closed = true;
       }
     } catch {
       /* ignore */
     }
+
+    // Дадим клиенту до ~600 мс «физически» закрыть окно.
+    setTimeout(() => {
+      if (closed) return;
+
+      // 1) Попробуем вернуться назад (часто работает в SFSafariViewController)
+      try {
+        window.history.back();
+      } catch {
+        /* ignore */
+      }
+
+      // 2) Попробуем закрыть вкладку (может быть заблокировано браузером)
+      setTimeout(() => {
+        try {
+          window.close();
+        } catch {
+          /* ignore */
+        }
+      }, 120);
+
+      // 3) Жёсткий фолбэк — открыть чат, Telegram обычно перехватывает tg:// и скрывает webview
+      setTimeout(() => {
+        try {
+          // Попытка deeplink
+          (window.location as any).href = "tg://resolve?domain=HannkitBot";
+        } catch {
+          /* ignore */
+        }
+      }, 240);
+
+      // 4) Финальный фолбэк — обычная http-ссылка на бота
+      setTimeout(() => {
+        try {
+          (window.location as any).href = "https://t.me/HannkitBot";
+        } catch {
+          /* ignore */
+        }
+      }, 480);
+    }, 600);
   };
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -161,20 +205,10 @@ export default function TgFormPage() {
         setSent("ok");
         haptic("success");
 
-        // Чуть-чуть показываем сообщение и закрываем
+        // Немного показываем сообщение и закрываем с фолбэками
         setTimeout(() => {
-          if (isTg) {
-            closeMiniApp();
-          } else {
-            // Фолбэк для обычного браузера:
-            // если пришли не из Telegram — просто уводим к боту или назад
-            try {
-              window.location.href = "https://t.me/HannkitBot";
-            } catch {
-              /* ignore */
-            }
-          }
-        }, 1200);
+          closeWithFallbacks();
+        }, 700);
       } else {
         throw new Error("Request failed");
       }
@@ -272,7 +306,7 @@ export default function TgFormPage() {
             }}
           />
 
-          <button
+        <button
             type="submit"
             disabled={sending}
             style={{
@@ -324,7 +358,7 @@ export default function TgFormPage() {
         {mounted && isTg && (
           <div style={{ marginTop: 12 }}>
             <button
-              onClick={closeMiniApp}
+              onClick={closeWithFallbacks}
               style={{
                 padding: "10px 12px",
                 borderRadius: 10,
@@ -344,8 +378,7 @@ export default function TgFormPage() {
 }
 
 /**
- * Чтобы Vercel / Next.js НЕ пытались статически пререндерить /tg-form на билде
- * (иначе возможна "Minified React error #31" при SSG),
+ * Чтобы Vercel / Next.js НЕ пытались статически пререндерить /tg-form на билде,
  * заставляем страницу рендериться на запросе.
  */
 export async function getServerSideProps() {
