@@ -1,338 +1,341 @@
 // pages/tg-form.tsx
-import { useEffect, useMemo, useRef, useState } from "react";
-
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp?: {
-        ready: () => void;
-        expand: () => void;
-        close: () => void;
-        themeParams?: Record<string, string>;
-        initDataUnsafe?: { user?: { id?: number; username?: string; first_name?: string; last_name?: string } };
-        colorScheme?: "light" | "dark";
-        HapticFeedback?: { impactOccurred: (style: "light" | "medium" | "heavy") => void };
-      };
-    };
-  }
-}
+import React, { useEffect, useMemo, useState } from "react";
 
 type Lang = "ru" | "en" | "zh";
 
-const COLORS = { brand: "#0B1E5B", border: "#E5E7EB", subtext: "#374151", bg: "#F6F7F9", card: "#fff" };
+const COLORS = {
+  brand: "#0B1E5B",
+  text: "#111827",
+  subtext: "#4B5563",
+  card: "#FFFFFF",
+  border: "#E5E7EB",
+  chip: "#F3F4F6",
+  bg: "#F6F7F9",
+};
 
-const T: Record<
+const TDICT: Record<
   Lang,
   {
     title: string;
-    lead: string;
     name: string;
     email: string;
     phone: string;
     send: string;
-    sending: string;
-    hint: string;
-    sent: string;
+    note: string;
+    done: string;
     ru: string;
     en: string;
     zh: string;
+    close: string;
   }
 > = {
   ru: {
     title: "Заявка",
-    lead: "Оставьте контакты — ответим в Telegram или на почту.",
     name: "Ваше имя",
     email: "Email",
     phone: "Телефон",
     send: "Отправить заявку",
-    sending: "Отправляем…",
-    hint: "Форма работает внутри Telegram. После отправки окно закроется.",
-    sent: "Заявка отправлена! Закрываем…",
+    note: "Форма работает внутри Telegram. После отправки окно закроется.",
+    done: "Заявка отправлена! Закрываем…",
     ru: "РУ",
     en: "EN",
     zh: "中文",
+    close: "Закрыть",
   },
   en: {
     title: "Request",
-    lead: "Leave your contacts — we’ll reply in Telegram or by email.",
     name: "Your name",
     email: "Email",
     phone: "Phone",
     send: "Send request",
-    sending: "Sending…",
-    hint: "The form runs inside Telegram. After sending, the window will close.",
-    sent: "Sent! Closing…",
+    note: "This form runs inside Telegram. The window will close after sending.",
+    done: "Request sent! Closing…",
     ru: "RU",
     en: "EN",
     zh: "中文",
+    close: "Close",
   },
   zh: {
     title: "咨询",
-    lead: "留下联系方式 — 我们会在 Telegram 或邮箱回复。",
     name: "姓名",
     email: "邮箱",
     phone: "电话",
     send: "提交",
-    sending: "发送中…",
-    hint: "表单在 Telegram 内运行。提交后窗口将关闭。",
-    sent: "已发送！正在关闭…",
-    ru: "俄",
-    en: "英",
-    zh: "中",
+    note: "此表单在 Telegram 内运行。提交后窗口将自动关闭。",
+    done: "已提交！正在关闭…",
+    ru: "РУ",
+    en: "EN",
+    zh: "中文",
+    close: "关闭",
   },
 };
 
-// безопасно определяем язык (без доступа к window при SSR)
-const pickInitialLang = (): Lang => "ru";
+const BOT_USERNAME = "HannkitBot"; // на случай резервного редиректа
 
-export default function TgFormPage() {
-  const [lang, setLang] = useState<Lang>(pickInitialLang());
+function useLangFromParam(): Lang {
+  const [lang, setLang] = useState<Lang>("ru");
+  useEffect(() => {
+    try {
+      const p = new URLSearchParams(window.location.search);
+      const q = (p.get("lang") || p.get("l") || "").toLowerCase();
+      if (q === "en" || q === "zh" || q === "ru") setLang(q);
+    } catch {}
+  }, []);
+  return lang;
+}
+
+export default function TgForm() {
+  const lang = useLangFromParam();
+  const T = useMemo(() => TDICT[lang], [lang]);
+
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [mail, setMail] = useState("");
   const [phone, setPhone] = useState("");
   const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [done, setDone] = useState(false);
+  const [showManualClose, setShowManualClose] = useState(false);
 
-  const tgRef = useRef<NonNullable<typeof window.Telegram>["WebApp"] | null>(null);
+  // ---- Telegram WebApp init
+  const tg = typeof window !== "undefined" ? (window as any)?.Telegram?.WebApp : undefined;
 
-  // Инициализация Telegram WebApp только на клиенте
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const tg = window.Telegram?.WebApp ?? null;
-    tgRef.current = tg || null;
-
     try {
-      tg?.ready();
-      tg?.expand();
+      tg?.ready?.();
+      tg?.expand?.();
+      tg?.disableVerticalSwipes?.(); // iOS лишние свайпы
+      tg?.disableClosingConfirmation?.();
     } catch {}
-  }, []);
+  }, [tg]);
 
-  // аккуратный выбор языка из query (только на клиенте)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const qs = new URLSearchParams(window.location.search);
-    const ql = (qs.get("lang") || qs.get("l") || "").toLowerCase();
-    if (ql === "ru" || ql === "en" || ql === "zh") setLang(ql as Lang);
-  }, []);
-
-  const theme = useMemo(() => {
-    const tp = tgRef.current?.themeParams || {};
-    const bg = tp.bg_color || COLORS.bg;
-    const card = "#ffffff";
-    const text = tp.text_color || "#111827";
-    const subtext = tp.hint_color || COLORS.subtext;
-    const brand = tp.button_color || COLORS.brand;
-    const border = COLORS.border;
-    return { bg, card, text, subtext, brand, border };
-  }, [tgRef.current?.themeParams]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Универсальное закрытие окна (iOS-хаки внутри)
-  const closeMiniApp = () => {
-    const tg = tgRef.current;
-    let closed = false;
-
-    try {
-      tg?.HapticFeedback?.impactOccurred("light");
-    } catch {}
-
+  // ---- Надёжное закрытие с несколькими попытками и fallback
+  const tryClose = () => {
     try {
       tg?.close?.();
-      closed = true;
-    } catch {}
-
-    const tryHardClose = () => {
-      if (typeof window === "undefined") return;
-      try {
-        // 1) назад в контроллере
-        if (window.history.length > 1) {
-          window.history.back();
-          closed = true;
-        }
-      } catch {}
-
-      try {
-        // 2) выгрузить вкладку
-        window.location.href = "about:blank";
-        closed = true;
-      } catch {}
-
-      try {
-        // 3) iOS WebView костыль
-        // @ts-ignore
-        window.open("", "_self");
-        window.close();
-        closed = true;
-      } catch {}
-    };
-
-    // даже если close() сработал — подстрахуемся
-    setTimeout(tryHardClose, 50);
-    setTimeout(tryHardClose, 300);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
-  const submit = async () => {
+  useEffect(() => {
+    if (!done) return;
+
+    // 1) сразу попробовать закрыть
+    const t0 = setTimeout(() => {
+      if (tryClose()) return;
+    }, 50);
+
+    // 2) ещё попытки через короткие интервалы (на iOS иногда срабатывает не сразу)
+    const t1 = setTimeout(() => {
+      if (tryClose()) return;
+    }, 400);
+
+    const t2 = setTimeout(() => {
+      if (tryClose()) return;
+    }, 1000);
+
+    // 3) мягкий резерв — вернуть пользователя в бота (если МП упёрлось)
+    const t3 = setTimeout(() => {
+      if (tryClose()) return;
+      try {
+        window.location.href = `https://t.me/${BOT_USERNAME}`;
+      } catch {}
+    }, 1700);
+
+    // 4) самый крайний резерв (часто игнорируется iOS) — закрыть вкладку
+    const t4 = setTimeout(() => {
+      if (tryClose()) return;
+      try {
+        window.close();
+      } catch {}
+      // если не закрылось — показать ручную кнопку
+      setShowManualClose(true);
+    }, 2600);
+
+    return () => {
+      clearTimeout(t0);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      clearTimeout(t4);
+    };
+  }, [done]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (sending) return;
     setSending(true);
 
-    const payload = {
-      name,
-      email,
-      phone,
-      lang,
-      source: "tg-miniapp",
-      tg: {
-        user: tgRef.current?.initDataUnsafe?.user || null,
-      },
-    };
-
     try {
-      const r = await fetch("/api/lead", {
+      // можно прокинуть peerId / initData если понадобится — сейчас не требуется
+      await fetch("/api/lead", {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email: mail,
+          phone,
+          source: "tg-webapp",
+          lang,
+        }),
       });
-
-      if (r.ok) {
-        setSent(true);
-        // показываем "отправлено" и закрываем
-        setTimeout(closeMiniApp, 300);
-        return;
-      }
+      setDone(true);
     } catch {
-      // игнор
+      // даже если сеть глючнула — всё равно пробуем закрыть,
+      // т.к. у тебя запрос в итоге доходит по факту
+      setDone(true);
     } finally {
-      // не держим состояние "sending" если закрытие не удалось
-      setTimeout(() => setSending(false), 500);
+      setSending(false);
     }
-
-    // если API вернуло не 200 — всё равно пытаемся закрыть
-    setSent(true);
-    setTimeout(closeMiniApp, 300);
   };
 
   return (
     <div
       style={{
-        fontFamily:
-          'Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"',
-        background: theme.bg,
-        color: theme.text,
         minHeight: "100vh",
+        background: COLORS.bg,
+        color: COLORS.text,
+        padding: 16,
       }}
     >
-      <div style={{ maxWidth: 680, margin: "0 auto", padding: "18px 16px 24px" }}>
-        {/* Lang switch */}
-        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+      <div
+        style={{
+          maxWidth: 680,
+          margin: "0 auto",
+          background: COLORS.card,
+          border: `1px solid ${COLORS.border}`,
+          borderRadius: 16,
+          padding: 18,
+          boxShadow: "0 8px 24px rgba(0,0,0,.06)",
+        }}
+      >
+        {/* язык */}
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginBottom: 6 }}>
           {(["ru", "en", "zh"] as Lang[]).map((l) => (
-            <button
+            <a
               key={l}
-              onClick={() => setLang(l)}
+              href={`?lang=${l}`}
               style={{
                 padding: "6px 10px",
                 borderRadius: 999,
-                border: `1px solid ${l === lang ? theme.brand : theme.border}`,
-                background: l === lang ? theme.brand : "transparent",
-                color: l === lang ? "#fff" : theme.text,
-                cursor: "pointer",
+                textDecoration: "none",
+                border: `1px solid ${lang === l ? COLORS.brand : COLORS.border}`,
+                background: lang === l ? "#eef2ff" : COLORS.card,
+                color: lang === l ? COLORS.brand : COLORS.text,
+                fontWeight: 600,
+                fontSize: 13,
               }}
             >
-              {T[lang][l]}
-            </button>
+              {TDICT[l][l]}
+            </a>
           ))}
         </div>
 
-        <h1 style={{ fontSize: 28, fontWeight: 800, margin: "10px 0 10px" }}>{T[lang].title}</h1>
-        <p style={{ color: theme.subtext, margin: 0 }}>{T[lang].lead}</p>
+        <h1 style={{ fontSize: 28, margin: "0 0 10px", letterSpacing: 0.2 }}>{T.title}</h1>
 
-        <div
-          style={{
-            marginTop: 14,
-            background: theme.card,
-            border: `1px solid ${theme.border}`,
-            borderRadius: 14,
-            padding: 14,
-            display: "grid",
-            gap: 10,
-          }}
-        >
-          <input
-            placeholder={T[lang].name}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+        <form onSubmit={handleSubmit}>
+          <div
             style={{
-              padding: "12px",
-              borderRadius: 10,
-              border: `1px solid ${theme.border}`,
-              outline: "none",
-              width: "100%",
-              background: "#fff",
-            }}
-          />
-          <input
-            placeholder={T[lang].email}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            style={{
-              padding: "12px",
-              borderRadius: 10,
-              border: `1px solid ${theme.border}`,
-              outline: "none",
-              width: "100%",
-              background: "#fff",
-            }}
-          />
-          <input
-            placeholder={T[lang].phone}
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            inputMode="tel"
-            style={{
-              padding: "12px",
-              borderRadius: 10,
-              border: `1px solid ${theme.border}`,
-              outline: "none",
-              width: "100%",
-              background: "#fff",
-            }}
-          />
-
-          <button
-            onClick={submit}
-            disabled={sending}
-            style={{
-              padding: "12px",
-              borderRadius: 10,
-              border: "none",
-              background: sending ? theme.subtext : theme.brand,
-              color: "#fff",
-              fontWeight: 700,
-              cursor: "pointer",
+              display: "grid",
+              gap: 10,
+              marginTop: 8,
+              background: "#FAFAFB",
+              borderRadius: 14,
+              padding: 12,
+              border: `1px solid ${COLORS.border}`,
             }}
           >
-            {sending ? T[lang].sending : T[lang].send}
-          </button>
+            <input
+              placeholder={T.name}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              autoComplete="name"
+              style={inputStyle}
+            />
+            <input
+              placeholder={T.email}
+              type="email"
+              value={mail}
+              onChange={(e) => setMail(e.target.value)}
+              required
+              autoComplete="email"
+              style={inputStyle}
+            />
+            <input
+              placeholder={T.phone}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              inputMode="tel"
+              autoComplete="tel"
+              style={inputStyle}
+            />
 
-          <div style={{ fontSize: 12, color: theme.subtext }}>{T[lang].hint}</div>
-
-          {sent && (
-            <div
-              role="status"
-              aria-live="polite"
+            <button
+              type="submit"
+              disabled={sending}
               style={{
-                marginTop: 6,
-                padding: "10px 12px",
-                borderRadius: 10,
-                background: "#F3F4F6",
-                border: `1px solid ${theme.border}`,
-                color: theme.text,
+                padding: "12px 14px",
+                borderRadius: 12,
+                background: sending ? "#1f2a5a" : COLORS.brand,
+                color: "#fff",
+                border: "none",
+                fontWeight: 700,
+                cursor: "pointer",
               }}
             >
-              {T[lang].sent}
-            </div>
-          )}
-        </div>
+              {T.send}
+            </button>
+
+            <div style={{ color: COLORS.subtext }}>{T.note}</div>
+
+            {done && (
+              <div
+                style={{
+                  background: COLORS.chip,
+                  border: `1px solid ${COLORS.border}`,
+                  borderRadius: 12,
+                  padding: 12,
+                  fontWeight: 600,
+                }}
+              >
+                {T.done}
+              </div>
+            )}
+
+            {showManualClose && (
+              <button
+                type="button"
+                onClick={() => {
+                  if (!tryClose()) {
+                    try {
+                      window.location.href = `https://t.me/${BOT_USERNAME}`;
+                    } catch {}
+                  }
+                }}
+                style={{
+                  padding: "10px 12px",
+                  borderRadius: 10,
+                  background: COLORS.card,
+                  border: `1px solid ${COLORS.border}`,
+                  cursor: "pointer",
+                  fontWeight: 700,
+                }}
+              >
+                {T.close}
+              </button>
+            )}
+          </div>
+        </form>
       </div>
     </div>
   );
 }
+
+const inputStyle: React.CSSProperties = {
+  padding: "12px 14px",
+  borderRadius: 10,
+  border: `1px solid ${COLORS.border}`,
+  outline: "none",
+  background: "#fff",
+};
