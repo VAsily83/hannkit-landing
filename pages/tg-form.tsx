@@ -1,14 +1,10 @@
 // pages/tg-form.tsx
 import React, { useEffect, useMemo, useState } from "react";
 
-// ВАЖНО: этот файл рендерится на сервере при билде,
-// поэтому никаких обращений к window/Telegram вне эффектов!
-
+// ВАЖНО: никакого прямого доступа к window/Telegram вне эффектов
 declare global {
   interface Window {
-    Telegram?: {
-      WebApp?: any;
-    };
+    Telegram?: { WebApp?: any };
   }
 }
 
@@ -46,7 +42,7 @@ const TDICT: Record<
     email: "Email",
     phone: "Телефон",
     send: "Отправить заявку",
-    note: "Форма работает внутри Telegram. После отправки окно закроется.",
+    note: "Форма работает внутри Telegram. После отправки окно закроется (или нажмите «Закрыть»).",
     sent: "Заявка отправлена!",
     closing: "Закрываем…",
     closeBtn: "Закрыть",
@@ -59,7 +55,7 @@ const TDICT: Record<
     email: "Email",
     phone: "Phone",
     send: "Send request",
-    note: "This form runs inside Telegram. The window will close after sending.",
+    note: "This form runs inside Telegram. It will close after sending (or tap “Close”).",
     sent: "Request sent!",
     closing: "Closing…",
     closeBtn: "Close",
@@ -72,7 +68,7 @@ const TDICT: Record<
     email: "邮箱",
     phone: "电话",
     send: "发送",
-    note: "该表单在 Telegram 内运行。发送后窗口会关闭。",
+    note: "该表单在 Telegram 内运行。发送后会关闭（或点击“关闭”）。",
     sent: "已发送！",
     closing: "正在关闭…",
     closeBtn: "关闭",
@@ -87,10 +83,8 @@ export default function TgFormPage() {
   const T = useMemo(() => TDICT[lang], [lang]);
 
   const [mounted, setMounted] = useState(false);
-  const isTg = useMemo(
-    () => mounted && typeof window !== "undefined" && !!window.Telegram?.WebApp,
-    [mounted]
-  );
+  const [isTg, setIsTg] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
 
   // Поля формы
   const [name, setName] = useState("");
@@ -100,86 +94,58 @@ export default function TgFormPage() {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState<null | "ok" | "fail">(null);
 
-  // Mount + Telegram init
   useEffect(() => {
     setMounted(true);
-
-    // Инициализация Telegram WebApp (если внутри мини-аппа)
     try {
-      const W = window as any;
-      if (W?.Telegram?.WebApp) {
-        const wa = W.Telegram.WebApp;
+      const ua = navigator.userAgent || "";
+      setIsIOS(/iPhone|iPad|iPod/i.test(ua));
+
+      const wa = window.Telegram?.WebApp;
+      if (wa) {
+        setIsTg(true);
+        // Базовая инициализация
         wa.ready?.();
-        wa.expand?.(); // чтобы занять доступную высоту
+        wa.expand?.();
+        wa.disableVerticalSwipes?.(); // меньше шансов «случайно» уйти жестом
+        wa.enableClosingConfirmation?.(false);
+        // Цвета заголовка под фирстиль (не обязательно)
+        wa.setHeaderColor?.("#0B1E5B");
+        wa.setBackgroundColor?.("#FFFFFF");
       }
     } catch {
-      /* ignore */
+      // ignore
     }
   }, []);
 
   const haptic = (type: "success" | "error" | "warning" = "success") => {
     try {
-      if (isTg) {
-        window.Telegram!.WebApp.HapticFeedback?.notificationOccurred?.(type);
-      }
-    } catch {
-      /* ignore */
-    }
+      window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.(type);
+    } catch {}
   };
 
-  // Универсальное закрытие с каскадом фолбэков
+  // Универсальное закрытие + каскад фолбэков
   const closeWithFallbacks = () => {
     let closed = false;
-
     try {
-      if (isTg) {
-        // Основной путь — закрыть мини-апп
-        window.Telegram!.WebApp.close();
-        closed = true;
-      }
-    } catch {
-      /* ignore */
-    }
+      window.Telegram?.WebApp?.close?.();
+      closed = true;
+    } catch {}
 
-    // Дадим клиенту до ~600 мс «физически» закрыть окно.
+    // Даем клиенту шанс физически закрыть
     setTimeout(() => {
       if (closed) return;
 
-      // 1) Попробуем вернуться назад (часто работает в SFSafariViewController)
-      try {
-        window.history.back();
-      } catch {
-        /* ignore */
-      }
-
-      // 2) Попробуем закрыть вкладку (может быть заблокировано браузером)
+      try { window.history.back(); } catch {}
       setTimeout(() => {
-        try {
-          window.close();
-        } catch {
-          /* ignore */
-        }
+        try { window.close(); } catch {}
       }, 120);
-
-      // 3) Жёсткий фолбэк — открыть чат, Telegram обычно перехватывает tg:// и скрывает webview
       setTimeout(() => {
-        try {
-          // Попытка deeplink
-          (window.location as any).href = "tg://resolve?domain=HannkitBot";
-        } catch {
-          /* ignore */
-        }
+        try { (window.location as any).href = "tg://resolve?domain=HannkitBot"; } catch {}
       }, 240);
-
-      // 4) Финальный фолбэк — обычная http-ссылка на бота
       setTimeout(() => {
-        try {
-          (window.location as any).href = "https://t.me/HannkitBot";
-        } catch {
-          /* ignore */
-        }
+        try { (window.location as any).href = "https://t.me/HannkitBot"; } catch {}
       }, 480);
-    }, 600);
+    }, 350);
   };
 
   const onSubmit = async (e: React.FormEvent) => {
@@ -188,6 +154,7 @@ export default function TgFormPage() {
 
     setSending(true);
     setSent(null);
+
     try {
       const r = await fetch(FORMSPREE, {
         method: "POST",
@@ -201,21 +168,27 @@ export default function TgFormPage() {
         }),
       });
 
-      if (r.ok) {
-        setSent("ok");
-        haptic("success");
+      if (!r.ok) throw new Error("Request failed");
 
-        // Немного показываем сообщение и закрываем с фолбэками
-        setTimeout(() => {
-          closeWithFallbacks();
-        }, 700);
-      } else {
-        throw new Error("Request failed");
-      }
+      setSent("ok");
+      haptic("success");
+
+      // Попытка автозакрытия СРАЗУ после успеха (важно для iOS)
+      // Если Telegram/iOS не даст закрыть — покажем кнопку и оставим фолбэки.
+      try {
+        if (isTg) {
+          window.Telegram!.WebApp.close();
+          return; // в большинстве клиентов закроется здесь
+        }
+      } catch {}
+
+      // Если до сюда дошли — либо не TG, либо клиент проигнорил close()
+      // Покажем сообщение и оставим кнопку «Закрыть»
+      // (дополнительно запустим мягкие фолбэки через небольшую паузу)
+      setTimeout(() => closeWithFallbacks(), 1200);
     } catch {
       setSent("fail");
       haptic("error");
-      // В браузере остаёмся на странице; в Telegram пользователь может нажать «Закрыть»
     } finally {
       setSending(false);
     }
@@ -267,18 +240,14 @@ export default function TgFormPage() {
         <h1 style={{ fontSize: 34, margin: "6px 0 8px" }}>{T.title}</h1>
         <p style={{ color: COLORS.subtext, margin: "0 0 14px", fontSize: 18 }}>{T.lead}</p>
 
+        {/* Форма */}
         <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
           <input
             placeholder={T.name}
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            style={{
-              padding: "12px 14px",
-              borderRadius: 12,
-              border: `1px solid ${COLORS.border}`,
-              outline: "none",
-            }}
+            style={{ padding: "12px 14px", borderRadius: 12, border: `1px solid ${COLORS.border}`, outline: "none" }}
           />
           <input
             placeholder={T.email}
@@ -286,27 +255,17 @@ export default function TgFormPage() {
             onChange={(e) => setMail(e.target.value)}
             type="email"
             required
-            style={{
-              padding: "12px 14px",
-              borderRadius: 12,
-              border: `1px solid ${COLORS.border}`,
-              outline: "none",
-            }}
+            style={{ padding: "12px 14px", borderRadius: 12, border: `1px solid ${COLORS.border}`, outline: "none" }}
           />
           <input
             placeholder={T.phone}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             inputMode="tel"
-            style={{
-              padding: "12px 14px",
-              borderRadius: 12,
-              border: `1px solid ${COLORS.border}`,
-              outline: "none",
-            }}
+            style={{ padding: "12px 14px", borderRadius: 12, border: `1px solid ${COLORS.border}`, outline: "none" }}
           />
 
-        <button
+          <button
             type="submit"
             disabled={sending}
             style={{
@@ -334,6 +293,7 @@ export default function TgFormPage() {
               borderRadius: 12,
               padding: "10px 12px",
               fontWeight: 700,
+              marginTop: 8,
             }}
           >
             {T.sent} {T.closing}
@@ -348,24 +308,29 @@ export default function TgFormPage() {
               padding: "10px 12px",
               fontWeight: 700,
               color: "#991B1B",
+              marginTop: 8,
             }}
           >
             Ошибка отправки. Попробуйте ещё раз или вернитесь в бот.
           </div>
         )}
 
-        {/* Ручная кнопка закрытия видна только в Telegram */}
-        {mounted && isTg && (
+        {/* Большая ручная кнопка закрытия:
+           - показываем после успешной отправки
+           - в TG-клиенте всегда
+           - особенно нужна на iOS */}
+        {(sent === "ok" || isTg) && (
           <div style={{ marginTop: 12 }}>
             <button
               onClick={closeWithFallbacks}
               style={{
-                padding: "10px 12px",
-                borderRadius: 10,
+                padding: "12px 14px",
+                borderRadius: 12,
                 border: `1px solid ${COLORS.border}`,
                 background: COLORS.card,
                 cursor: "pointer",
-                fontWeight: 600,
+                fontWeight: 700,
+                width: "100%",
               }}
             >
               {T.closeBtn}
@@ -377,10 +342,7 @@ export default function TgFormPage() {
   );
 }
 
-/**
- * Чтобы Vercel / Next.js НЕ пытались статически пререндерить /tg-form на билде,
- * заставляем страницу рендериться на запросе.
- */
+// Чтобы Next не пытался SSG-рендерить страницу на билде
 export async function getServerSideProps() {
   return { props: {} };
 }
