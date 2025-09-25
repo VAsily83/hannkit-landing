@@ -1,229 +1,228 @@
 // pages/tg-form.tsx
 import React, { useEffect, useMemo, useState } from "react";
 
+// ВАЖНО: этот файл рендерится на сервере при билде,
+// поэтому никаких обращений к window/Telegram вне эффектов!
+
+declare global {
+  interface Window {
+    Telegram?: {
+      WebApp?: any;
+    };
+  }
+}
+
 type Lang = "ru" | "en" | "zh";
 
 const COLORS = {
   brand: "#0B1E5B",
   text: "#111827",
-  subtext: "#4B5563",
+  subtext: "#374151",
+  bg: "#F3F4F6",
   card: "#FFFFFF",
   border: "#E5E7EB",
-  chip: "#F3F4F6",
-  bg: "#F6F7F9",
 };
 
 const TDICT: Record<
   Lang,
   {
     title: string;
+    lead: string;
     name: string;
     email: string;
     phone: string;
     send: string;
     note: string;
-    done: string;
-    ru: string;
-    en: string;
-    zh: string;
-    close: string;
+    sent: string;
+    closing: string;
+    closeBtn: string;
+    ru: string; en: string; zh: string;
   }
 > = {
   ru: {
     title: "Заявка",
+    lead: "Оставьте контакты — ответим в Telegram или на почту.",
     name: "Ваше имя",
     email: "Email",
     phone: "Телефон",
     send: "Отправить заявку",
     note: "Форма работает внутри Telegram. После отправки окно закроется.",
-    done: "Заявка отправлена! Закрываем…",
-    ru: "РУ",
-    en: "EN",
-    zh: "中文",
-    close: "Закрыть",
+    sent: "Заявка отправлена!",
+    closing: "Закрываем…",
+    closeBtn: "Закрыть",
+    ru: "РУ", en: "EN", zh: "中文",
   },
   en: {
     title: "Request",
+    lead: "Leave your contacts — we’ll reply in Telegram or by email.",
     name: "Your name",
     email: "Email",
     phone: "Phone",
     send: "Send request",
     note: "This form runs inside Telegram. The window will close after sending.",
-    done: "Request sent! Closing…",
-    ru: "RU",
-    en: "EN",
-    zh: "中文",
-    close: "Close",
+    sent: "Request sent!",
+    closing: "Closing…",
+    closeBtn: "Close",
+    ru: "RU", en: "EN", zh: "中文",
   },
   zh: {
-    title: "咨询",
+    title: "提交咨询",
+    lead: "留下联系方式——我们会在 Telegram 或邮箱回复。",
     name: "姓名",
     email: "邮箱",
     phone: "电话",
-    send: "提交",
-    note: "此表单在 Telegram 内运行。提交后窗口将自动关闭。",
-    done: "已提交！正在关闭…",
-    ru: "RU",
-    en: "EN",
-    zh: "中文",
-    close: "关闭",
+    send: "发送",
+    note: "该表单在 Telegram 内运行。发送后窗口会关闭。",
+    sent: "已发送！",
+    closing: "正在关闭…",
+    closeBtn: "关闭",
+    ru: "俄", en: "英", zh: "中",
   },
 };
 
-const BOT_USERNAME = "HannkitBot";
+const FORMSPREE = "/api/lead";
 
-function guessInitialLang(): Lang {
-  if (typeof window === "undefined") return "ru";
-  // Пытаемся взять язык из Telegram WebApp, если он есть
-  const code =
-    (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user?.language_code ||
-    navigator.language ||
-    "ru";
-  if (code.startsWith("ru")) return "ru";
-  if (code.startsWith("zh")) return "zh";
-  return "en";
-}
-
-export default function TgForm() {
-  // ВАЖНО: язык — чисто в state, без перезагрузок страницы
-  const [lang, setLang] = useState<Lang>(guessInitialLang());
+export default function TgFormPage() {
+  const [lang, setLang] = useState<Lang>("ru");
   const T = useMemo(() => TDICT[lang], [lang]);
 
+  const [mounted, setMounted] = useState(false);
+  const isTg = useMemo(
+    () => mounted && typeof window !== "undefined" && !!window.Telegram?.WebApp,
+    [mounted]
+  );
+
+  // Поля формы
   const [name, setName] = useState("");
   const [mail, setMail] = useState("");
   const [phone, setPhone] = useState("");
+
   const [sending, setSending] = useState(false);
-  const [done, setDone] = useState(false);
-  const [showManualClose, setShowManualClose] = useState(false);
+  const [sent, setSent] = useState<null | "ok" | "fail">(null);
 
-  const tg = typeof window !== "undefined" ? (window as any)?.Telegram?.WebApp : undefined;
-
-  // Инициализация WebApp
+  // Mount + Telegram init
   useEffect(() => {
-    try {
-      tg?.ready?.();
-      tg?.expand?.();
-      tg?.disableVerticalSwipes?.();
-      tg?.disableClosingConfirmation?.();
-    } catch {}
-  }, [tg]);
+    setMounted(true);
 
-  // Попытки закрытия
-  const attemptCloseOnce = () => {
+    // Инициализация Telegram WebApp (если внутри мини-аппа)
     try {
-      tg?.close?.();
-      return true;
+      const W = window as any;
+      if (W?.Telegram?.WebApp) {
+        const wa = W.Telegram.WebApp;
+        wa.ready?.();
+        wa.expand?.(); // чтобы занять доступную высоту
+        // Светлая/тёмная темы Telegram применяются нативно, цвета берем нейтральные
+      }
     } catch {
-      return false;
+      /* ignore */
+    }
+  }, []);
+
+  const haptic = (type: "success" | "error" | "warning" = "success") => {
+    try {
+      if (isTg) {
+        window.Telegram!.WebApp.HapticFeedback?.notificationOccurred?.(type);
+      }
+    } catch {
+      /* ignore */
     }
   };
 
-  useEffect(() => {
-    if (!done) return;
+  const closeMiniApp = () => {
+    try {
+      if (isTg) {
+        window.Telegram!.WebApp.close();
+      }
+    } catch {
+      /* ignore */
+    }
+  };
 
-    const timers: number[] = [];
-
-    const schedule = (fn: () => void, ms: number) => {
-      const id = window.setTimeout(fn, ms);
-      timers.push(id);
-    };
-
-    // 1–3. несколько попыток close()
-    schedule(() => {
-      if (attemptCloseOnce()) return;
-    }, 50);
-    schedule(() => {
-      if (attemptCloseOnce()) return;
-    }, 350);
-    schedule(() => {
-      if (attemptCloseOnce()) return;
-    }, 900);
-
-    // 4. Попробовать вернуться назад (иногда закрывает webview на iOS)
-    schedule(() => {
-      if (attemptCloseOnce()) return;
-      try {
-        if (window.history.length > 1) window.history.back();
-      } catch {}
-    }, 1300);
-
-    // 5. tg://resolve — выкинуть пользователя в чат
-    schedule(() => {
-      if (attemptCloseOnce()) return;
-      try {
-        // может быть заблокировано, но часто срабатывает
-        window.location.href = `tg://resolve?domain=${BOT_USERNAME}`;
-      } catch {}
-    }, 1800);
-
-    // 6. Крайний случай — попытаться закрыть вкладку
-    schedule(() => {
-      if (attemptCloseOnce()) return;
-      try {
-        window.close();
-      } catch {}
-      setShowManualClose(true);
-    }, 2400);
-
-    return () => {
-      timers.forEach((id) => clearTimeout(id));
-    };
-  }, [done]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (sending) return;
+
     setSending(true);
+    setSent(null);
     try {
-      await fetch("/api/lead", {
+      const r = await fetch(FORMSPREE, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           name,
           email: mail,
           phone,
-          source: "tg-webapp",
+          source: "tg-miniapp",
           lang,
         }),
       });
-      setDone(true);
+
+      if (r.ok) {
+        setSent("ok");
+        haptic("success");
+
+        // Чуть-чуть показываем сообщение и закрываем
+        setTimeout(() => {
+          if (isTg) {
+            closeMiniApp();
+          } else {
+            // Фолбэк для обычного браузера:
+            // если пришли не из Telegram — просто уводим к боту или назад
+            try {
+              window.location.href = "https://t.me/HannkitBot";
+            } catch {
+              /* ignore */
+            }
+          }
+        }, 1200);
+      } else {
+        throw new Error("Request failed");
+      }
     } catch {
-      // Даже при сетевой ошибке — идём в done, чтобы попытаться закрыть окно.
-      setDone(true);
+      setSent("fail");
+      haptic("error");
+      // В браузере остаёмся на странице; в Telegram пользователь может нажать «Закрыть»
     } finally {
       setSending(false);
     }
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: COLORS.bg, color: COLORS.text, padding: 16 }}>
+    <div
+      style={{
+        fontFamily:
+          'Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji"',
+        color: COLORS.text,
+        background: COLORS.bg,
+        minHeight: "100vh",
+        padding: 16,
+      }}
+    >
       <div
         style={{
-          maxWidth: 680,
+          maxWidth: 720,
           margin: "0 auto",
           background: COLORS.card,
           border: `1px solid ${COLORS.border}`,
-          borderRadius: 16,
+          borderRadius: 18,
           padding: 18,
-          boxShadow: "0 8px 24px rgba(0,0,0,.06)",
+          boxShadow: "0 6px 18px rgba(0,0,0,.06)",
         }}
       >
-        {/* Языковые кнопки — БЕЗ href, только setLang */}
-        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginBottom: 6 }}>
+        {/* Языки */}
+        <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
           {(["ru", "en", "zh"] as Lang[]).map((l) => (
             <button
               key={l}
-              type="button"
               onClick={() => setLang(l)}
               style={{
                 padding: "6px 10px",
                 borderRadius: 999,
-                border: `1px solid ${lang === l ? COLORS.brand : COLORS.border}`,
-                background: lang === l ? "#eef2ff" : COLORS.card,
-                color: lang === l ? COLORS.brand : COLORS.text,
-                fontWeight: 600,
-                fontSize: 13,
+                border: `1px solid ${l === lang ? COLORS.brand : COLORS.border}`,
+                background: l === lang ? COLORS.brand : "transparent",
+                color: l === lang ? "#fff" : COLORS.text,
                 cursor: "pointer",
+                fontWeight: 700,
               }}
             >
               {TDICT[l][l]}
@@ -231,111 +230,124 @@ export default function TgForm() {
           ))}
         </div>
 
-        <h1 style={{ fontSize: 28, margin: "0 0 10px", letterSpacing: 0.2 }}>{T.title}</h1>
+        <h1 style={{ fontSize: 34, margin: "6px 0 8px" }}>{T.title}</h1>
+        <p style={{ color: COLORS.subtext, margin: "0 0 14px", fontSize: 18 }}>{T.lead}</p>
 
-        <form onSubmit={handleSubmit}>
-          <div
+        <form onSubmit={onSubmit} style={{ display: "grid", gap: 12 }}>
+          <input
+            placeholder={T.name}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
             style={{
-              display: "grid",
-              gap: 10,
-              marginTop: 8,
-              background: "#FAFAFB",
-              borderRadius: 14,
-              padding: 12,
+              padding: "12px 14px",
+              borderRadius: 12,
               border: `1px solid ${COLORS.border}`,
+              outline: "none",
+            }}
+          />
+          <input
+            placeholder={T.email}
+            value={mail}
+            onChange={(e) => setMail(e.target.value)}
+            type="email"
+            required
+            style={{
+              padding: "12px 14px",
+              borderRadius: 12,
+              border: `1px solid ${COLORS.border}`,
+              outline: "none",
+            }}
+          />
+          <input
+            placeholder={T.phone}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            inputMode="tel"
+            style={{
+              padding: "12px 14px",
+              borderRadius: 12,
+              border: `1px solid ${COLORS.border}`,
+              outline: "none",
+            }}
+          />
+
+          <button
+            type="submit"
+            disabled={sending}
+            style={{
+              padding: "12px 14px",
+              borderRadius: 12,
+              border: "none",
+              background: sending ? "#152a7e" : COLORS.brand,
+              color: "#fff",
+              fontWeight: 700,
+              cursor: sending ? "default" : "pointer",
             }}
           >
-            <input
-              placeholder={T.name}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              autoComplete="name"
-              style={inputStyle}
-            />
-            <input
-              placeholder={T.email}
-              type="email"
-              value={mail}
-              onChange={(e) => setMail(e.target.value)}
-              required
-              autoComplete="email"
-              style={inputStyle}
-            />
-            <input
-              placeholder={T.phone}
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              inputMode="tel"
-              autoComplete="tel"
-              style={inputStyle}
-            />
+            {T.send}
+          </button>
+        </form>
 
+        <p style={{ color: COLORS.subtext, margin: "12px 0 10px" }}>{T.note}</p>
+
+        {/* Сообщения статуса */}
+        {sent === "ok" && (
+          <div
+            style={{
+              background: "#F3F4F6",
+              border: `1px solid ${COLORS.border}`,
+              borderRadius: 12,
+              padding: "10px 12px",
+              fontWeight: 700,
+            }}
+          >
+            {T.sent} {T.closing}
+          </div>
+        )}
+        {sent === "fail" && (
+          <div
+            style={{
+              background: "#FEF2F2",
+              border: "1px solid #FECACA",
+              borderRadius: 12,
+              padding: "10px 12px",
+              fontWeight: 700,
+              color: "#991B1B",
+            }}
+          >
+            Ошибка отправки. Попробуйте ещё раз или вернитесь в бот.
+          </div>
+        )}
+
+        {/* Ручная кнопка закрытия видна только в Telegram */}
+        {mounted && isTg && (
+          <div style={{ marginTop: 12 }}>
             <button
-              type="submit"
-              disabled={sending}
+              onClick={closeMiniApp}
               style={{
-                padding: "12px 14px",
-                borderRadius: 12,
-                background: sending ? "#1f2a5a" : COLORS.brand,
-                color: "#fff",
-                border: "none",
-                fontWeight: 700,
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: `1px solid ${COLORS.border}`,
+                background: COLORS.card,
                 cursor: "pointer",
+                fontWeight: 600,
               }}
             >
-              {T.send}
+              {T.closeBtn}
             </button>
-
-            <div style={{ color: COLORS.subtext }}>{T.note}</div>
-
-            {done && (
-              <div
-                style={{
-                  background: COLORS.chip,
-                  border: `1px solid ${COLORS.border}`,
-                  borderRadius: 12,
-                  padding: 12,
-                  fontWeight: 600,
-                }}
-              >
-                {T.done}
-              </div>
-            )}
-
-            {done && showManualClose && (
-              <button
-                type="button"
-                onClick={() => {
-                  if (!attemptCloseOnce()) {
-                    try {
-                      window.location.href = `tg://resolve?domain=${BOT_USERNAME}`;
-                    } catch {}
-                  }
-                }}
-                style={{
-                  padding: "10px 12px",
-                  borderRadius: 10,
-                  background: COLORS.card,
-                  border: `1px solid ${COLORS.border}`,
-                  cursor: "pointer",
-                  fontWeight: 700,
-                }}
-              >
-                {T.close}
-              </button>
-            )}
           </div>
-        </form>
+        )}
       </div>
     </div>
   );
 }
 
-const inputStyle: React.CSSProperties = {
-  padding: "12px 14px",
-  borderRadius: 10,
-  border: `1px solid ${COLORS.border}`,
-  outline: "none",
-  background: "#fff",
-};
+/**
+ * Чтобы Vercel / Next.js НЕ пытались статически пререндерить /tg-form на билде
+ * (иначе возможна "Minified React error #31" при SSG),
+ * заставляем страницу рендериться на запросе.
+ */
+export async function getServerSideProps() {
+  return { props: {} };
+}
