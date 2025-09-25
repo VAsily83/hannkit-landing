@@ -4,10 +4,22 @@ import { useEffect, useMemo, useState } from "react";
 const COLORS = { brand: "#0B1E5B", border: "#E5E7EB", subtext: "#374151" };
 
 type Lang = "ru" | "en" | "zh";
-const T: Record<Lang, {
-  title: string; lead: string; name: string; email: string; phone: string;
-  send: string; sending: string; hint: string; need: string;
-}> = {
+const T: Record<
+  Lang,
+  {
+    title: string;
+    lead: string;
+    name: string;
+    email: string;
+    phone: string;
+    send: string;
+    sending: string;
+    hint: string;
+    need: string;
+    ok: string;
+    fail: string;
+  }
+> = {
   ru: {
     title: "Заявка",
     lead: "Оставьте контакты — ответим в Telegram или на почту.",
@@ -18,6 +30,8 @@ const T: Record<Lang, {
     sending: "Отправляем…",
     hint: "Форма работает внутри Telegram. После отправки окно закроется.",
     need: "Укажите имя и хотя бы email или телефон.",
+    ok: "Заявка отправлена!",
+    fail: "Не удалось отправить. Попробуйте ещё раз.",
   },
   en: {
     title: "Request",
@@ -29,6 +43,8 @@ const T: Record<Lang, {
     sending: "Sending…",
     hint: "This form runs inside Telegram. It will close after submission.",
     need: "Please provide your name and either email or phone.",
+    ok: "Request sent!",
+    fail: "Failed to send. Please try again.",
   },
   zh: {
     title: "提交申请",
@@ -40,44 +56,52 @@ const T: Record<Lang, {
     sending: "正在提交…",
     hint: "此表单在 Telegram 内运行，提交后会自动关闭。",
     need: "请填写姓名，并提供邮箱或电话其中之一。",
+    ok: "已发送！",
+    fail: "发送失败，请重试。",
   },
 };
 
+// --- Telegram WebApp typings (минимально нужные) ---
 declare global {
   interface Window {
     Telegram?: {
       WebApp?: {
-        initDataUnsafe?: any;
+        ready?: () => void;
         expand?: () => void;
         close?: () => void;
+        sendData?: (data: string) => void;
+        enableClosingConfirmation?: (v: boolean) => void;
+        HapticFeedback?: {
+          notificationOccurred?: (t: "success" | "warning" | "error") => void;
+        };
+        themeParams?: Record<string, string>;
         MainButton?: {
           setText?: (t: string) => void;
           show?: () => void;
           hide?: () => void;
-          onClick?: (cb: () => void) => void;
-          offClick?: (cb: () => void) => void;
+          isVisible?: boolean;
         };
-        HapticFeedback?: { notificationOccurred?: (t: "success" | "warning" | "error") => void };
-        themeParams?: Record<string, string>;
+        onEvent?: (event: string, cb: (...a: any[]) => void) => void;
+        offEvent?: (event: string, cb: (...a: any[]) => void) => void;
+        initDataUnsafe?: { user?: { language_code?: string } };
       };
     };
   }
 }
 
+// --- helpers ---
 function pickLangFromTG(code?: string): Lang {
   const c = (code || "").toLowerCase();
   if (c.startsWith("zh")) return "zh";
   if (c.startsWith("en")) return "en";
   return "ru";
 }
-
 function pickInitialLang(): Lang {
   if (typeof window !== "undefined") {
     try {
       const q = new URLSearchParams(window.location.search);
       const ql = (q.get("lang") || "").toLowerCase() as Lang;
       if (ql === "ru" || ql === "en" || ql === "zh") return ql;
-
       const tg = window.Telegram?.WebApp;
       const lc = tg?.initDataUnsafe?.user?.language_code;
       return pickLangFromTG(lc);
@@ -94,7 +118,9 @@ export default function TgForm() {
   const [sending, setSending] = useState(false);
 
   const tg = typeof window !== "undefined" ? window.Telegram?.WebApp : undefined;
+  const inTG = !!tg;
 
+  // тема из Telegram + наши дефолты
   const theme = useMemo(() => {
     const t = tg?.themeParams || {};
     return {
@@ -106,19 +132,57 @@ export default function TgForm() {
     };
   }, [tg?.themeParams]);
 
+  // Инициализация WebApp
   useEffect(() => {
-    tg?.expand?.();
-    tg?.MainButton?.setText?.(T[lang].send);
-    tg?.MainButton?.show?.();
+    if (!tg) return;
+    try {
+      tg.ready?.();
+      tg.expand?.();
+      tg.enableClosingConfirmation?.(false);
+      tg.MainButton?.setText?.(T[lang].send);
+      tg.MainButton?.show?.();
+    } catch {}
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tg, lang]);
 
+  // Обработчик MainButton (через onEvent — стабильнее для iOS)
   useEffect(() => {
-    if (!tg?.MainButton) return;
-    const onClick = async () => { if (!sending) await submit(); };
-    tg.MainButton.onClick?.(onClick);
-    return () => tg.MainButton?.offClick?.(onClick);
+    if (!tg?.onEvent) return;
+    const handler = async () => {
+      if (!sending) await submit();
+    };
+    tg.onEvent("mainButtonClicked", handler);
+    return () => tg.offEvent?.("mainButtonClicked", handler);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, mail, phone, lang, sending]);
+
+  // Унифицированное закрытие (с фоллбэками под iOS)
+  const closeWebApp = () => {
+    try {
+      tg?.sendData?.("submitted"); // не мешает, иногда помогает iOS корректно «закрыться»
+    } catch {}
+    // небольшая задержка чтобы Telegram успел обработать sendData
+    setTimeout(() => {
+      try {
+        tg?.close?.();
+      } catch {}
+      // Fallback-цепочка (если вдруг не закрылось)
+      setTimeout(() => {
+        try {
+          window.close();
+        } catch {}
+        setTimeout(() => {
+          try {
+            history.length > 1 ? history.back() : (window.location.href = "about:blank");
+          } catch {
+            try {
+              window.location.replace("about:blank");
+            } catch {}
+          }
+        }, 200);
+      }, 100);
+    }, 50);
+  };
 
   const submit = async () => {
     if (!name || !(mail || phone)) {
@@ -130,27 +194,52 @@ export default function TgForm() {
       const r = await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email: mail, phone, lang, source: "telegram-webapp" }),
+        body: JSON.stringify({
+          name,
+          email: mail,
+          phone,
+          lang,
+          source: "telegram-webapp",
+        }),
       });
+
       if (r.ok) {
         tg?.HapticFeedback?.notificationOccurred?.("success");
-        tg?.close?.();
+        // прячем MainButton на всякий
+        tg?.MainButton?.hide?.();
+        closeWebApp();
         return;
       }
       throw new Error("bad status");
     } catch {
       tg?.HapticFeedback?.notificationOccurred?.("error");
-      alert("Failed to send. Please try again."); // краткое тех-сообщение
+      alert(T[lang].fail);
     } finally {
       setSending(false);
     }
   };
 
   return (
-    <div style={{ minHeight: "100vh", background: theme.bg, color: theme.text, fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto" }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        background: theme.bg,
+        color: theme.text,
+        fontFamily: "Inter, system-ui, -apple-system, Segoe UI, Roboto",
+      }}
+    >
       <div style={{ maxWidth: 520, margin: "0 auto", padding: 16 }}>
-        <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 8 }}>
-          <h1 style={{ fontSize: 20, fontWeight: 800, margin: "2px 0 10px" }}>{T[lang].title}</h1>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            gap: 8,
+          }}
+        >
+          <h1 style={{ fontSize: 20, fontWeight: 800, margin: "2px 0 10px" }}>
+            {T[lang].title}
+          </h1>
           <div style={{ display: "flex", gap: 6 }}>
             {(["ru", "en", "zh"] as Lang[]).map((l) => (
               <button
@@ -173,37 +262,74 @@ export default function TgForm() {
 
         <p style={{ color: theme.subtext, margin: "0 0 14px" }}>{T[lang].lead}</p>
 
-        <div style={{ display: "grid", gap: 10, background: "#fff", border: `1px solid ${theme.border}`, borderRadius: 12, padding: 12 }}>
+        <div
+          style={{
+            display: "grid",
+            gap: 10,
+            background: "#fff",
+            border: `1px solid ${theme.border}`,
+            borderRadius: 12,
+            padding: 12,
+          }}
+        >
           <input
             placeholder={T[lang].name}
             value={name}
             onChange={(e) => setName(e.target.value)}
-            style={{ padding: "12px", borderRadius: 10, border: `1px solid ${theme.border}`, outline: "none" }}
+            style={{
+              padding: "12px",
+              borderRadius: 10,
+              border: `1px solid ${theme.border}`,
+              outline: "none",
+            }}
           />
           <input
             placeholder={T[lang].email}
             type="email"
             value={mail}
             onChange={(e) => setMail(e.target.value)}
-            style={{ padding: "12px", borderRadius: 10, border: `1px solid ${theme.border}`, outline: "none" }}
+            style={{
+              padding: "12px",
+              borderRadius: 10,
+              border: `1px solid ${theme.border}`,
+              outline: "none",
+            }}
           />
           <input
             placeholder={T[lang].phone}
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            style={{ padding: "12px", borderRadius: 10, border: `1px solid ${theme.border}`, outline: "none" }}
+            style={{
+              padding: "12px",
+              borderRadius: 10,
+              border: `1px solid ${theme.border}`,
+              outline: "none",
+            }}
           />
 
-          <button
-            onClick={submit}
-            disabled={sending}
-            style={{ padding: "12px", borderRadius: 10, border: "none", background: theme.brand, color: "#fff", fontWeight: 700, cursor: "pointer" }}
-          >
-            {sending ? T[lang].sending : T[lang].send}
-          </button>
+          {/* Если открыто не в Telegram WebApp — рендерим нашу кнопку */}
+          {!inTG && (
+            <button
+              onClick={submit}
+              disabled={sending}
+              style={{
+                padding: "12px",
+                borderRadius: 10,
+                border: "none",
+                background: theme.brand,
+                color: "#fff",
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              {sending ? T[lang].sending : T[lang].send}
+            </button>
+          )}
         </div>
 
-        <div style={{ fontSize: 12, color: theme.subtext, marginTop: 10 }}>{T[lang].hint}</div>
+        <div style={{ fontSize: 12, color: theme.subtext, marginTop: 10 }}>
+          {T[lang].hint}
+        </div>
       </div>
     </div>
   );
