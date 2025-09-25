@@ -63,29 +63,30 @@ const TDICT: Record<
     send: "提交",
     note: "此表单在 Telegram 内运行。提交后窗口将自动关闭。",
     done: "已提交！正在关闭…",
-    ru: "РУ",
+    ru: "RU",
     en: "EN",
     zh: "中文",
     close: "关闭",
   },
 };
 
-const BOT_USERNAME = "HannkitBot"; // на случай резервного редиректа
+const BOT_USERNAME = "HannkitBot";
 
-function useLangFromParam(): Lang {
-  const [lang, setLang] = useState<Lang>("ru");
-  useEffect(() => {
-    try {
-      const p = new URLSearchParams(window.location.search);
-      const q = (p.get("lang") || p.get("l") || "").toLowerCase();
-      if (q === "en" || q === "zh" || q === "ru") setLang(q);
-    } catch {}
-  }, []);
-  return lang;
+function guessInitialLang(): Lang {
+  if (typeof window === "undefined") return "ru";
+  // Пытаемся взять язык из Telegram WebApp, если он есть
+  const code =
+    (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user?.language_code ||
+    navigator.language ||
+    "ru";
+  if (code.startsWith("ru")) return "ru";
+  if (code.startsWith("zh")) return "zh";
+  return "en";
 }
 
 export default function TgForm() {
-  const lang = useLangFromParam();
+  // ВАЖНО: язык — чисто в state, без перезагрузок страницы
+  const [lang, setLang] = useState<Lang>(guessInitialLang());
   const T = useMemo(() => TDICT[lang], [lang]);
 
   const [name, setName] = useState("");
@@ -95,20 +96,20 @@ export default function TgForm() {
   const [done, setDone] = useState(false);
   const [showManualClose, setShowManualClose] = useState(false);
 
-  // ---- Telegram WebApp init
   const tg = typeof window !== "undefined" ? (window as any)?.Telegram?.WebApp : undefined;
 
+  // Инициализация WebApp
   useEffect(() => {
     try {
       tg?.ready?.();
       tg?.expand?.();
-      tg?.disableVerticalSwipes?.(); // iOS лишние свайпы
+      tg?.disableVerticalSwipes?.();
       tg?.disableClosingConfirmation?.();
     } catch {}
   }, [tg]);
 
-  // ---- Надёжное закрытие с несколькими попытками и fallback
-  const tryClose = () => {
+  // Попытки закрытия
+  const attemptCloseOnce = () => {
     try {
       tg?.close?.();
       return true;
@@ -120,44 +121,52 @@ export default function TgForm() {
   useEffect(() => {
     if (!done) return;
 
-    // 1) сразу попробовать закрыть
-    const t0 = setTimeout(() => {
-      if (tryClose()) return;
+    const timers: number[] = [];
+
+    const schedule = (fn: () => void, ms: number) => {
+      const id = window.setTimeout(fn, ms);
+      timers.push(id);
+    };
+
+    // 1–3. несколько попыток close()
+    schedule(() => {
+      if (attemptCloseOnce()) return;
     }, 50);
+    schedule(() => {
+      if (attemptCloseOnce()) return;
+    }, 350);
+    schedule(() => {
+      if (attemptCloseOnce()) return;
+    }, 900);
 
-    // 2) ещё попытки через короткие интервалы (на iOS иногда срабатывает не сразу)
-    const t1 = setTimeout(() => {
-      if (tryClose()) return;
-    }, 400);
-
-    const t2 = setTimeout(() => {
-      if (tryClose()) return;
-    }, 1000);
-
-    // 3) мягкий резерв — вернуть пользователя в бота (если МП упёрлось)
-    const t3 = setTimeout(() => {
-      if (tryClose()) return;
+    // 4. Попробовать вернуться назад (иногда закрывает webview на iOS)
+    schedule(() => {
+      if (attemptCloseOnce()) return;
       try {
-        window.location.href = `https://t.me/${BOT_USERNAME}`;
+        if (window.history.length > 1) window.history.back();
       } catch {}
-    }, 1700);
+    }, 1300);
 
-    // 4) самый крайний резерв (часто игнорируется iOS) — закрыть вкладку
-    const t4 = setTimeout(() => {
-      if (tryClose()) return;
+    // 5. tg://resolve — выкинуть пользователя в чат
+    schedule(() => {
+      if (attemptCloseOnce()) return;
+      try {
+        // может быть заблокировано, но часто срабатывает
+        window.location.href = `tg://resolve?domain=${BOT_USERNAME}`;
+      } catch {}
+    }, 1800);
+
+    // 6. Крайний случай — попытаться закрыть вкладку
+    schedule(() => {
+      if (attemptCloseOnce()) return;
       try {
         window.close();
       } catch {}
-      // если не закрылось — показать ручную кнопку
       setShowManualClose(true);
-    }, 2600);
+    }, 2400);
 
     return () => {
-      clearTimeout(t0);
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
-      clearTimeout(t4);
+      timers.forEach((id) => clearTimeout(id));
     };
   }, [done]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -165,9 +174,7 @@ export default function TgForm() {
     e.preventDefault();
     if (sending) return;
     setSending(true);
-
     try {
-      // можно прокинуть peerId / initData если понадобится — сейчас не требуется
       await fetch("/api/lead", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -181,8 +188,7 @@ export default function TgForm() {
       });
       setDone(true);
     } catch {
-      // даже если сеть глючнула — всё равно пробуем закрыть,
-      // т.к. у тебя запрос в итоге доходит по факту
+      // Даже при сетевой ошибке — идём в done, чтобы попытаться закрыть окно.
       setDone(true);
     } finally {
       setSending(false);
@@ -190,14 +196,7 @@ export default function TgForm() {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: COLORS.bg,
-        color: COLORS.text,
-        padding: 16,
-      }}
-    >
+    <div style={{ minHeight: "100vh", background: COLORS.bg, color: COLORS.text, padding: 16 }}>
       <div
         style={{
           maxWidth: 680,
@@ -209,25 +208,26 @@ export default function TgForm() {
           boxShadow: "0 8px 24px rgba(0,0,0,.06)",
         }}
       >
-        {/* язык */}
+        {/* Языковые кнопки — БЕЗ href, только setLang */}
         <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginBottom: 6 }}>
           {(["ru", "en", "zh"] as Lang[]).map((l) => (
-            <a
+            <button
               key={l}
-              href={`?lang=${l}`}
+              type="button"
+              onClick={() => setLang(l)}
               style={{
                 padding: "6px 10px",
                 borderRadius: 999,
-                textDecoration: "none",
                 border: `1px solid ${lang === l ? COLORS.brand : COLORS.border}`,
                 background: lang === l ? "#eef2ff" : COLORS.card,
                 color: lang === l ? COLORS.brand : COLORS.text,
                 fontWeight: 600,
                 fontSize: 13,
+                cursor: "pointer",
               }}
             >
               {TDICT[l][l]}
-            </a>
+            </button>
           ))}
         </div>
 
@@ -303,13 +303,13 @@ export default function TgForm() {
               </div>
             )}
 
-            {showManualClose && (
+            {done && showManualClose && (
               <button
                 type="button"
                 onClick={() => {
-                  if (!tryClose()) {
+                  if (!attemptCloseOnce()) {
                     try {
-                      window.location.href = `https://t.me/${BOT_USERNAME}`;
+                      window.location.href = `tg://resolve?domain=${BOT_USERNAME}`;
                     } catch {}
                   }
                 }}
