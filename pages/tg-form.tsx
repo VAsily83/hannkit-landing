@@ -16,59 +16,11 @@ const COLORS = {
 
 const TDICT: Record<
   Lang,
-  {
-    title: string;
-    name: string;
-    email: string;
-    phone: string;
-    send: string;
-    hint: string;
-    sent: string;
-    close: string;
-    langRU: string;
-    langEN: string;
-    langZH: string;
-  }
+  { title: string; name: string; email: string; phone: string; send: string; hint: string; sent: string; close: string; langRU: string; langEN: string; langZH: string }
 > = {
-  ru: {
-    title: "Заявка",
-    name: "Ваше имя",
-    email: "Email",
-    phone: "Телефон",
-    send: "Отправить заявку",
-    hint: "Форма работает внутри Telegram. После отправки окно закроется (или нажмите «Закрыть»).",
-    sent: "Заявка отправлена! Закрываем…",
-    close: "Закрыть",
-    langRU: "РУ",
-    langEN: "EN",
-    langZH: "中文",
-  },
-  en: {
-    title: "Request",
-    name: "Your name",
-    email: "Email",
-    phone: "Phone",
-    send: "Send request",
-    hint: "This form runs inside Telegram. After sending, the window will close (or tap “Close”).",
-    sent: "Request sent! Closing…",
-    close: "Close",
-    langRU: "RU",
-    langEN: "EN",
-    langZH: "ZH",
-  },
-  zh: {
-    title: "提交信息",
-    name: "姓名",
-    email: "邮箱",
-    phone: "电话",
-    send: "提交",
-    hint: "该表单在 Telegram 内运行。提交后窗口会关闭（或点击“关闭”）。",
-    sent: "已提交！正在关闭…",
-    close: "关闭",
-    langRU: "俄",
-    langEN: "英",
-    langZH: "中",
-  },
+  ru: { title: "Заявка", name: "Ваше имя", email: "Email", phone: "Телефон", send: "Отправить заявку", hint: "Форма работает внутри Telegram. После отправки окно закроется (или нажмите «Закрыть»).", sent: "Заявка отправлена! Закрываем…", close: "Закрыть", langRU: "РУ", langEN: "EN", langZH: "中文" },
+  en: { title: "Request", name: "Your name", email: "Email", phone: "Phone", send: "Send request", hint: "This form runs inside Telegram. After sending, the window will close (or tap “Close”).", sent: "Request sent! Closing…", close: "Close", langRU: "RU", langEN: "EN", langZH: "ZH" },
+  zh: { title: "提交信息", name: "姓名", email: "邮箱", phone: "电话", send: "提交", hint: "该表单在 Telegram 内运行。提交后窗口会关闭（或点击“关闭”）。", sent: "已提交！正在关闭…", close: "关闭", langRU: "俄", langEN: "英", langZH: "中" },
 };
 
 function getTG() {
@@ -79,7 +31,7 @@ function getTG() {
 }
 
 export default function TgFormPage() {
-  // язык из startparam: tg-form?lang=en
+  // язык из ?lang=
   const [lang, setLang] = useState<Lang>(() => {
     if (typeof window === "undefined") return "ru";
     const url = new URL(window.location.href);
@@ -94,20 +46,18 @@ export default function TgFormPage() {
   const [isSending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
 
-  // Инициализация Mini-App
+  // Инициализация Mini App
   useEffect(() => {
     const tg = getTG();
-    if (tg) {
-      try {
-        tg.ready();
-        tg.expand(); // чтобы не было «просадки» по высоте
-        tg.setHeaderColor && tg.setHeaderColor("secondary_bg_color");
-        tg.setBackgroundColor && tg.setBackgroundColor("#ffffff");
-      } catch {}
-    }
+    try {
+      tg?.ready?.();
+      tg?.expand?.();
+      tg?.setHeaderColor?.("secondary_bg_color");
+      tg?.setBackgroundColor?.("#ffffff");
+    } catch {}
   }, []);
 
-  // Безопасное закрытие с многоступенчатым фоллбэком
+  // Безопасное закрытие с несколькими фоллбэками
   const safeClose = () => {
     try {
       const tg = getTG();
@@ -116,7 +66,6 @@ export default function TgFormPage() {
         return;
       }
     } catch {}
-    // iOS иногда игнорирует close(), пробуем альтернативы
     try {
       window.close();
     } catch {}
@@ -127,43 +76,51 @@ export default function TgFormPage() {
     }
   };
 
-  const submit = async () => {
+  // Отправка «огнеупорно» + закрытие синхронно из клика
+  const submit = () => {
     if (isSending) return;
     setSending(true);
 
-    // Отправляем на тот же обработчик, что и ленд (можешь заменить путь)
-    const endpoint = "/api/lead";
-    const payload = {
-      source: "tg-miniapp",
-      lang,
-      name,
-      email: mail,
-      phone,
-    };
+    const payload = { source: "tg-miniapp", lang, name, email: mail, phone };
 
+    // Абсолютный URL — надёжнее в iOS веб-вью
+    const url =
+      typeof window !== "undefined"
+        ? `${window.location.origin.replace(/\/$/, "")}/api/lead`
+        : "https://hannkit.com/api/lead";
+
+    // 1) Пытаемся sendBeacon (не блокирует закрытие страницы)
+    let sentByBeacon = false;
     try {
-      const r = await fetch(endpoint, {
+      if ("navigator" in window && "sendBeacon" in navigator) {
+        const blob = new Blob([JSON.stringify(payload)], { type: "application/json" });
+        sentByBeacon = navigator.sendBeacon(url, blob);
+      }
+    } catch {}
+
+    // 2) Параллельно — фоллбэк fetch с keepalive (не ждём результата)
+    try {
+      // @ts-ignore keepalive поддерживается в современных браузерах
+      fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify(payload),
-      });
-      // Считаем успехом любой 2xx (и даже сетевой оффлайн — всё равно пробуем закрыть)
-      if (!r.ok) {
-        // Не валим UX — показываем «отправлено» и закрываемся
-        // Можно логировать в свою аналитику, если нужно
-      }
-    } catch {
-      // игнор — ниже всё равно закрываем
-    }
+        keepalive: true,
+      }).catch(() => {});
+    } catch {}
 
+    // Показать тост и закрыть — в том же тике клика (важно для iOS Telegram)
     setSent(true);
-    // даём пользователю увидеть тост, затем закрываем
-    setTimeout(safeClose, 800);
+    // даём кадр на перерисовку, затем закрываем
+    requestAnimationFrame(() => {
+      // Небольшая задержка, чтобы тост мигнул визуально
+      setTimeout(safeClose, 250);
+    });
   };
 
   return (
     <>
-      {/* SDK должен загрузиться ДО рендера, чтобы iOS-клиент точно увидел API */}
+      {/* SDK грузим до рендера — для iOS Telegram это критично */}
       <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
 
       <div
@@ -176,50 +133,25 @@ export default function TgFormPage() {
         }}
       >
         <div style={{ maxWidth: 720, margin: "0 auto", padding: "20px 16px 28px" }}>
-          {/* языки */}
+          {/* Языки */}
           <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-            <button
-              onClick={() => setLang("ru")}
-              style={{
-                padding: "8px 12px",
-                borderRadius: 999,
-                border: `1px solid ${lang === "ru" ? COLORS.brand : COLORS.border}`,
-                background: lang === "ru" ? COLORS.brand : "#fff",
-                color: lang === "ru" ? "#fff" : COLORS.text,
-                cursor: "pointer",
-                fontWeight: 700,
-              }}
-            >
-              {T.langRU}
-            </button>
-            <button
-              onClick={() => setLang("en")}
-              style={{
-                padding: "8px 12px",
-                borderRadius: 999,
-                border: `1px solid ${lang === "en" ? COLORS.brand : COLORS.border}`,
-                background: lang === "en" ? COLORS.brand : "#fff",
-                color: lang === "en" ? "#fff" : COLORS.text,
-                cursor: "pointer",
-                fontWeight: 700,
-              }}
-            >
-              {T.langEN}
-            </button>
-            <button
-              onClick={() => setLang("zh")}
-              style={{
-                padding: "8px 12px",
-                borderRadius: 999,
-                border: `1px solid ${lang === "zh" ? COLORS.brand : COLORS.border}`,
-                background: lang === "zh" ? COLORS.brand : "#fff",
-                color: lang === "zh" ? "#fff" : COLORS.text,
-                cursor: "pointer",
-                fontWeight: 700,
-              }}
-            >
-              {T.langZH}
-            </button>
+            {(["ru", "en", "zh"] as Lang[]).map((l) => (
+              <button
+                key={l}
+                onClick={() => setLang(l)}
+                style={{
+                  padding: "8px 12px",
+                  borderRadius: 999,
+                  border: `1px solid ${lang === l ? COLORS.brand : COLORS.border}`,
+                  background: lang === l ? COLORS.brand : "#fff",
+                  color: lang === l ? "#fff" : COLORS.text,
+                  cursor: "pointer",
+                  fontWeight: 700,
+                }}
+              >
+                {l === "ru" ? T.langRU : l === "en" ? T.langEN : T.langZH}
+              </button>
+            ))}
           </div>
 
           <h1 style={{ fontSize: 36, lineHeight: 1.15, margin: "8px 0 14px", fontWeight: 800 }}>{T.title}</h1>
@@ -238,36 +170,21 @@ export default function TgFormPage() {
               placeholder={T.name}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              style={{
-                padding: "12px 14px",
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 12,
-                outline: "none",
-              }}
+              style={{ padding: "12px 14px", border: `1px solid ${COLORS.border}`, borderRadius: 12, outline: "none" }}
             />
             <input
               placeholder={T.email}
               value={mail}
               onChange={(e) => setMail(e.target.value)}
               type="email"
-              style={{
-                padding: "12px 14px",
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 12,
-                outline: "none",
-              }}
+              style={{ padding: "12px 14px", border: `1px solid ${COLORS.border}`, borderRadius: 12, outline: "none" }}
             />
             <input
               placeholder={T.phone}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               inputMode="tel"
-              style={{
-                padding: "12px 14px",
-                border: `1px solid ${COLORS.border}`,
-                borderRadius: 12,
-                outline: "none",
-              }}
+              style={{ padding: "12px 14px", border: `1px solid ${COLORS.border}`, borderRadius: 12, outline: "none" }}
             />
 
             <button
@@ -307,7 +224,7 @@ export default function TgFormPage() {
               </div>
             )}
 
-            {/* Ручная кнопка закрытия на случай, если автозакрытие не сработало */}
+            {/* Ручное закрытие, если вдруг автозакрытие не сработало */}
             <button
               onClick={safeClose}
               style={{
