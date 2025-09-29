@@ -334,99 +334,19 @@ type CaseCard = {
 };
 
 const CASES: CaseCard[] = [
-  {
-    brand: "OMX",
-    market: "Wildberries",
-    category: { ru: "Бытовая техника", en: "Small appliances", zh: "小家电" },
-    bulletsKey: ["assort", "seo", "reviews"],
-    img: "https://basket-13.wbbasket.ru/vol1945/part194511/194511252/images/big/1.webp",
-    click: "https://www.wildberries.ru/seller/94640",
-  },
-  {
-    brand: "OMX",
-    market: "Ozon",
-    category: { ru: "Бытовая техника", en: "Small appliances", zh: "小家电" },
-    bulletsKey: ["optCards", "reviews"],
-    img: "https://ir.ozone.ru/s3/multimedia-1-p/wc1000/7372434949.jpg",
-    click: "https://www.ozon.ru/seller/omx-611623",
-  },
-  {
-    brand: "Print Tees",
-    market: "Wildberries",
-    category: { ru: "Футболки с принтами", en: "Printed tees", zh: "印花T恤" },
-    bulletsKey: ["content", "promo", "sizes"],
-    img: "https://basket-18.wbbasket.ru/vol2892/part289294/289294687/images/big/1.webp",
-    click: "https://www.wildberries.ru/seller/235322",
-  },
-  {
-    brand: "Handmade Bags «loombloom»",
-    market: "Wildberries",
-    category: { ru: "Вязаные сумки и футболки", en: "Crochet bags & tees", zh: "钩织包与T恤" },
-    bulletsKey: ["showcase", "assort", "promo"],
-    img: "https://basket-27.wbbasket.ru/vol4951/part495135/495135155/images/big/1.webp",
-    click: "https://www.wildberries.ru/seller/4499972",
-  },
-  {
-    brand: "Wow Shtuchki (18+)",
-    market: "Ozon",
-    category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" },
-    bulletsKey: ["assort", "relevantKeys", "policies"],
-    click: "https://www.ozon.ru/seller/wow-shtuchki-664611",
-  },
-  {
-    brand: "SHT (18+)",
-    market: "Яндекс.Маркет",
-    category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" },
-    bulletsKey: ["content", "pricing", "recs"],
-    click:
-      "https://market.yandex.ru/business--sht/51251801?generalContext=t%3DshopInShop%3Bi%3D1%3Bbi%3D51251801%3B&rs=eJwzkv_EKMPBKLDwEKsEg8aufwflNd53HJLX2Nt1Sl7j-6pT8gC_dg1E&searchContext=sins_ctx",
-  },
+  { brand: "OMX", market: "Wildberries", category: { ru: "Бытовая техника", en: "Small appliances", zh: "小家电" }, bulletsKey: ["assort", "seo", "reviews"], img: "https://basket-13.wbbasket.ru/vol1945/part194511/194511252/images/big/1.webp", click: "https://www.wildberries.ru/seller/94640" },
+  { brand: "OMX", market: "Ozon", category: { ru: "Бытовая техника", en: "Small appliances", zh: "小家电" }, bulletsKey: ["optCards", "reviews"], img: "https://ir.ozone.ru/s3/multimedia-1-p/wc1000/7372434949.jpg", click: "https://www.ozon.ru/seller/omx-611623" },
+  { brand: "Print Tees", market: "Wildberries", category: { ru: "Футболки с принтами", en: "Printed tees", zh: "印花T恤" }, bulletsKey: ["content", "promo", "sizes"], img: "https://basket-18.wbbasket.ru/vol2892/part289294/289294687/images/big/1.webp", click: "https://www.wildberries.ru/seller/235322" },
+  { brand: "Handmade Bags «loombloom»", market: "Wildberries", category: { ru: "Вязаные сумки и футболки", en: "Crochet bags & tees", zh: "钩织包与T恤" }, bulletsKey: ["showcase", "assort", "promo"], img: "https://basket-27.wbbasket.ru/vol4951/part495135/495135155/images/big/1.webp", click: "https://www.wildberries.ru/seller/4499972" },
+  { brand: "Wow Shtuchki (18+)", market: "Ozon", category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" }, bulletsKey: ["assort", "relevantKeys", "policies"], click: "https://www.ozon.ru/seller/wow-shtuchki-664611" },
+  { brand: "SHT (18+)", market: "Яндекс.Маркет", category: { ru: "Товары для взрослых (18+)", en: "Adults-only (18+)", zh: "成人用品(18+)" }, bulletsKey: ["content", "pricing", "recs"], click: "https://market.yandex.ru/business--sht/51251801?generalContext=t%3DshopInShop%3Bi%3D1%3Bbi%3D51251801%3B&rs=eJwzkv_EKMPBKLDwEKsEg8aufwflNd53HJLX2Nt1Sl7j-6pT8gC_dg1E&searchContext=sins_ctx" },
 ];
 
 // локализованные буллеты
 const CASE_BULLETS: Record<Lang, Record<NonNullable<CaseCard["bulletsKey"][number]>, string>> = {
-  ru: {
-    assort: "Ассортимент",
-    seo: "SEO карточек",
-    reviews: "Отзывы / Q&A",
-    optCards: "Оптимизация карточек",
-    content: "Контент",
-    promo: "Промо",
-    sizes: "Размерные сетки",
-    showcase: "Витрина",
-    relevantKeys: "Релевантные ключи",
-    policies: "Политики площадки",
-    pricing: "Ценообразование",
-    recs: "Рекомендации",
-  },
-  en: {
-    assort: "Assortment",
-    seo: "SEO cards",
-    reviews: "Reviews / Q&A",
-    optCards: "Card optimization",
-    content: "Content",
-    promo: "Promotions",
-    sizes: "Size charts",
-    showcase: "Showcase",
-    relevantKeys: "Relevant keywords",
-    policies: "Platform policies",
-    pricing: "Pricing",
-    recs: "Recommendations",
-  },
-  zh: {
-    assort: "商品结构",
-    seo: "SEO 优化",
-    reviews: "评价 / 问答",
-    optCards: "卡片优化",
-    content: "内容",
-    promo: "促销",
-    sizes: "尺码表",
-    showcase: "橱窗",
-    relevantKeys: "相关关键词",
-    policies: "平台政策",
-    pricing: "定价",
-    recs: "建议",
-  },
+  ru: { assort: "Ассортимент", seo: "SEO карточек", reviews: "Отзывы / Q&A", optCards: "Оптимизация карточек", content: "Контент", promo: "Промо", sizes: "Размерные сетки", showcase: "Витрина", relevantKeys: "Релевантные ключи", policies: "Политики площадки", pricing: "Ценообразование", recs: "Рекомендации" },
+  en: { assort: "Assortment", seo: "SEO cards", reviews: "Reviews / Q&A", optCards: "Card optimization", content: "Content", promo: "Promotions", sizes: "Size charts", showcase: "Showcase", relevantKeys: "Relevant keywords", policies: "Platform policies", pricing: "Pricing", recs: "Recommendations" },
+  zh: { assort: "商品结构", seo: "SEO 优化", reviews: "评价 / 问答", optCards: "卡片优化", content: "内容", promo: "促销", sizes: "尺码表", showcase: "橱窗", relevantKeys: "相关关键词", policies: "平台政策", pricing: "定价", recs: "建议" },
 };
 
 // --------- PARTNERS WE WORK WITH (with logo box + bg) ---------
@@ -477,6 +397,7 @@ export default function Landing() {
   const [name, setName] = useState("");
   const [mail, setMail] = useState("");
   const [phone, setPhone] = useState<string | undefined>();
+  const [isSending, setIsSending] = useState(false);
 
   const contactRef = useRef<HTMLDivElement>(null);
   const openModal = () => setOpenLead(true);
@@ -484,11 +405,23 @@ export default function Landing() {
   const FORMSPREE = "/api/lead";
 
   const sendLead = async () => {
+    if (isSending) return;
+    setIsSending(true);
+
+    // генерируем идемпотентный ключ на клиенте (сервер может его учитывать)
+    const idemKey =
+      (typeof crypto !== "undefined" && "randomUUID" in crypto && crypto.randomUUID()) ||
+      `clt-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+
     if (FORMSPREE) {
       try {
         const r = await fetch(FORMSPREE, {
           method: "POST",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            "X-Idempotency-Key": idemKey,
+          },
           body: JSON.stringify({ name, email: mail, phone, source: "hannkit.com", lang }),
         });
         if (r.ok) {
@@ -497,16 +430,21 @@ export default function Landing() {
           setName("");
           setMail("");
           setPhone(undefined);
+          setIsSending(false);
           return;
         }
-      } catch {}
+      } catch {
+        // пойдём в mailto-фолбэк
+      }
     }
+
     alert(T.toastFail);
     const subject = T.mailSubject;
     const body = `${T.formName}: ${name || "-"}\n${T.formEmail}: ${mail || "-"}\n${T.formPhone}: ${phone || "-"}`;
     const href = `mailto:Wildbizshop@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     if (typeof window !== "undefined") window.location.href = href;
     setOpenLead(false);
+    setIsSending(false);
   };
 
   const copyWeChat = async () => {
@@ -716,8 +654,8 @@ export default function Landing() {
                       justifyContent: "center",
                     }}
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     {c.img ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img src={c.img} alt={c.brand} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     ) : (
                       <div style={{ padding: 20, color: COLORS.text, fontWeight: 700, textAlign: "center" }}>{T.case18}</div>
@@ -899,8 +837,8 @@ export default function Landing() {
                       overflow: "hidden",
                     }}
                   >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     {p.logo ? (
-                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={p.logo}
                         alt={`${p.name} logo`}
@@ -1078,51 +1016,20 @@ export default function Landing() {
 
       {/* Footer */}
       <footer style={{ borderTop: `1px solid ${COLORS.border}`, background: "#fff" }}>
-        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "16px 20px", color: COLORS.subtext }}>
-          {T.footer}
-        </div>
+        <div style={{ maxWidth: 1120, margin: "0 auto", padding: "16px 20px", color: COLORS.subtext }}>{T.footer}</div>
       </footer>
 
       {/* Modal mini-form */}
       {openLead && (
-        <div
-          onClick={() => setOpenLead(false)}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,.45)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 50,
-          }}
-        >
+        <div onClick={() => setOpenLead(false)} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50 }}>
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{
-              width: isMobile ? 320 : 380,
-              background: "#fff",
-              borderRadius: 14,
-              border: `1px solid ${COLORS.border}`,
-              padding: 18,
-              boxShadow: "0 12px 32px rgba(0,0,0,.18)",
-            }}
+            style={{ width: isMobile ? 320 : 380, background: "#fff", borderRadius: 14, border: `1px solid ${COLORS.border}`, padding: 18, boxShadow: "0 12px 32px rgba(0,0,0,.18)" }}
           >
             <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 10 }}>{T.formTitle}</div>
             <div style={{ display: "grid", gap: 10 }}>
-              <input
-                placeholder={T.formName}
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
-              />
-              <input
-                placeholder={T.formEmail}
-                value={mail}
-                onChange={(e) => setMail(e.target.value)}
-                type="email"
-                style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }}
-              />
+              <input placeholder={T.formName} value={name} onChange={(e) => setName(e.target.value)} style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }} />
+              <input placeholder={T.formEmail} value={mail} onChange={(e) => setMail(e.target.value)} type="email" style={{ padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none" }} />
               <div style={{ display: "grid", gap: 6 }}>
                 <label style={{ fontSize: 12, color: COLORS.subtext }}>{T.formPhone}</label>
                 <PhoneInput
@@ -1133,37 +1040,21 @@ export default function Landing() {
                   onChange={setPhone}
                   placeholder="+7 900 000-00-00"
                   numberInputProps={{
-                    style: {
-                      padding: "10px 12px",
-                      borderRadius: 10,
-                      border: `1px solid ${COLORS.border}`,
-                      outline: "none",
-                      width: "100%",
-                    },
+                    style: { padding: "10px 12px", borderRadius: 10, border: `1px solid ${COLORS.border}`, outline: "none", width: "100%" },
                   }}
                 />
               </div>
             </div>
             <div style={{ display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" }}>
-              <button
-                onClick={() => setOpenLead(false)}
-                style={{ padding: "9px 12px", background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 10, cursor: "pointer" }}
-              >
+              <button onClick={() => setOpenLead(false)} style={{ padding: "9px 12px", background: COLORS.chip, border: `1px solid ${COLORS.border}`, borderRadius: 10, cursor: "pointer" }}>
                 {T.formCancel}
               </button>
               <button
                 onClick={sendLead}
-                style={{
-                  padding: "9px 14px",
-                  background: COLORS.brand,
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 10,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
+                disabled={isSending}
+                style={{ padding: "9px 14px", background: isSending ? "#9CA3AF" : COLORS.brand, color: "#fff", border: "none", borderRadius: 10, fontWeight: 600, cursor: isSending ? "not-allowed" : "pointer", opacity: isSending ? 0.85 : 1 }}
               >
-                {T.formSend}
+                {isSending ? (lang === "ru" ? "Отправка…" : lang === "en" ? "Sending…" : "发送中…") : T.formSend}
               </button>
             </div>
           </div>
