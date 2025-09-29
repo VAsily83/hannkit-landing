@@ -46,7 +46,7 @@ const TgForm: React.FC = () => {
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    if (isSending) return; // замок от дублей
+    if (isSending) return;
     setIsSending(true);
 
     const idempotencyKey = `${Date.now()}-${Math.random()}`;
@@ -69,17 +69,9 @@ const TgForm: React.FC = () => {
 
       setSubmitted(true);
 
-      // хаптик + закрытие
       const tg = (window as any).Telegram?.WebApp;
       tg?.HapticFeedback?.impactOccurred?.("light");
-
-      setTimeout(() => {
-        try {
-          tg?.close?.();
-        } catch (err) {
-          console.error("Close error", err);
-        }
-      }, 600);
+      tg?.close(); // сразу закрыть
     } catch (err) {
       console.error("Submit error", err);
     } finally {
